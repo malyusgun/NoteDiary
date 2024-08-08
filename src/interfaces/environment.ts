@@ -1,3 +1,14 @@
+import type { IImage, ITable, IText } from '@/interfaces/entities';
+
+export interface ISheet {
+  uuid: string;
+  title: string;
+  address: string;
+  entities: IEntity[];
+}
+
+export type IEntity = IText | ITable | IImage;
+
 export type TThemes =
   | 'green-blue'
   | 'red-yellow'
@@ -6,11 +17,3 @@ export type TThemes =
   | 'pink-red-orange'
   | 'pink-purple'
   | 'purple-pink';
-
-export interface IImage {
-  uuid: string;
-  name: string;
-  url: string;
-  width: number;
-  height: number;
-}

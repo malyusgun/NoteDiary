@@ -53,5 +53,11 @@ export const useDataStore = defineStore('dataStore', () => {
     }
   ]);
 
-  return { sheets };
+  const homeEntities = ref(JSON.parse(localStorage.getItem('homeEntities') || '[]'));
+
+  function editHomeEntities(newState) {
+    homeEntities.value = newState;
+    localStorage.setItem('homeEntities', JSON.stringify(newState));
+  }
+  return { sheets, homeEntities, editHomeEntities };
 });

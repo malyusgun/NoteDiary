@@ -2,23 +2,26 @@
 import { useElementSize } from '@vueuse/core';
 import EntityItem from '@/modules/EntityItem.vue';
 import CreateEntityMenu from '@/components/CreateEntityMenu.vue';
-import { setDefaultHomeBackground, uploadFile } from '@/helpers ';
+import { setDefaultHomeBackground, uploadFile } from '@/helpers';
 import { useInterfaceStore } from '@/stores/interface';
 import type { IEntity } from '@/interfaces/environment';
+import { useDataStore } from '@/stores/data';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);
 const entitiesContainer = ref();
 const { height: entitiesHeight } = useElementSize(entitiesContainer);
 
-const entities = ref([]);
+const dataStore = useDataStore();
+const interfaceStore = useInterfaceStore();
+const entities = computed(() => dataStore.homeEntities);
+const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
 
 const addEntity = (newEntity: IEntity) => {
-  entities.value.push(newEntity);
+  const prevState = [...entities.value];
+  prevState.push(newEntity);
+  dataStore.editHomeEntities(prevState);
 };
-
-const interfaceStore = useInterfaceStore();
-const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
 </script>
 
 <template>
@@ -27,7 +30,7 @@ const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
   </header>
   <main class="flex flex-col">
     <Splitter
-      :style="`height: calc(${backgroundImageHeight - 3}px + ${entitiesHeight}px + 150px);`"
+      :style="`height: calc(${backgroundImageHeight - 3}px + ${entitiesHeight}px + 100px);`"
       layout="vertical"
       stateKey="homeSplitter"
       stateStorage="local"
@@ -56,11 +59,13 @@ const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
         </button>
       </SplitterPanel>
       <SplitterPanel class="flex items-start justify-center"
-        ><div ref="entitiesContainer" class="pt-6">
+        ><div ref="entitiesContainer" class="pt-6 px-4">
           <p class="mb-6">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad autem cum dolores doloribus
             dolorum, earum illum nam nemo nesciunt odit pariatur quam quisquam reprehenderit
-            sapiente ullam unde ut vel, voluptatem!
+            sapiente ullam unde ut vel, voluptatem! Lorem ipsum dolor sit amet, consectetur
+            adipisicing elit. Ad autem cum dolores doloribus dolorum, earum illum nam nemo nesciunt
+            odit pariatur quam quisquam reprehenderit sapiente ullam unde ut vel, voluptatem!
           </p>
           <EntityItem
             v-for="entitiesItem of entities"

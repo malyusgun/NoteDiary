@@ -6,7 +6,7 @@ const visible = ref<boolean>(false);
 
 <template>
   <router-view />
-  <div class="absolute top-0 left-0">
+  <div class="fixed top-0 left-0">
     <Button
       @click.prevent="visible = !visible"
       label="Menu"

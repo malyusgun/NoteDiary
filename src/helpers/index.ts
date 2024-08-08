@@ -1,5 +1,6 @@
 import { useInterfaceStore } from '@/stores/interface';
 import type { IEntity } from '@/interfaces/environment';
+import { useDataStore } from '@/stores/data';
 
 export async function uploadFile($event: Event) {
   const target = $event.target as HTMLInputElement;
@@ -23,3 +24,13 @@ export function setDefaultHomeBackground() {
   );
   localStorage.removeItem('homeBackgroundUrl');
 }
+
+export const editEntity = (newState: IEntity, entityUuid: string) => {
+  const dataStore = useDataStore();
+  let prevState = dataStore.homeEntities;
+  prevState = prevState.map((entity: IEntity) => {
+    if (entity.uuid !== entityUuid) return entity;
+    return newState;
+  });
+  dataStore.editHomeEntities(prevState);
+};

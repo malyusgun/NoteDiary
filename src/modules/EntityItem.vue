@@ -10,7 +10,7 @@ defineProps<Props>();
 
 <template>
   <div>
-    <TextItem v-if="entity.type === 'text'" :entityData="entity"/>
+    <TextItem v-if="entity.type === 'text'" :entityData="entity" />
   </div>
 </template>
 

@@ -14,25 +14,14 @@ const { height: entitiesHeight } = useElementSize(entitiesContainer);
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
-
-// const entities = ref(JSON.parse(localStorage.getItem('homeEntities') || '[]'));
 const entities = computed(() => dataStore.homeEntities);
+const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
 
 const addEntity = (newEntity: IEntity) => {
-  console.log('entities.value', entities.value);
   const prevState = [...entities.value];
   prevState.push(newEntity);
   dataStore.editHomeEntities(prevState);
-  // let prevValue = JSON.parse(localStorage.getItem('homeEntities') || '[]');
-  // prevValue.push(newEntity);
-  // localStorage.setItem('homeEntities', JSON.stringify(prevValue));
-  // entities.value.push(newEntity);
 };
-
-const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
-watchEffect(() => {
-  console.log('entities: ', entities.value);
-});
 </script>
 
 <template>
@@ -74,9 +63,9 @@ watchEffect(() => {
           <p class="mb-6">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad autem cum dolores doloribus
             dolorum, earum illum nam nemo nesciunt odit pariatur quam quisquam reprehenderit
-            sapiente ullam unde ut vel, voluptatem! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad autem cum dolores doloribus
-            dolorum, earum illum nam nemo nesciunt odit pariatur quam quisquam reprehenderit
-            sapiente ullam unde ut vel, voluptatem!
+            sapiente ullam unde ut vel, voluptatem! Lorem ipsum dolor sit amet, consectetur
+            adipisicing elit. Ad autem cum dolores doloribus dolorum, earum illum nam nemo nesciunt
+            odit pariatur quam quisquam reprehenderit sapiente ullam unde ut vel, voluptatem!
           </p>
           <EntityItem
             v-for="entitiesItem of entities"

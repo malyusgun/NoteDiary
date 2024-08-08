@@ -33,12 +33,6 @@ const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
 watchEffect(() => {
   console.log('entities: ', entities.value);
 });
-
-// watch(entities.value.length, () => {
-//   console.log('watch');
-//   localStorage.setItem('homeEntities', JSON.stringify(entities.value));
-// });
-// provide('entities', entities);
 </script>
 
 <template>

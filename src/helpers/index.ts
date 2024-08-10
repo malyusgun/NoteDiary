@@ -34,3 +34,28 @@ export const editEntity = (newState: IEntity, entityUuid: string) => {
   });
   dataStore.editHomeEntities(prevState);
 };
+
+export const deleteEntity = (entityUuid: string) => {
+  const dataStore = useDataStore();
+  let prevState = dataStore.homeEntities;
+  prevState = prevState.filter((entity: IEntity) => entity.uuid !== entityUuid);
+  dataStore.editHomeEntities(prevState);
+};
+
+export const changeOrderHomeEntity = (entityUuid: string, direction: 'up' | 'down') => {
+  const dataStore = useDataStore();
+  const prevState = dataStore.homeEntities;
+  const entityIndex = prevState.findIndex((entity: IEntity) => entity.uuid === entityUuid);
+  if (direction === 'up') {
+    [prevState[entityIndex], prevState[entityIndex - 1]] = [
+      prevState[entityIndex - 1],
+      prevState[entityIndex]
+    ];
+  } else {
+    [prevState[entityIndex], prevState[entityIndex + 1]] = [
+      prevState[entityIndex + 1],
+      prevState[entityIndex]
+    ];
+  }
+  dataStore.editHomeEntities(prevState);
+};

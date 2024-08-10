@@ -59,19 +59,12 @@ const addEntity = (newEntity: IEntity) => {
         </button>
       </SplitterPanel>
       <SplitterPanel class="flex items-start justify-center"
-        ><div ref="entitiesContainer" class="pt-6 px-4">
-          <p class="mb-6">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad autem cum dolores doloribus
-            dolorum, earum illum nam nemo nesciunt odit pariatur quam quisquam reprehenderit
-            sapiente ullam unde ut vel, voluptatem! Lorem ipsum dolor sit amet, consectetur
-            adipisicing elit. Ad autem cum dolores doloribus dolorum, earum illum nam nemo nesciunt
-            odit pariatur quam quisquam reprehenderit sapiente ullam unde ut vel, voluptatem!
-          </p>
+        ><div ref="entitiesContainer" class="w-full pt-8 px-4">
           <EntityItem
             v-for="entitiesItem of entities"
             :entity="entitiesItem"
             :key="entitiesItem.uuid"
-            class="mb-6"
+            class="mb-12"
           />
           <div class="relative">
             <CreateEntityMenu @addEntity="addEntity" />

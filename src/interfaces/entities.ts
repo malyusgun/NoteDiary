@@ -31,8 +31,9 @@ export interface IText {
 export interface IImage {
   type: 'image';
   uuid: string;
-  name: string;
+  title: string;
   url: string;
   width: number;
   height: number;
+  position: 'left' | 'center' | 'right';
 }

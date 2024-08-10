@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { IText } from '@/interfaces/entities';
-import type { IEntity } from '@/interfaces/environment';
 import { useDataStore } from '@/stores/data';
-import {useTextareaAutosize} from "@vueuse/core";
+import { useTextareaAutosize } from '@vueuse/core';
+import { deleteEntity, editEntity } from '@/helpers';
+import EditTextEntityMenu from '@/components/EditTextEntityMenu.vue';
 
 interface Props {
   entityData: IText;
@@ -10,55 +11,56 @@ interface Props {
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
 
-const dataStore = useDataStore();
-
-const editEntity = (newState: IEntity) => {
-  let prevState = dataStore.homeEntities;
-  prevState = prevState.map((entity: IEntity) => {
-    if (entity.uuid !== entityData.value.uuid) return entity;
-    return newState;
-  });
-  dataStore.editHomeEntities(prevState);
-};
-
 const addTitle = () => {
-  editEntity({ ...entityData.value, title: 'Title' });
+  editEntity({ ...entityData.value, title: 'Title' }, entityData.value.uuid);
   entityData.value = { ...entityData.value, title: 'Title' };
 };
 
 const editTitle = () => {
-  editEntity({ ...entityData.value, title: entityData.value.title });
+  editEntity({ ...entityData.value, title: entityData.value.title }, entityData.value.uuid);
 };
 
 const editText = () => {
-  editEntity({ ...entityData.value, text: entityData.value.text });
+  editEntity({ ...entityData.value, text: entityData.value.text }, entityData.value.uuid);
 };
 
-const deleteEntity = () => {
-  let prevState = dataStore.homeEntities;
-  prevState = prevState.filter((entity: IEntity) => entity.uuid !== entityData.value.uuid);
-  dataStore.editHomeEntities(prevState);
-}
-const { textarea, triggerResize  } = useTextareaAutosize();
+const removeTitle = () => {
+  const newState = { ...entityData.value };
+  delete newState.title;
+  editEntity({ ...newState }, entityData.value.uuid);
+  entityData.value = newState;
+};
+
+const { textarea, triggerResize } = useTextareaAutosize();
 </script>
 
 <template>
-  <div class="textContainer relative">
-    <input ref="input" v-if="entityData?.title" type="text" v-model="entityData.title" @change="editTitle" @input="triggerResize" class="w-full mb-2 font-bold pl-2" />
-    <textarea ref="textarea" v-model="entityData.text" class="w-full indent-5 resize-none pl-4 -ml-4 border-0 border-l-4 border-solid border-l-blue-400" @change="editText" @input="triggerResize" placeholder="Enter text..."/>
-    <button
-        v-if="!entityData.title"
-        @click.prevent="addTitle"
-        class="addTitleButton absolute top-0 left-4 bg-blue-500 py-0.5 px-2 rounded-md -translate-y-full border-2 border-solid border-black transition-all select-none"
-    >
-      Add title
-    </button>
-    <button
-        @click.prevent="deleteEntity"
-        class="deleteEntityButton absolute top-0 right-4 bg-blue-500 py-0.5 px-2 rounded-md -translate-y-full border-2 border-solid border-black transition-all select-none"
-    >
-      <i class="pi pi-trash pr-2"></i>Delete
-    </button>
+  <div class="entityContainer relative">
+    <input
+      ref="input"
+      v-if="entityData.title || entityData.title === ''"
+      type="text"
+      v-model="entityData.title"
+      @change="editTitle"
+      placeholder="Enter title..."
+      class="w-full mb-2 font-bold text-2xl pl-2"
+    />
+    <textarea
+      ref="textarea"
+      v-model="entityData.text"
+      class="w-full indent-5 resize-none pl-4 -ml-4 border-0 border-l-4 border-solid border-l-blue-400"
+      @change="editText"
+      @input="triggerResize"
+      placeholder="Enter text..."
+    />
+    <div class="speedDial absolute top-0 left-2 z-50 transition-all select-none">
+      <EditTextEntityMenu
+        :entityData="entityData"
+        @deleteEntity="deleteEntity"
+        @addTitle="addTitle"
+        @removeTitle="removeTitle"
+      />
+    </div>
   </div>
 </template>
 
@@ -71,12 +73,13 @@ textarea {
 textarea::-webkit-scrollbar {
   display: none;
 }
-.textContainer > .addTitleButton,
-.textContainer > .deleteEntityButton {
+.entityContainer > .speedDial {
   opacity: 0;
 }
-.textContainer:hover > .addTitleButton,
-.textContainer:hover > .deleteEntityButton{
+.entityContainer:hover > .speedDial {
   opacity: 100;
+}
+input::placeholder {
+  font-weight: 400;
 }
 </style>

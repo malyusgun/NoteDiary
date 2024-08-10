@@ -1,7 +1,41 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid';
+import { useFileDialog } from '@vueuse/core';
+import { useInterfaceStore } from '@/stores/interface';
 
 const emit = defineEmits(['addEntity']);
+
+const {
+  files,
+  open: uploadFile,
+  reset,
+  onChange
+} = useFileDialog({
+  accept: 'image/*'
+});
+
+const addImage = (files: FileList) => {
+  console.log('files', files);
+
+  const file = files[0];
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.addEventListener('load', () => {
+    const url = reader.result;
+    emit('addEntity', {
+      type: 'image',
+      uuid: uuidv4(),
+      url,
+      position: 'left',
+      height: 300
+    });
+  });
+};
+onChange((files) => {
+  if (files && files?.length > 0) {
+    addImage(files);
+  }
+});
 
 const speedDialItems = ref([
   {
@@ -19,10 +53,8 @@ const speedDialItems = ref([
     label: 'Image',
     icon: 'pi pi-image',
     command: () => {
-      emit('addEntity', {
-        type: 'image',
-        uuid: uuidv4()
-      });
+      uploadFile();
+      console.log('uploadFile finished');
     }
   },
   {

@@ -3,7 +3,8 @@ import type { IText } from '@/interfaces/entities';
 import { useDataStore } from '@/stores/data';
 import { useTextareaAutosize } from '@vueuse/core';
 import { deleteEntity, editEntity } from '@/helpers';
-import EditTextEntityMenu from '@/components/EditTextEntityMenu.vue';
+import StateMenu from '@/components/editEntityMenus/text/StateMenu.vue';
+import MoveMenu from '@/components/editEntityMenus/text/MoveMenu.vue';
 
 interface Props {
   entityData: IText;
@@ -12,30 +13,33 @@ const props = defineProps<Props>();
 const entityData = ref(props.entityData);
 
 const addTitle = () => {
-  editEntity({ ...entityData.value, title: 'Title' }, entityData.value.uuid);
+  editEntity({ ...entityData.value, title: 'Title' }, entityData.value.entity_uuid);
   entityData.value = { ...entityData.value, title: 'Title' };
 };
 
 const editTitle = () => {
-  editEntity({ ...entityData.value, title: entityData.value.title }, entityData.value.uuid);
+  editEntity({ ...entityData.value, title: entityData.value.title }, entityData.value.entity_uuid);
 };
 
 const editText = () => {
-  editEntity({ ...entityData.value, text: entityData.value.text }, entityData.value.uuid);
+  editEntity({ ...entityData.value, text: entityData.value.text }, entityData.value.entity_uuid);
 };
 
 const removeTitle = () => {
   const newState = { ...entityData.value };
-  delete newState.title;
-  editEntity({ ...newState }, entityData.value.uuid);
+  newState.title = null;
+  editEntity({ ...newState }, entityData.value.entity_uuid);
   entityData.value = newState;
 };
 
-const { textarea, triggerResize } = useTextareaAutosize();
+const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
+
+const dataStore = useDataStore();
+const homeEntities = computed(() => dataStore.homeEntities);
 </script>
 
 <template>
-  <div class="entityContainer relative">
+  <div class="entityContainer relative py-8 px-16">
     <input
       ref="input"
       v-if="entityData.title || entityData.title === ''"
@@ -43,23 +47,30 @@ const { textarea, triggerResize } = useTextareaAutosize();
       v-model="entityData.title"
       @change="editTitle"
       placeholder="Enter title..."
-      class="w-full mb-2 font-bold text-2xl pl-2"
+      class="w-full mb-4 font-bold text-2xl pl-2"
     />
     <textarea
       ref="textarea"
       v-model="entityData.text"
-      class="w-full indent-5 resize-none pl-4 -ml-4 border-0 border-l-4 border-solid border-l-blue-400"
+      class="w-full indent-5 resize-none outline-0"
       @change="editText"
       @input="triggerResize"
       placeholder="Enter text..."
+      rows="2"
     />
-    <div class="speedDial absolute top-0 left-2 z-50 transition-all select-none">
-      <EditTextEntityMenu
+    <div class="speedDial absolute left-4 top-2 transition-all select-none">
+      <StateMenu
         :entityData="entityData"
         @deleteEntity="deleteEntity"
         @addTitle="addTitle"
         @removeTitle="removeTitle"
       />
+    </div>
+    <div
+      v-if="homeEntities.length > 1"
+      class="speedDial absolute left-4 bottom-2 transition-all select-none"
+    >
+      <MoveMenu :entityData="entityData" />
     </div>
   </div>
 </template>

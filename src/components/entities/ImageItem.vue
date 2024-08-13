@@ -10,23 +10,33 @@ interface Props {
 }
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
+// const imageUrl = ref<string>();
+onMounted(() => {
+  console.log('entityData.value', entityData.value);
 
-const dataStore = useDataStore();
-const entities = computed(() => dataStore.homeEntities);
-
+  // const reader = new FileReader();
+  // const imageData = new Blob(entityData.value.image_data.data, {
+  //   type: 'image/x-icon;'
+  // });
+  // reader.readAsDataURL(imageData);
+  // reader.addEventListener('load', () => {
+  //   imageUrl.value = reader.result;
+  //   console.log(' imageUrl.value', imageUrl.value);
+  // });
+})
 const imageContainer = ref();
 const { width: imageWidth, height: imageHeight } = useElementSize(imageContainer);
 
 const editTitle = () => {
-  editEntity({ ...entityData.value, title: entityData.value.title }, entityData.value.uuid);
+  editEntity({ ...entityData.value, title: entityData.value.title }, entityData.value.entity_uuid);
 };
 
 const addTitle = () => {
   imageHeight.value = imageHeight.value + 48;
   console.log('imageHeight.value', imageHeight.value);
   editEntity(
-    { ...entityData.value, title: 'Title', height: imageHeight.value },
-    entityData.value.uuid
+    { ...entityData.value, title: 'Title', image_height: imageHeight.value },
+    entityData.value.entity_uuid
   );
   entityData.value = { ...entityData.value, title: 'Title' };
 };
@@ -34,7 +44,7 @@ const removeTitle = () => {
   const newState = { ...entityData.value };
   delete newState.title;
   imageHeight.value = imageHeight.value - 48;
-  editEntity({ ...newState, height: imageHeight.value }, entityData.value.uuid);
+  editEntity({ ...newState, image_height: imageHeight.value }, entityData.value.entity_uuid);
   entityData.value = newState;
 };
 
@@ -43,15 +53,15 @@ const toggleIsResizable = () => {
   isResizable.value = !isResizable.value;
   if (!isResizable.value) {
     editEntity(
-      { ...entityData.value, height: imageHeight.value, width: imageWidth.value },
-      entityData.value.uuid
+      { ...entityData.value, image_height: imageHeight.value, image_width: imageWidth.value },
+      entityData.value.entity_uuid
     );
     console.log(entityData.value);
   }
 };
 const editPosition = (position: 'left' | 'center' | 'right') => {
-  entityData.value.position = position;
-  editEntity({ ...entityData.value, position }, entityData.value.uuid);
+  entityData.value.image_position = position;
+  editEntity({ ...entityData.value, image_position: position }, entityData.value.entity_uuid);
 };
 </script>
 
@@ -60,9 +70,9 @@ const editPosition = (position: 'left' | 'center' | 'right') => {
     :class="[
       'entityContainer relative flex',
       {
-        'justify-start': entityData.position === 'left',
-        'justify-center': entityData.position === 'center',
-        'justify-end': entityData.position === 'right'
+        'justify-start': entityData.image_position === 'left',
+        'justify-center': entityData.image_position === 'center',
+        'justify-end': entityData.image_position === 'right'
       }
     ]"
   >
@@ -75,7 +85,7 @@ const editPosition = (position: 'left' | 'center' | 'right') => {
         @change="editTitle"
         placeholder="Enter title..."
         class="w-full mb-4 font-bold text-2xl pl-2"
-        :style="`width: ${entityData.width}px`"
+        :style="`width: ${entityData.image_width}px`"
       />
       <div
         ref="imageContainer"
@@ -86,10 +96,10 @@ const editPosition = (position: 'left' | 'center' | 'right') => {
             'min-h-[148px]': entityData.title || entityData.title === ''
           }
         ]"
-        :style="`height: ${entityData.height}px; width: ${entityData.width}px`"
+        :style="`height: ${entityData.image_height}px; width: ${entityData.image_width}px`"
       >
         <img
-          :src="entityData.url"
+          :src="entityData?.image_data"
           :alt="`Image ${entityData?.title}` || 'Image'"
           class="max-h-[700px] min-h-[100px] object-contain"
         />

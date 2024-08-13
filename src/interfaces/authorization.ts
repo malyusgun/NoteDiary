@@ -1,13 +1,14 @@
-import type { IImage, TThemes } from '@/interfaces/environment';
+import type {  TThemes } from '@/interfaces/environment';
+import type {IImage } from "@/interfaces/entities";
 
 export interface IUserData {
-  uuid: string;
-  nickName: string;
-  firstName: string;
-  lastName: string;
-  middleName: string;
+  user_uuid: string;
+  nick_name: string;
+  first_name: string;
+  last_name: string;
+  middle_name: string;
   email: string;
-  phoneNumber: string;
+  phone_number: string;
   settings: IUserSettings;
 }
 interface IUserSettings {

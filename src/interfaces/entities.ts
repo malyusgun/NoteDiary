@@ -1,15 +1,18 @@
 export interface ITable {
-  type: 'table';
-  uuid: string;
+  entity_type: 'table';
+  entity_uuid: string;
   title?: string;
-  columns: ITableColumn[];
-  data: {
+  text?: string;
+  table_columns: ITableColumn[];
+  table_data: {
     [key: string]: any;
   }[];
 }
 interface ITableColumn {
+  column_uuid: string;
   name: string;
   type: ITableColumnTypes;
+  data: any;
 }
 type ITableColumnTypes =
   | 'text'
@@ -22,18 +25,19 @@ type ITableColumnTypes =
   | 'knob';
 
 export interface IText {
-  type: 'text';
-  uuid: string;
-  text: string;
+  entity_type: 'text';
+  entity_uuid: string;
   title?: string;
+  text: string;
 }
 
 export interface IImage {
-  type: 'image';
-  uuid: string;
-  title: string;
-  url: string;
-  width: number;
-  height: number;
-  position: 'left' | 'center' | 'right';
+  entity_type: 'image';
+  entity_uuid: string;
+  title?: string;
+  text?: string;
+  image_data: string;
+  image_width: number;
+  image_height: number;
+  image_position: 'left' | 'center' | 'right';
 }

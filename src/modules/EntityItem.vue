@@ -11,8 +11,11 @@ defineProps<Props>();
 
 <template>
   <div>
-    <TextItem v-if="entity.type === 'text'" :entityData="entity" />
-    <ImageItem v-if="entity.type === 'image'" :entityData="entity" />
+    <TextItem v-if="entity.entity_type === 'text'" :entityData="entity" />
+    <ImageItem v-if="entity.entity_type === 'image'" :entityData="entity" />
+    <div class="px-16">
+      <div class="w-full h-[1px] bg-gray-500"></div>
+    </div>
   </div>
 </template>
 

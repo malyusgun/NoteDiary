@@ -1,6 +1,7 @@
 import { useInterfaceStore } from '@/stores/interface';
 import type { IEntity } from '@/interfaces/environment';
 import { useDataStore } from '@/stores/data';
+import { useWebsocketStore } from '@/stores/websocket';
 
 export async function uploadFile($event: Event) {
   const target = $event.target as HTMLInputElement;
@@ -26,36 +27,34 @@ export function setDefaultHomeBackground() {
 }
 
 export const editEntity = (newState: IEntity, entityUuid: string) => {
-  const dataStore = useDataStore();
-  let prevState = dataStore.homeEntities;
-  prevState = prevState.map((entity: IEntity) => {
-    if (entity.uuid !== entityUuid) return entity;
-    return newState;
-  });
-  dataStore.editHomeEntities(prevState);
+  const websocketStore = useWebsocketStore();
+  const data = {
+    event: 'editHomeEntity',
+    body: { ...newState }
+  };
+  websocketStore.sendData(data);
 };
 
 export const deleteEntity = (entityUuid: string) => {
   const dataStore = useDataStore();
-  let prevState = dataStore.homeEntities;
-  prevState = prevState.filter((entity: IEntity) => entity.uuid !== entityUuid);
-  dataStore.editHomeEntities(prevState);
+  const websocketStore = useWebsocketStore();
+  const entities = dataStore.homeEntities;
+  const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
+  const data = {
+    event: 'deleteHomeEntity',
+    body: { ...entityToDelete }
+  };
+  websocketStore.sendData(data);
 };
 
 export const changeOrderHomeEntity = (entityUuid: string, direction: 'up' | 'down') => {
-  const dataStore = useDataStore();
-  const prevState = dataStore.homeEntities;
-  const entityIndex = prevState.findIndex((entity: IEntity) => entity.uuid === entityUuid);
-  if (direction === 'up') {
-    [prevState[entityIndex], prevState[entityIndex - 1]] = [
-      prevState[entityIndex - 1],
-      prevState[entityIndex]
-    ];
-  } else {
-    [prevState[entityIndex], prevState[entityIndex + 1]] = [
-      prevState[entityIndex + 1],
-      prevState[entityIndex]
-    ];
-  }
-  dataStore.editHomeEntities(prevState);
+  const websocketStore = useWebsocketStore();
+  const data = {
+    event: 'changeOrderHomeEntity',
+    body: {
+      entity_uuid: entityUuid,
+      direction
+    }
+  };
+  websocketStore.sendData(data);
 };

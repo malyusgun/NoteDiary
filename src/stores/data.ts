@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { ISheet } from '@/interfaces/environment';
+import type {IEntity, ISheet} from '@/interfaces/environment';
 
 export const useDataStore = defineStore('dataStore', () => {
   const sheets = ref([
@@ -53,11 +53,14 @@ export const useDataStore = defineStore('dataStore', () => {
     }
   ]);
 
-  const homeEntities = ref(JSON.parse(localStorage.getItem('homeEntities') || '[]'));
+  const homeEntities = ref<IEntity[]>([]);
 
-  function editHomeEntities(newState) {
+  function editHomeEntities(newState: IEntity) {
     homeEntities.value = newState;
-    localStorage.setItem('homeEntities', JSON.stringify(newState));
   }
-  return { sheets, homeEntities, editHomeEntities };
+
+  function setHomeEntities(entities: IEntity[]) {
+    homeEntities.value = entities;
+  }
+  return { sheets, homeEntities, editHomeEntities, setHomeEntities };
 });

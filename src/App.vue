@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css';
 import BaseMenu from '@/modules/BaseMenu.vue';
+
 const visible = ref<boolean>(false);
 </script>
 

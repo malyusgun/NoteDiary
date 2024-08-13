@@ -19,15 +19,17 @@ const addImage = (files: FileList) => {
 
   const file = files[0];
   const reader = new FileReader();
+  console.log('file', file, 'type: ', typeof file);
   reader.readAsDataURL(file);
   reader.addEventListener('load', () => {
     const url = reader.result;
+    console.log('url length: ', url.length);
     emit('addEntity', {
-      type: 'image',
-      uuid: uuidv4(),
-      url,
-      position: 'left',
-      height: 300
+      entity_type: 'image',
+      entity_uuid: uuidv4(),
+      image_data: url,
+      image_position: 'left',
+      image_height: 300
     });
   });
 };
@@ -43,8 +45,8 @@ const speedDialItems = ref([
     icon: 'pi pi-pencil',
     command: () => {
       emit('addEntity', {
-        type: 'text',
-        uuid: uuidv4(),
+        entity_type: 'text',
+        entity_uuid: uuidv4(),
         text: ''
       });
     }
@@ -52,19 +54,16 @@ const speedDialItems = ref([
   {
     label: 'Image',
     icon: 'pi pi-image',
-    command: () => {
-      uploadFile();
-      console.log('uploadFile finished');
-    }
+    command: () => uploadFile()
   },
   {
     label: 'Table',
     icon: 'pi pi-table',
     command: () => {
       emit('addEntity', {
-        type: 'table',
-        uuid: uuidv4(),
-        columns: [
+        entity_type: 'table',
+        entity_uuid: uuidv4(),
+        table_columns: [
           {
             name: 'Name',
             type: 'text'

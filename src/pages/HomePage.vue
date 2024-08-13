@@ -6,6 +6,8 @@ import { setDefaultHomeBackground, uploadFile } from '@/helpers';
 import { useInterfaceStore } from '@/stores/interface';
 import type { IEntity } from '@/interfaces/environment';
 import { useDataStore } from '@/stores/data';
+import { useAuthorizationStore } from '@/stores/authorization';
+import { useWebsocketStore } from '@/stores/websocket';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);
@@ -14,13 +16,23 @@ const { height: entitiesHeight } = useElementSize(entitiesContainer);
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
+const authorizationStore = useAuthorizationStore();
+const websocketStore = useWebsocketStore();
 const entities = computed(() => dataStore.homeEntities);
+
 const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
+const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultHomeBackgroundUrl);
 
 const addEntity = (newEntity: IEntity) => {
-  const prevState = [...entities.value];
-  prevState.push(newEntity);
-  dataStore.editHomeEntities(prevState);
+  const data = {
+    event: 'createHomeEntity',
+    body: {
+      ...newEntity,
+      nickName: authorizationStore.userNickName
+    }
+  };
+  console.log('data.body?.image_data: ', data.body?.image_data);
+  websocketStore.sendData(data);
 };
 </script>
 
@@ -41,32 +53,32 @@ const addEntity = (newEntity: IEntity) => {
         class="splitterPanelBackground"
       >
         <div
-          class="changeImageBlock absolute top-2 right-2 bg-black p-2 rounded-md hover:text-gray-300 transition-all cursor-pointer select-none"
+          class="changeImageBlock absolute top-2 right-2 bg-black p-2 rounded-md hover:text-gray-300 transition-all select-none"
         >
           <input
             type="file"
             @change="uploadFile($event)"
             title="Change image"
             accept="image/*"
-            class="w-2 pr-[135px] -mr-[135px] py-2 -my-2 pl-2 -ml-2 opacity-0 cursor-pointer"
-          /><span class="cursor-pointer"><i class="pi pi-image mr-2"></i>Change image</span>
+            class="w-2 pr-[135px] -mr-[135px] py-2 -my-2 pl-2 -ml-2 opacity-0"
+          /><span><i class="pi pi-image mr-2"></i>Change image</span>
         </div>
         <button
           @click.prevent="setDefaultHomeBackground"
+          v-if="backgroundUrl !== defaultBackgroundUrl"
           class="returnDefaultImageBlock absolute top-16 right-2 bg-blue-600 p-2 transition-all rounded-md border-2 border-solid border-black select-none"
         >
           Return default image
         </button>
       </SplitterPanel>
       <SplitterPanel class="flex items-start justify-center"
-        ><div ref="entitiesContainer" class="w-full pt-8 px-4">
+        ><div ref="entitiesContainer" class="w-full">
           <EntityItem
             v-for="entitiesItem of entities"
             :entity="entitiesItem"
-            :key="entitiesItem.uuid"
-            class="mb-12"
+            :key="entitiesItem.entity_uuid"
           />
-          <div class="relative">
+          <div class="relative mt-2">
             <CreateEntityMenu @addEntity="addEntity" />
           </div>
         </div>
@@ -89,5 +101,10 @@ const addEntity = (newEntity: IEntity) => {
 .splitterPanelBackground:hover > .changeImageBlock,
 .splitterPanelBackground:hover > .returnDefaultImageBlock {
   opacity: 100;
+}
+input[type=file], /* FF, IE7+, chrome (except button) */
+input[type=file]::-webkit-file-upload-button {
+  /* chromes and blink button */
+  cursor: pointer;
 }
 </style>

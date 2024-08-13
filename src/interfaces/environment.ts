@@ -1,7 +1,7 @@
 import type { IImage, ITable, IText } from '@/interfaces/entities';
 
 export interface ISheet {
-  uuid: string;
+  sheet_uuid: string;
   title: string;
   address: string;
   entities: IEntity[];

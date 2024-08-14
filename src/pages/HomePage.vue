@@ -2,12 +2,12 @@
 import { useElementSize } from '@vueuse/core';
 import EntityItem from '@/modules/EntityItem.vue';
 import CreateEntityMenu from '@/components/CreateEntityMenu.vue';
-import { setDefaultHomeBackground, uploadFile } from '@/helpers';
-import { useInterfaceStore } from '@/stores/interface';
-import type { IEntity } from '@/interfaces/environment';
-import { useDataStore } from '@/stores/data';
-import { useAuthorizationStore } from '@/stores/authorization';
-import { useWebsocketStore } from '@/stores/websocket';
+import { setDefaultHomeBackground, uploadFile } from '@/app/helpers';
+import { useInterfaceStore } from '@/app/stores/interface';
+import type { IEntity } from '@/app/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
+import { useAuthorizationStore } from '@/app/stores/authorization';
+import { useWebsocketStore } from '@/app/stores/websocket';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);

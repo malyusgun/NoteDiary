@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { changeOrderHomeEntity, deleteEntity } from '@/helpers';
-import type { IText } from '@/interfaces/entities';
-import { useDataStore } from '@/stores/data';
-import type { IEntity } from '@/interfaces/environment';
+import { deleteEntity } from '@/app/helpers';
+import type { IText } from '@/app/interfaces/entities';
 
 interface Props {
   entityData: IText;
@@ -20,21 +18,18 @@ const emit = defineEmits([
   // 'toggleIsResizable'
 ]);
 
-// const isResizable = computed(() => props.isResizable);
-// const position = computed(() => props.entityData.position);
-
 const speedDialState = computed(() => {
   const state = [];
   if (!props.entityData?.title && props.entityData?.title !== '') {
     state.push({
-      label: 'Add title',
-      icon: 'pi pi-pencil',
+      label: 'Title',
+      icon: 'pi pi-plus',
       command: () => emit('addTitle')
     });
   }
   if (props.entityData?.title || props.entityData?.title === '') {
     state.push({
-      label: 'Remove title',
+      label: 'Title',
       icon: 'pi pi-trash',
       command: () => emit('removeTitle')
     });
@@ -84,43 +79,15 @@ const speedDialState = computed(() => {
   state.push({
     label: 'Delete',
     icon: 'pi pi-trash',
-    command: () => deleteEntity(props.entityData.uuid)
+    command: () => deleteEntity(props.entityData.entity_uuid)
   });
-  return state;
-});
-
-const speedDialMove = computed(() => {
-  const state = [];
-  const dataStore = useDataStore();
-  const entities = dataStore.homeEntities;
-  const entityIndex = entities.findIndex(
-    (entity: IEntity) => entity.uuid === props.entityData.uuid
-  );
-  if (entityIndex !== 0) {
-    state.push({
-      label: 'Move up',
-      icon: 'pi pi-arrow-up',
-      command: () => changeOrderHomeEntity(props.entityData.uuid, 'up')
-    });
-  }
-  if (entityIndex !== entities.length - 1) {
-    state.push({
-      label: 'Move down',
-      icon: 'pi pi-arrow-down',
-      command: () => changeOrderHomeEntity(props.entityData.uuid, 'down')
-    });
-  }
   return state;
 });
 </script>
 
 <template>
-  <div class="relative">
-    <SpeedDial
-      :model="speedDialState"
-      direction="right"
-      pt:root:class="speedDialRoot w-16 -translate-y-12"
-    >
+  <div>
+    <SpeedDial :model="speedDialState" direction="right" pt:root:class="speedDialRoot size-12">
       <template #button="{ toggleCallback }">
         <button
           class="border p-6 size-10 rounded-full bg-blue-500 flex items-center justify-center"
@@ -132,33 +99,7 @@ const speedDialMove = computed(() => {
       <template #item="{ item, toggleCallback }">
         <div
           :class="[
-            'flex flex-col bg-black bg-opacity-70 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
-            {
-              'text-red-400 font-semibold': item.icon.includes('trash')
-            }
-          ]"
-          @click="toggleCallback"
-        >
-          <span :class="item.icon" />
-          <span class="text-center">
-            {{ item.label }}
-          </span>
-        </div>
-      </template>
-    </SpeedDial>
-    <SpeedDial :model="speedDialMove" direction="right" pt:root:class="speedDialRoot w-16">
-      <template #button="{ toggleCallback }">
-        <button
-          class="border p-6 size-10 rounded-full bg-blue-500 flex items-center justify-center"
-          @click="toggleCallback"
-        >
-          <i class="pi pi-arrows-alt"></i>
-        </button>
-      </template>
-      <template #item="{ item, toggleCallback }">
-        <div
-          :class="[
-            'flex flex-col bg-black bg-opacity-70 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
+            'flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
             {
               'text-red-400 font-semibold': item.icon.includes('trash')
             }

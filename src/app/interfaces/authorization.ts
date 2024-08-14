@@ -1,5 +1,5 @@
-import type {  TThemes } from '@/interfaces/environment';
-import type {IImage } from "@/interfaces/entities";
+import type { TThemes } from '@/app/interfaces/environment';
+import type { IImage } from '@/app/interfaces/entities';
 
 export interface IUserData {
   user_uuid: string;

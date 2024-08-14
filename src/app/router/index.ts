@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/:sheetUuid',
       name: 'sheet',
-      component: () => import('../pages/[uuid]/SheetPage.vue')
+      component: () => import('../../pages/[uuid]/SheetPage.vue')
     }
   ]
 });

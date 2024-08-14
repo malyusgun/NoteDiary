@@ -1,4 +1,4 @@
-import type { IImage, ITable, IText } from '@/interfaces/entities';
+import type { IImage, ITable, IText } from '@/app/interfaces/entities';
 
 export interface ISheet {
   sheet_uuid: string;

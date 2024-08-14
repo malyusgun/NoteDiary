@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid';
 import { useFileDialog } from '@vueuse/core';
-import { useInterfaceStore } from '@/stores/interface';
 
 const emit = defineEmits(['addEntity']);
 
@@ -16,6 +15,7 @@ const {
 
 const addImage = (files: FileList) => {
   console.log('files', files);
+  let image = new Image();
 
   const file = files[0];
   const reader = new FileReader();
@@ -23,6 +23,8 @@ const addImage = (files: FileList) => {
   reader.readAsDataURL(file);
   reader.addEventListener('load', () => {
     const url = reader.result;
+    image.src = url;
+    console.log('image width and height: ', image.width, image.height);
     console.log('url length: ', url.length);
     emit('addEntity', {
       entity_type: 'image',

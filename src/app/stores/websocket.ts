@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { useDataStore } from '@/stores/data';
-import type { IEntity } from '@/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
+import type { IEntity } from '@/app/interfaces/environment';
 
 export const useWebsocketStore = defineStore('websocketStore', () => {
   const socket = ref();

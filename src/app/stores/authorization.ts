@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { IUserData } from '@/interfaces/authorization';
+import type { IUserData } from '@/app/interfaces/authorization';
 
 export const useAuthorizationStore = defineStore('authorizationStore', () => {
   const userUuid = ref<string>('e786de50-f33c-4ef9-9dfe-329eed32b023');

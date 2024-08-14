@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { changeOrderHomeEntity } from '@/helpers';
-import type { IText } from '@/interfaces/entities';
-import { useDataStore } from '@/stores/data';
-import type { IEntity } from '@/interfaces/environment';
+import { changeOrderHomeEntity } from '@/app/helpers';
+import type { IText } from '@/app/interfaces/entities';
+import { useDataStore } from '@/app/stores/data';
+import type { IEntity } from '@/app/interfaces/environment';
 
 interface Props {
   entityData: IText;
@@ -52,7 +52,7 @@ const speedDialMove = computed(() => {
       <template #item="{ item, toggleCallback }">
         <div
           :class="[
-            'flex flex-col bg-black bg-opacity-70 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
+            'flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
             {
               'text-red-400 font-semibold': item.icon.includes('trash')
             }

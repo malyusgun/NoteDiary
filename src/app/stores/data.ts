@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type {IEntity, ISheet} from '@/interfaces/environment';
+import type { IEntity } from '@/app/interfaces/environment';
 
 export const useDataStore = defineStore('dataStore', () => {
   const sheets = ref([

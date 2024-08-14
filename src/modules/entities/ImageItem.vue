@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { IImage } from '@/interfaces/entities';
-import { deleteEntity, editEntity } from '@/helpers';
-import EditImageEntityMenu from '@/components/EditImageEntityMenu.vue';
-import { useDataStore } from '@/stores/data';
+import type { IImage } from '@/app/interfaces/entities';
+import { deleteEntity, editEntity } from '@/app/helpers';
+import { useDataStore } from '@/app/stores/data';
 import { useElementSize } from '@vueuse/core';
+import MoveMenu from '@/components/editEntityMenu/image/MoveMenu.vue';
+import StateMenu from '@/components/editEntityMenu/image/StateMenu.vue';
 
 interface Props {
   entityData: IImage;
@@ -23,7 +24,7 @@ onMounted(() => {
   //   imageUrl.value = reader.result;
   //   console.log(' imageUrl.value', imageUrl.value);
   // });
-})
+});
 const imageContainer = ref();
 const { width: imageWidth, height: imageHeight } = useElementSize(imageContainer);
 
@@ -63,6 +64,9 @@ const editPosition = (position: 'left' | 'center' | 'right') => {
   entityData.value.image_position = position;
   editEntity({ ...entityData.value, image_position: position }, entityData.value.entity_uuid);
 };
+
+const dataStore = useDataStore();
+const homeEntities = computed(() => dataStore.homeEntities);
 </script>
 
 <template>
@@ -104,15 +108,24 @@ const editPosition = (position: 'left' | 'center' | 'right') => {
           class="max-h-[700px] min-h-[100px] object-contain"
         />
       </div>
-      <div class="speedDial absolute top-16 left-2 transition-all select-none">
-        <EditImageEntityMenu
+      <div class="speedDial absolute left-2 top-2 transition-all select-none">
+        <StateMenu
           :entityData="entityData"
           :isResizable="isResizable"
           @deleteEntity="deleteEntity"
-          @editPosition="editPosition"
           @addTitle="addTitle"
           @removeTitle="removeTitle"
           @toggleIsResizable="toggleIsResizable"
+        />
+      </div>
+      <div
+        v-if="homeEntities.length > 1"
+        class="speedDial absolute left-2 bottom-2 transition-all select-none"
+      >
+        <MoveMenu
+          :entityData="entityData"
+          :isResizable="isResizable"
+          @editPosition="editPosition"
         />
       </div>
     </div>

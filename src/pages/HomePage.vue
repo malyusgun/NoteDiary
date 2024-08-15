@@ -2,12 +2,15 @@
 import { useElementSize } from '@vueuse/core';
 import EntityItem from '@/modules/EntityItem.vue';
 import CreateEntityMenu from '@/components/CreateEntityMenu.vue';
-import { setDefaultHomeBackground, uploadFile } from '@/app/helpers';
+// import { setDefaultHomeBackground, uploadFile } from '@/app/helpers';
+import { setDefaultHomeBackground } from '@/app/helpers';
 import { useInterfaceStore } from '@/app/stores/interface';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
+import BaseModal from '@/modules/BaseModal.vue';
+import type { IImageMainInfo } from '@/app/interfaces';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);
@@ -34,12 +37,49 @@ const addEntity = (newEntity: IEntity) => {
   console.log('data.body?.image_data: ', data.body?.image_data);
   websocketStore.sendData(data);
 };
+
+const imageInfo = ref<IImageMainInfo>({
+  url: backgroundUrl.value,
+  width: 0,
+  height: 0
+});
+const isModalUploadFile = ref<boolean>(false);
+function openUploadFileModal() {
+  console.log('openModal');
+  isModalUploadFile.value = true;
+}
+function uploadFile($event: Event) {
+  const target = $event.target as HTMLInputElement;
+  console.log('target.files', target.files);
+  if (target && target.files && target.files[0]) {
+    let image = new Image();
+    const file = target.files[0];
+    console.log('file: ', file);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.addEventListener('load', () => {
+      image.src = reader.result;
+      image.onload = function () {
+        console.log('image width and height: ', image.width, image.height);
+        imageInfo.value.url = String(reader.result);
+        imageInfo.value.width = image.width;
+        imageInfo.value.height = image.height;
+        console.log('imageInfo.value', imageInfo.value);
+        openUploadFileModal();
+        const interfaceStore = useInterfaceStore();
+        // interfaceStore.changeHomeBackgroundUrl(url);
+        // localStorage.setItem('homeBackgroundUrl', url);
+      };
+    });
+  }
+}
 </script>
 
 <template>
   <header>
     <h1 class="text-center text-4xl py-4">Home page</h1>
   </header>
+  <BaseModal v-model:isVisible="isModalUploadFile" v-model:imageInfo="imageInfo" />
   <main class="flex flex-col">
     <Splitter
       :style="`height: calc(${backgroundImageHeight - 3}px + ${entitiesHeight}px + 100px);`"
@@ -49,7 +89,7 @@ const addEntity = (newEntity: IEntity) => {
     >
       <SplitterPanel
         ref="splitterBackground"
-        :pt:root:style="`position: relative; background-image: url(${backgroundUrl}); background-size: 100% auto; max-height: ${backgroundImageHeight - 3}px; min-height: 200px;`"
+        :pt:root:style="`position: relative; background-image: url(${imageInfo.url}); background-size: 100% auto; max-height: ${backgroundImageHeight - 3}px; min-height: 200px;`"
         class="splitterPanelBackground"
       >
         <div
@@ -58,14 +98,23 @@ const addEntity = (newEntity: IEntity) => {
           <input
             type="file"
             @change="uploadFile($event)"
+            onclick="this.value = null"
             title="Change image"
             accept="image/*"
             class="w-2 pr-[135px] -mr-[135px] py-2 -my-2 pl-2 -ml-2 opacity-0"
           /><span><i class="pi pi-image mr-2"></i>Change image</span>
         </div>
+        <!--          <input-->
+        <!--            type="button"-->
+        <!--            @click.prevent="openUploadFileModal"-->
+        <!--            title="Change image"-->
+        <!--            accept="image/*"-->
+        <!--            class="w-2 pr-[135px] -mr-[135px] py-2 -my-2 pl-2 -ml-2 opacity-0"-->
+        <!--          /><span><i class="pi pi-image mr-2"></i>Change image</span>-->
+        <!--        </div>-->
         <button
           @click.prevent="setDefaultHomeBackground"
-          v-if="backgroundUrl !== defaultBackgroundUrl"
+          v-if="imageInfo.url !== defaultBackgroundUrl"
           class="returnDefaultImageBlock absolute top-16 right-2 bg-blue-600 p-2 transition-all rounded-md border-2 border-solid border-black select-none"
         >
           Return default image
@@ -87,7 +136,7 @@ const addEntity = (newEntity: IEntity) => {
   </main>
   <img
     ref="backgroundImage"
-    :src="backgroundUrl"
+    :src="imageInfo.url"
     alt="background image"
     class="absolute w-full -top-full -left-full"
   />

@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.4",
-    "@vueuse/components": "^10.11.1",
     "@vueuse/core": "^10.11.0",
     "@vueuse/integrations": "^10.11.0",
+    "cropperjs": "^1.6.2",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.4",
@@ -24,6 +24,7 @@
     "universal-cookie": "^7",
     "uuid": "^10.0.0",
     "vue": "^3.4.29",
+    "vue-advanced-cropper": "^2.8.9",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",
     "@vue/tsconfig": "^0.5.1",
+    "cost-of-modules": "^1.0.1",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.23.0",
     "npm-run-all2": "^6.2.0",

@@ -10,7 +10,8 @@ const {
   reset,
   onChange
 } = useFileDialog({
-  accept: 'image/*'
+  accept: 'image/*',
+  reset: true
 });
 
 const addImage = (files: FileList) => {

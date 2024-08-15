@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css';
-import BaseMenu from '@/modules/BaseMenu.vue';
+import BaseSidebarMenu from '@/modules/BaseSidebarMenu.vue';
 
 const visible = ref<boolean>(false);
 </script>
@@ -18,7 +18,7 @@ const visible = ref<boolean>(false);
   </div>
   <Drawer v-model:visible="visible">
     <template #container="{ closeCallback }">
-      <BaseMenu @closeCallback="closeCallback" />
+      <BaseSidebarMenu @closeCallback="closeCallback" />
     </template>
   </Drawer>
 </template>

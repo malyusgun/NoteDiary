@@ -29,8 +29,7 @@ const addEntity = (newEntity: IEntity) => {
   const data = {
     event: 'createHomeEntity',
     body: {
-      ...newEntity,
-      nickName: authorizationStore.userNickName
+      ...newEntity
     }
   };
   websocketStore.sendData(data);
@@ -47,24 +46,19 @@ function openUploadFileModal() {
 }
 function uploadFile($event: Event) {
   const target = $event.target as HTMLInputElement;
-  console.log('target.files', target.files);
   if (target && target.files && target.files[0]) {
     let image = new Image();
     const file = target.files[0];
-    console.log('file: ', file);
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.addEventListener('load', () => {
-      image.src = reader.result;
-      image.onload = function () {
-        console.log('image width and height: ', image.width, image.height);
-        imageInfo.value.url = String(reader.result);
-        imageInfo.value.width = image.width;
-        imageInfo.value.height = image.height;
-        console.log('imageInfo.value', imageInfo.value);
-        openUploadFileModal();
-      };
-    });
+    const url = URL.createObjectURL(file);
+    image.src = url;
+    console.log('url: ', url);
+    image.onload = function () {
+      imageInfo.value.url = url;
+      imageInfo.value.width = image.width;
+      imageInfo.value.height = image.height;
+      console.log('imageInfo.value', imageInfo.value);
+      openUploadFileModal();
+    };
   }
 }
 </script>
@@ -96,7 +90,8 @@ function uploadFile($event: Event) {
             title="Change image"
             accept="image/*"
             class="w-2 pr-[135px] -mr-[135px] py-2 -my-2 pl-2 -ml-2 opacity-0"
-          /><span><i class="pi pi-image mr-2"></i>Change image</span>
+          />
+          <span><i class="pi pi-image mr-2"></i>Change image</span>
         </div>
         <button
           @click.prevent="setDefaultHomeBackground"

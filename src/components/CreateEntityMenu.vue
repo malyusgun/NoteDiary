@@ -15,25 +15,19 @@ const {
 });
 
 const addImage = (files: FileList) => {
-  console.log('files', files);
   let image = new Image();
-
   const file = files[0];
-  const reader = new FileReader();
   console.log('file', file, 'type: ', typeof file);
-  reader.readAsDataURL(file);
-  reader.addEventListener('load', () => {
-    const url = reader.result;
-    image.src = url;
-    console.log('image width and height: ', image.width, image.height);
-    console.log('url length: ', url.length);
-    emit('addEntity', {
-      entity_type: 'image',
-      entity_uuid: uuidv4(),
-      image_data: url,
-      image_position: 'left',
-      image_height: 300
-    });
+  const url = URL.createObjectURL(file);
+  image.src = url;
+  console.log('image width and height: ', image.width, image.height);
+  console.log('url length: ', url.length);
+  emit('addEntity', {
+    entity_type: 'image',
+    entity_uuid: uuidv4(),
+    image_data: url,
+    image_position: 'left',
+    image_height: 300
   });
 };
 onChange((files) => {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
+import 'vue-advanced-cropper/dist/theme.compact.css';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { useWindowSize, useVModels } from '@vueuse/core';
 import type { IImageMainInfo } from '@/app/interfaces';
@@ -92,7 +93,12 @@ function onCropperChange({ canvas }) {
       <div
         :style="`position: relative; width: ${stageSize.width}px; height: ${stageSize.height}px;`"
       >
-        <Cropper :src="imageInstance.src" @change="onCropperChange"></Cropper>
+        <Cropper
+          :src="imageInstance.src"
+          @change="onCropperChange"
+          :minWidth="200"
+          :minHeight="200"
+        ></Cropper>
       </div>
     </Dialog>
   </div>

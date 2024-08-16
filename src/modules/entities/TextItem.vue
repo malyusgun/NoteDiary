@@ -3,8 +3,8 @@ import type { IText } from '@/app/interfaces/entities';
 import { useDataStore } from '@/app/stores/data';
 import { useTextareaAutosize } from '@vueuse/core';
 import { deleteEntity, editEntity } from '@/app/helpers';
-import StateTextMenu from '@/components/editEntityMenu/text/StateTextMenu.vue';
-import MoveTextMenu from '@/components/editEntityMenu/text/MoveTextMenu.vue';
+import StateMenu from '@/components/editEntityMenu/TextStateMenu.vue';
+import MoveMenu from '@/components/editEntityMenu/TextMoveMenu.vue';
 
 interface Props {
   entityData: IText;
@@ -59,7 +59,7 @@ const homeEntities = computed(() => dataStore.homeEntities);
       rows="2"
     />
     <div class="speedDial absolute left-2 top-2 transition-all select-none">
-      <StateTextMenu
+      <StateMenu
         :entityData="entityData"
         @deleteEntity="deleteEntity"
         @addTitle="addTitle"
@@ -70,7 +70,7 @@ const homeEntities = computed(() => dataStore.homeEntities);
       v-if="homeEntities.length > 1"
       class="speedDial absolute left-2 bottom-2 transition-all select-none"
     >
-      <MoveTextMenu :entityData="entityData" />
+      <MoveMenu :entityData="entityData" />
     </div>
   </div>
 </template>

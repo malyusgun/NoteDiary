@@ -14,6 +14,8 @@ declare module 'vue' {
     Divider: typeof import('primevue/divider')['default']
     Drawer: typeof import('primevue/drawer')['default']
     ImageItem: typeof import('@/modules/entities/ImageItem.vue')['default']
+    ImageMoveMenu: typeof import('./src/components/editEntityMenu/ImageMoveMenu.vue')['default']
+    ImageStateMenu: typeof import('./src/components/editEntityMenu/ImageStateMenu.vue')['default']
     LogoAndLabel: typeof import('./src/components/LogoAndLabel.vue')['default']
     MoveImageMenu: typeof import('./src/components/editEntityMenu/image/MoveImageMenu.vue')['default']
     MoveMenu: typeof import('./src/components/editEntityMenu/text/MoveMenu.vue')['default']
@@ -27,6 +29,8 @@ declare module 'vue' {
     StateMenu: typeof import('./src/components/editEntityMenu/text/StateMenu.vue')['default']
     StateTextMenu: typeof import('./src/components/editEntityMenu/text/StateTextMenu.vue')['default']
     TextItem: typeof import('@/modules/entities/TextItem.vue')['default']
+    TextMoveMenu: typeof import('./src/components/editEntityMenu/TextMoveMenu.vue')['default']
+    TextStateMenu: typeof import('./src/components/editEntityMenu/TextStateMenu.vue')['default']
     Tree: typeof import('primevue/tree')['default']
     UserInfoHeaderWithSettings: typeof import('./src/components/UserInfoHeaderWithSettings.vue')['default']
   }

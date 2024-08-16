@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useWindowSize, useVModels, useDraggable } from '@vueuse/core';
-import type { IImageMainInfo } from '@/app/interfaces';
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
+import { useInterfaceStore } from '@/app/stores/interface';
+import { useWindowSize, useVModels } from '@vueuse/core';
+import type { IImageMainInfo } from '@/app/interfaces';
 
 interface Props {
   isVisible: boolean;
@@ -24,7 +25,6 @@ const stageSize = ref({
 watch(
   () => imageInfo.value.url,
   () => {
-    console.log('imageInfo', imageInfo.value);
     if (imageInfo.value.url) {
       imageInstance.src = imageInfo.value.url;
       imageInstance.onload = () => {
@@ -46,20 +46,14 @@ watch(
             stageSize.value.height = imageInstance.height;
           };
         }
-        console.log(
-          'imageInstance.width',
-          imageInstance.width,
-          'imageInstance.height',
-          imageInstance.height
-        );
       };
     }
   }
 );
 
 function saveImage() {
-  console.log('save image!');
-  imageInfo.value.url = finalImageUrl.value;
+  const interfaceStore = useInterfaceStore();
+  interfaceStore.changeHomeBackgroundUrl(finalImageUrl.value);
   finalImageUrl.value = '';
   isVisible.value = false;
 }
@@ -72,7 +66,6 @@ const modalWidth = computed(() => {
 });
 function onCropperChange({ canvas }) {
   finalImageUrl.value = canvas.toDataURL();
-  console.log('finalImageUrl.value', finalImageUrl.value);
 }
 </script>
 

@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useElementSize } from '@vueuse/core';
-import EntityItem from '@/modules/EntityItem.vue';
-import CreateEntityMenu from '@/components/CreateEntityMenu.vue';
-// import { setDefaultHomeBackground, uploadFile } from '@/app/helpers';
 import { setDefaultHomeBackground } from '@/app/helpers';
 import { useInterfaceStore } from '@/app/stores/interface';
-import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
-import BaseModal from '@/modules/BaseModal.vue';
+import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
+import EntityItem from '@/modules/EntityItem.vue';
+import CreateEntityMenu from '@/components/CreateEntityMenu.vue';
+import BaseModal from '@/modules/BaseModal.vue';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);
@@ -34,7 +33,6 @@ const addEntity = (newEntity: IEntity) => {
       nickName: authorizationStore.userNickName
     }
   };
-  console.log('data.body?.image_data: ', data.body?.image_data);
   websocketStore.sendData(data);
 };
 
@@ -45,7 +43,6 @@ const imageInfo = ref<IImageMainInfo>({
 });
 const isModalUploadFile = ref<boolean>(false);
 function openUploadFileModal() {
-  console.log('openModal');
   isModalUploadFile.value = true;
 }
 function uploadFile($event: Event) {
@@ -66,9 +63,6 @@ function uploadFile($event: Event) {
         imageInfo.value.height = image.height;
         console.log('imageInfo.value', imageInfo.value);
         openUploadFileModal();
-        const interfaceStore = useInterfaceStore();
-        // interfaceStore.changeHomeBackgroundUrl(url);
-        // localStorage.setItem('homeBackgroundUrl', url);
       };
     });
   }
@@ -89,7 +83,7 @@ function uploadFile($event: Event) {
     >
       <SplitterPanel
         ref="splitterBackground"
-        :pt:root:style="`position: relative; background-image: url(${imageInfo.url}); background-size: 100% auto; max-height: ${backgroundImageHeight - 3}px; min-height: 200px;`"
+        :pt:root:style="`position: relative; background-image: url(${backgroundUrl}); background-size: 100% auto; max-height: ${backgroundImageHeight - 3}px; min-height: 200px;`"
         class="splitterPanelBackground"
       >
         <div
@@ -104,14 +98,6 @@ function uploadFile($event: Event) {
             class="w-2 pr-[135px] -mr-[135px] py-2 -my-2 pl-2 -ml-2 opacity-0"
           /><span><i class="pi pi-image mr-2"></i>Change image</span>
         </div>
-        <!--          <input-->
-        <!--            type="button"-->
-        <!--            @click.prevent="openUploadFileModal"-->
-        <!--            title="Change image"-->
-        <!--            accept="image/*"-->
-        <!--            class="w-2 pr-[135px] -mr-[135px] py-2 -my-2 pl-2 -ml-2 opacity-0"-->
-        <!--          /><span><i class="pi pi-image mr-2"></i>Change image</span>-->
-        <!--        </div>-->
         <button
           @click.prevent="setDefaultHomeBackground"
           v-if="imageInfo.url !== defaultBackgroundUrl"
@@ -136,7 +122,7 @@ function uploadFile($event: Event) {
   </main>
   <img
     ref="backgroundImage"
-    :src="imageInfo.url"
+    :src="backgroundUrl"
     alt="background image"
     class="absolute w-full -top-full -left-full"
   />

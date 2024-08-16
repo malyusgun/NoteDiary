@@ -3,8 +3,8 @@ import type { IImage } from '@/app/interfaces/entities';
 import { deleteEntity, editEntity } from '@/app/helpers';
 import { useDataStore } from '@/app/stores/data';
 import { useElementSize } from '@vueuse/core';
-import MoveImageMenu from '@/components/editEntityMenu/image/MoveImageMenu.vue';
-import StateImageMenu from '@/components/editEntityMenu/image/StateImageMenu.vue';
+import MoveMenu from '@/components/editEntityMenu/ImageMoveMenu.vue';
+import StateMenu from '@/components/editEntityMenu/ImageStateMenu.vue';
 
 interface Props {
   entityData: IImage;
@@ -34,7 +34,6 @@ const editTitle = () => {
 
 const addTitle = () => {
   imageHeight.value = imageHeight.value + 48;
-  console.log('imageHeight.value', imageHeight.value);
   editEntity(
     { ...entityData.value, title: 'Title', image_height: imageHeight.value },
     entityData.value.entity_uuid
@@ -57,7 +56,6 @@ const toggleIsResizable = () => {
       { ...entityData.value, image_height: imageHeight.value, image_width: imageWidth.value },
       entityData.value.entity_uuid
     );
-    console.log(entityData.value);
   }
 };
 const editPosition = (position: 'left' | 'center' | 'right') => {
@@ -109,7 +107,7 @@ const homeEntities = computed(() => dataStore.homeEntities);
         />
       </div>
       <div class="speedDial absolute left-2 top-2 transition-all select-none">
-        <StateImageMenu
+        <StateMenu
           :entityData="entityData"
           :isResizable="isResizable"
           @deleteEntity="deleteEntity"
@@ -122,7 +120,7 @@ const homeEntities = computed(() => dataStore.homeEntities);
         v-if="homeEntities.length > 1"
         class="speedDial absolute left-2 bottom-2 transition-all select-none"
       >
-        <MoveImageMenu
+        <MoveMenu
           :entityData="entityData"
           :isResizable="isResizable"
           @editPosition="editPosition"

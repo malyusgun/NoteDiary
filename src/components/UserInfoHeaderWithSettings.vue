@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthorizationStore } from '@/stores/authorization';
+import { useAuthorizationStore } from '@/app/stores/authorization';
 
 const authorizationStore = useAuthorizationStore();
 const userNickName = computed(() => authorizationStore.userNickName);

@@ -1,7 +1,7 @@
-import { useInterfaceStore } from '@/stores/interface';
-import type { IEntity } from '@/interfaces/environment';
-import { useDataStore } from '@/stores/data';
-import { useWebsocketStore } from '@/stores/websocket';
+import { useInterfaceStore } from '@/app/stores/interface';
+import type { IEntity } from '@/app/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
+import { useWebsocketStore } from '@/app/stores/websocket';
 
 export async function uploadFile($event: Event) {
   const target = $event.target as HTMLInputElement;

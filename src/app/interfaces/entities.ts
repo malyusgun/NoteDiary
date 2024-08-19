@@ -36,8 +36,12 @@ export interface IImage {
   entity_uuid: string;
   title?: string;
   text?: string;
-  image_data: string;
+  text_size?: 'small' | 'medium' | 'large';
+  paragraph_size?: 'small' | 'medium' | 'large' | 'extraLarge';
+  text_position?: 'left' | 'right';
+  image_url: string;
   image_width: number;
   image_height: number;
   image_position: 'left' | 'center' | 'right';
+  image_scale: string;
 }

@@ -1,37 +1,34 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid';
 import { useFileDialog } from '@vueuse/core';
-import { useInterfaceStore } from '@/stores/interface';
 
 const emit = defineEmits(['addEntity']);
 
-const {
-  files,
-  open: uploadFile,
-  reset,
-  onChange
-} = useFileDialog({
-  accept: 'image/*'
+const { open: uploadFile, onChange } = useFileDialog({
+  accept: 'image/*',
+  reset: true
 });
 
-const addImage = (files: FileList) => {
-  console.log('files', files);
-
+const addImage = async (files: FileList) => {
+  let image = new Image();
+  const imageUuid = uuidv4();
   const file = files[0];
   const reader = new FileReader();
-  console.log('file', file, 'type: ', typeof file);
   reader.readAsDataURL(file);
   reader.addEventListener('load', () => {
-    const url = reader.result;
-    console.log('url length: ', url.length);
+    image.src = String(reader.result);
+  });
+  image.onload = () => {
     emit('addEntity', {
       entity_type: 'image',
-      entity_uuid: uuidv4(),
-      image_data: url,
+      entity_uuid: imageUuid,
+      image_url: image.src,
       image_position: 'left',
-      image_height: 300
+      image_width: image.width,
+      image_height: image.height,
+      image_scale: '1'
     });
-  });
+  };
 };
 onChange((files) => {
   if (files && files?.length > 0) {

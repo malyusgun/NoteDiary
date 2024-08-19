@@ -8,6 +8,9 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    'process.env': {}
+  },
   plugins: [
     vue({
       template: {}
@@ -72,7 +75,7 @@ export default defineConfig({
       // Filepath to generate corresponding .d.ts file.
       // Defaults to './auto-imports.d.ts' when `typescript` is installed locally.
       // Set `false` to disable.
-      dts: 'src/auto-imports.d.ts',
+      dts: 'src/app/auto-imports.d.ts',
 
       // Array of strings of regexes that contains imports meant to be ignored during
       // the declaration file generation. You may find this useful when you need to provide

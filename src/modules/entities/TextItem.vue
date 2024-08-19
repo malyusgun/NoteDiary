@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IText } from '@/interfaces/entities';
-import { useDataStore } from '@/stores/data';
+import type { IText } from '@/app/interfaces/entities';
+import { useDataStore } from '@/app/stores/data';
 import { useTextareaAutosize } from '@vueuse/core';
-import { deleteEntity, editEntity } from '@/helpers';
-import StateMenu from '@/components/editEntityMenus/text/StateMenu.vue';
-import MoveMenu from '@/components/editEntityMenus/text/MoveMenu.vue';
+import { deleteEntity, editEntity } from '@/app/helpers';
+import StateMenu from '@/components/editEntityMenu/TextStateMenu.vue';
+import MoveMenu from '@/components/editEntityMenu/TextMoveMenu.vue';
 
 interface Props {
   entityData: IText;
@@ -58,7 +58,7 @@ const homeEntities = computed(() => dataStore.homeEntities);
       placeholder="Enter text..."
       rows="2"
     />
-    <div class="speedDial absolute left-4 top-2 transition-all select-none">
+    <div class="speedDial absolute left-2 top-2 transition-all select-none">
       <StateMenu
         :entityData="entityData"
         @deleteEntity="deleteEntity"
@@ -68,7 +68,7 @@ const homeEntities = computed(() => dataStore.homeEntities);
     </div>
     <div
       v-if="homeEntities.length > 1"
-      class="speedDial absolute left-4 bottom-2 transition-all select-none"
+      class="speedDial absolute left-2 bottom-2 transition-all select-none"
     >
       <MoveMenu :entityData="entityData" />
     </div>

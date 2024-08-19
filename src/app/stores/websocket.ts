@@ -1,20 +1,26 @@
 import { defineStore } from 'pinia';
 import { useDataStore } from '@/app/stores/data';
 import type { IEntity } from '@/app/interfaces/environment';
+import { useInterfaceStore } from '@/app/stores/interface';
 
 export const useWebsocketStore = defineStore('websocketStore', () => {
   const socket = ref();
   const dataStore = useDataStore();
+  const interfaceStore = useInterfaceStore();
   const homeEntities = computed(() => dataStore.homeEntities);
 
   onMounted(() => {
     socket.value = new WebSocket('ws://localhost:5000');
     socket.value.onopen = () => {
       console.log('Websocket opened');
-      const data = {
+      const getHomeEntitiesData = {
         event: 'getHomeEntities'
       };
-      socket.value.send(JSON.stringify(data));
+      socket.value.send(JSON.stringify(getHomeEntitiesData));
+      const getHomeBackgroundUrlData = {
+        event: 'getHomeBackgroundUrl'
+      };
+      socket.value.send(JSON.stringify(getHomeBackgroundUrlData));
     };
     socket.value.onmessage = (event: any) => {
       const response = JSON.parse(event.data);
@@ -22,6 +28,9 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
       switch (response.event) {
         case 'getHomeEntities':
           dataStore.editHomeEntities(response.data);
+          break;
+        case 'getHomeBackgroundUrl':
+          interfaceStore.setHomeBackgroundUrlFromDB(response.data?.setting_value);
           break;
         case 'createHomeEntity': {
           const entities = [...homeEntities.value];

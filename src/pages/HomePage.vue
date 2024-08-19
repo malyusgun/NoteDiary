@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useElementSize } from '@vueuse/core';
+import { useElementSize, useWindowSize } from '@vueuse/core';
 import { setDefaultHomeBackground } from '@/app/helpers';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { useDataStore } from '@/app/stores/data';
@@ -9,12 +9,14 @@ import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
 import EntityItem from '@/modules/EntityItem.vue';
 import CreateEntityMenu from '@/components/CreateEntityMenu.vue';
-import BaseModal from '@/modules/BaseModal.vue';
+import CropImageModal from '@/modules/CropImageModal.vue';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);
 const entitiesContainer = ref();
 const { height: entitiesHeight } = useElementSize(entitiesContainer);
+const splitterPanelBackground = ref();
+const { height: splitterPanelBackgroundHeight } = useElementSize(splitterPanelBackground);
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
@@ -36,9 +38,9 @@ const addEntity = (newEntity: IEntity) => {
 };
 
 const imageInfo = ref<IImageMainInfo>({
-  url: backgroundUrl.value,
-  width: 0,
-  height: 0
+  image_url: backgroundUrl.value,
+  image_width: 0,
+  image_height: 0
 });
 const isModalUploadFile = ref<boolean>(false);
 function openUploadFileModal() {
@@ -51,35 +53,46 @@ function uploadFile($event: Event) {
     const file = target.files[0];
     const url = URL.createObjectURL(file);
     image.src = url;
-    console.log('url: ', url);
     image.onload = function () {
-      imageInfo.value.url = url;
-      imageInfo.value.width = image.width;
-      imageInfo.value.height = image.height;
-      console.log('imageInfo.value', imageInfo.value);
+      imageInfo.value.image_url = url;
+      imageInfo.value.image_width = image.width;
+      imageInfo.value.image_height = image.height;
       openUploadFileModal();
     };
   }
 }
+function saveImage(finalImageUrl: string) {
+  const interfaceStore = useInterfaceStore();
+  interfaceStore.changeHomeBackgroundUrl(finalImageUrl);
+  isModalUploadFile.value = false;
+}
+
+const splitterHeight = computed(() => {
+  return splitterPanelBackgroundHeight.value + entitiesHeight.value + 100;
+});
 </script>
 
 <template>
   <header>
     <h1 class="text-center text-4xl py-4">Home page</h1>
   </header>
-  <BaseModal v-model:isVisible="isModalUploadFile" v-model:imageInfo="imageInfo" />
+  <CropImageModal
+    v-model:isVisible="isModalUploadFile"
+    v-model:imageInfo="imageInfo"
+    @saveImage="saveImage"
+  />
   <main class="flex flex-col">
     <Splitter
-      :style="`height: calc(${backgroundImageHeight - 3}px + ${entitiesHeight}px + 100px);`"
+      :style="`height: ${splitterHeight}px;`"
       layout="vertical"
       stateKey="homeSplitter"
       stateStorage="local"
     >
       <SplitterPanel
-        ref="splitterBackground"
         :pt:root:style="`position: relative; background-image: url(${backgroundUrl}); background-size: 100% auto; max-height: ${backgroundImageHeight - 3}px; min-height: 200px;`"
         class="splitterPanelBackground"
       >
+        <div ref="splitterPanelBackground" class="w-full h-full"></div>
         <div
           class="changeImageBlock absolute top-2 right-2 bg-black p-2 rounded-md hover:text-gray-300 transition-all select-none"
         >
@@ -95,14 +108,14 @@ function uploadFile($event: Event) {
         </div>
         <button
           @click.prevent="setDefaultHomeBackground"
-          v-if="imageInfo.url !== defaultBackgroundUrl"
+          v-if="imageInfo.image_url !== defaultBackgroundUrl"
           class="returnDefaultImageBlock absolute top-16 right-2 bg-blue-600 p-2 transition-all rounded-md border-2 border-solid border-black select-none"
         >
           Return default image
         </button>
       </SplitterPanel>
       <SplitterPanel class="flex items-start justify-center"
-        ><div ref="entitiesContainer" class="w-full">
+        ><div ref="entitiesContainer" class="w-full pt-4">
           <EntityItem
             v-for="entitiesItem of entities"
             :entity="entitiesItem"

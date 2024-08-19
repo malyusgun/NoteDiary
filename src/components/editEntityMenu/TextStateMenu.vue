@@ -8,15 +8,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits([
-  'deleteEntity',
-  'addTitle',
-  'removeTitle'
-  // 'toLeftPosition',
-  // 'toCenterPosition',
-  // 'toRightPosition',
-  // 'toggleIsResizable'
-]);
+const emit = defineEmits(['deleteEntity', 'addTitle', 'removeTitle']);
 
 const speedDialState = computed(() => {
   const state = [];
@@ -34,48 +26,6 @@ const speedDialState = computed(() => {
       command: () => emit('removeTitle')
     });
   }
-  // state.push({
-  //   label: !isResizable.value ? 'Resize' : 'Stop resize',
-  //   icon: 'pi pi-arrow-up-right-and-arrow-down-left-from-center',
-  //   command: () => emit('toggleIsResizable')
-  // });
-  // switch (position.value) {
-  //   case 'left':
-  //     state.push({
-  //       label: 'Move to center',
-  //       icon: 'pi pi-align-center',
-  //       command: () => emit('toCenterPosition')
-  //     });
-  //     state.push({
-  //       label: 'Move to right',
-  //       icon: 'pi pi-arrow-right',
-  //       command: () => emit('toRightPosition')
-  //     });
-  //     break;
-  //   case 'center':
-  //     state.push({
-  //       label: 'Move to left',
-  //       icon: 'pi pi-arrow-left',
-  //       command: () => emit('toLeftPosition')
-  //     });
-  //     state.push({
-  //       label: 'Move to right',
-  //       icon: 'pi pi-arrow-right',
-  //       command: () => emit('toRightPosition')
-  //     });
-  //     break;
-  //   case 'right':
-  //     state.push({
-  //       label: 'Move to left',
-  //       icon: 'pi pi-arrow-left',
-  //       command: () => emit('toLeftPosition')
-  //     });
-  //     state.push({
-  //       label: 'Move to center',
-  //       icon: 'pi pi-align-center',
-  //       command: () => emit('toCenterPosition')
-  //     });
-  // }
   state.push({
     label: 'Delete',
     icon: 'pi pi-trash',

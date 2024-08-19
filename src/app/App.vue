@@ -7,7 +7,7 @@ const visible = ref<boolean>(false);
 
 <template>
   <router-view />
-  <div class="fixed top-0 left-0">
+  <div class="fixed top-0 left-0 z-50">
     <Button
       @click.prevent="visible = !visible"
       label="Menu"
@@ -18,7 +18,7 @@ const visible = ref<boolean>(false);
   </div>
   <Drawer v-model:visible="visible">
     <template #container="{ closeCallback }">
-      <BaseSidebarMenu @closeCallback="closeCallback" />
+      <BaseSidebarMenu @closeCallback="closeCallback" class="relative z-50" />
     </template>
   </Drawer>
 </template>

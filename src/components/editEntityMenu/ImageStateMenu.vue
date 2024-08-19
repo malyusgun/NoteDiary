@@ -4,15 +4,16 @@ import type { IImage } from '@/app/interfaces/entities';
 
 interface Props {
   entityData: IImage;
-  isResizable: boolean;
 }
-
 const props = defineProps<Props>();
-
-const emit = defineEmits(['deleteEntity', 'addTitle', 'removeTitle', 'toggleIsResizable']);
-
-const position = computed(() => props.entityData.image_position);
-const isResizable = computed(() => props.isResizable);
+const emit = defineEmits([
+  'deleteEntity',
+  'addTitle',
+  'removeTitle',
+  'addText',
+  'removeText',
+  'openUploadFileModal'
+]);
 
 const speedDialState = computed(() => {
   const state = [];
@@ -30,13 +31,25 @@ const speedDialState = computed(() => {
       command: () => emit('removeTitle')
     });
   }
-  if (position.value !== 'right') {
+  if (!props.entityData?.text && props.entityData?.text !== '') {
     state.push({
-      label: 'Resize',
-      icon: !isResizable.value
-        ? 'pi pi-arrow-up-right-and-arrow-down-left-from-center'
-        : 'pi pi-ban',
-      command: () => emit('toggleIsResizable')
+      label: 'Text',
+      icon: 'pi pi-pencil',
+      command: () => emit('addText')
+    });
+  }
+  if (props.entityData?.text || props.entityData?.text === '') {
+    state.push({
+      label: 'Text',
+      icon: 'pi pi-trash',
+      command: () => emit('removeText')
+    });
+  }
+  if (props.entityData.image_width > 200 && props.entityData.image_height > 200) {
+    state.push({
+      label: 'Crop',
+      icon: 'pi pi-expand',
+      command: () => emit('openUploadFileModal')
     });
   }
   state.push({

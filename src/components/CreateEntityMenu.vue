@@ -4,31 +4,31 @@ import { useFileDialog } from '@vueuse/core';
 
 const emit = defineEmits(['addEntity']);
 
-const {
-  files,
-  open: uploadFile,
-  reset,
-  onChange
-} = useFileDialog({
+const { open: uploadFile, onChange } = useFileDialog({
   accept: 'image/*',
   reset: true
 });
 
-const addImage = (files: FileList) => {
+const addImage = async (files: FileList) => {
   let image = new Image();
+  const imageUuid = uuidv4();
   const file = files[0];
-  console.log('file', file, 'type: ', typeof file);
-  const url = URL.createObjectURL(file);
-  image.src = url;
-  console.log('image width and height: ', image.width, image.height);
-  console.log('url length: ', url.length);
-  emit('addEntity', {
-    entity_type: 'image',
-    entity_uuid: uuidv4(),
-    image_data: url,
-    image_position: 'left',
-    image_height: 300
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.addEventListener('load', () => {
+    image.src = String(reader.result);
   });
+  image.onload = () => {
+    emit('addEntity', {
+      entity_type: 'image',
+      entity_uuid: imageUuid,
+      image_url: image.src,
+      image_position: 'left',
+      image_width: image.width,
+      image_height: image.height,
+      image_scale: '1'
+    });
+  };
 };
 onChange((files) => {
   if (files && files?.length > 0) {

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useWebsocketStore } from '@/app/stores/websocket';
 
 export const useInterfaceStore = defineStore('interfaceStore', () => {
   const homeBackgroundUrl = ref<string>(
@@ -13,7 +14,27 @@ export const useInterfaceStore = defineStore('interfaceStore', () => {
   });
   function changeHomeBackgroundUrl(newUrl: string) {
     homeBackgroundUrl.value = newUrl;
+    const websocketStore = useWebsocketStore();
+    const data = {
+      event: 'changeHomeBackgroundUrl',
+      body: {
+        setting_name: 'homeBackgroundUrl',
+        setting_value: newUrl
+      }
+    };
+    websocketStore.sendData(data);
+  }
+  function setHomeBackgroundUrlFromDB(url: string | null) {
+    if (!url) {
+      return;
+    }
+    homeBackgroundUrl.value = url;
   }
 
-  return { homeBackgroundUrl, defaultHomeBackgroundUrl, changeHomeBackgroundUrl };
+  return {
+    homeBackgroundUrl,
+    defaultHomeBackgroundUrl,
+    changeHomeBackgroundUrl,
+    setHomeBackgroundUrlFromDB
+  };
 });

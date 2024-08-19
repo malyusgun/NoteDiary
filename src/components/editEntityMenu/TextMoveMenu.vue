@@ -10,9 +10,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// const isResizable = computed(() => props.isResizable);
-// const position = computed(() => props.entityData.position);
-
 const speedDialMove = computed(() => {
   const state = [];
   const dataStore = useDataStore();

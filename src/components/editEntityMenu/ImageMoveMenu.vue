@@ -1,20 +1,16 @@
 <script setup lang="ts">
 import { changeOrderHomeEntity } from '@/app/helpers';
-import type { IImage, IText } from '@/app/interfaces/entities';
+import type { IImage } from '@/app/interfaces/entities';
 import { useDataStore } from '@/app/stores/data';
 import type { IEntity } from '@/app/interfaces/environment';
 
 interface Props {
   entityData: IImage;
-  isResizable: boolean;
 }
-
 const props = defineProps<Props>();
-
-const emit = defineEmits(['editPosition']);
+const emit = defineEmits(['editPosition', 'editTextPosition']);
 
 const position = computed(() => props.entityData.image_position);
-const isResizable = computed(() => props.isResizable);
 
 const speedDialMove = computed(() => {
   const state = [];
@@ -74,18 +70,28 @@ const speedDialMove = computed(() => {
       command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'down')
     });
   }
+  if (props.entityData?.text || props.entityData?.text === '') {
+    if (props.entityData?.text_position === 'right') {
+      state.push({
+        label: 'Text left',
+        icon: 'pi pi-align-left',
+        command: () => emit('editTextPosition', 'left')
+      });
+    } else {
+      state.push({
+        label: 'Text right',
+        icon: 'pi pi-align-right',
+        command: () => emit('editTextPosition', 'right')
+      });
+    }
+  }
   return state;
 });
 </script>
 
 <template>
   <div>
-    <SpeedDial
-      v-if="!isResizable"
-      :model="speedDialMove"
-      direction="right"
-      pt:root:class="speedDialRoot w-4"
-    >
+    <SpeedDial :model="speedDialMove" direction="right" pt:root:class="speedDialRoot w-4">
       <template #button="{ toggleCallback }">
         <button
           class="border p-6 size-10 rounded-full bg-blue-500 flex items-center justify-center"

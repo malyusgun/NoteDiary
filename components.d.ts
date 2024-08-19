@@ -15,6 +15,7 @@ declare module 'vue' {
     Drawer: typeof import('primevue/drawer')['default']
     ImageItem: typeof import('@/modules/entities/ImageItem.vue')['default']
     ImageMoveMenu: typeof import('./src/components/editEntityMenu/ImageMoveMenu.vue')['default']
+    ImageSizeMenu: typeof import('./src/components/editEntityMenu/ImageSizeMenu.vue')['default']
     ImageStateMenu: typeof import('./src/components/editEntityMenu/ImageStateMenu.vue')['default']
     LogoAndLabel: typeof import('./src/components/LogoAndLabel.vue')['default']
     MoveImageMenu: typeof import('./src/components/editEntityMenu/image/MoveImageMenu.vue')['default']
@@ -31,6 +32,7 @@ declare module 'vue' {
     TextItem: typeof import('@/modules/entities/TextItem.vue')['default']
     TextMoveMenu: typeof import('./src/components/editEntityMenu/TextMoveMenu.vue')['default']
     TextStateMenu: typeof import('./src/components/editEntityMenu/TextStateMenu.vue')['default']
+    Toast: typeof import('primevue/toast')['default']
     Tree: typeof import('primevue/tree')['default']
     UserInfoHeaderWithSettings: typeof import('./src/components/UserInfoHeaderWithSettings.vue')['default']
   }

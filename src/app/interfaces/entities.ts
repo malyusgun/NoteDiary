@@ -1,4 +1,6 @@
-export interface ITable {
+import type { IEntity } from '@/app/interfaces/environment';
+
+export interface ITable extends IEntity {
   entity_type: 'table';
   entity_uuid: string;
   title?: string;
@@ -24,24 +26,29 @@ type ITableColumnTypes =
   | 'rating'
   | 'knob';
 
-export interface IText {
+export interface IText extends IEntity {
   entity_type: 'text';
   entity_uuid: string;
   title?: string;
   text: string;
+  font_size?: '16' | '20' | '24' | '40' | '64';
+  paragraph_size?: 'full' | 'half';
+  entity_title_position: 'left' | 'center' | 'right';
+  entity_position: 'left' | 'center' | 'right';
 }
 
-export interface IImage {
+export interface IImage extends IEntity {
   entity_type: 'image';
   entity_uuid: string;
   title?: string;
   text?: string;
-  text_size?: 'small' | 'medium' | 'large';
-  paragraph_size?: 'small' | 'medium' | 'large' | 'extraLarge';
+  font_size?: '16' | '20' | '24' | '40' | '64';
+  paragraph_size?: 'full' | 'half';
   text_position?: 'left' | 'right';
   image_url: string;
   image_width: number;
   image_height: number;
-  image_position: 'left' | 'center' | 'right';
   image_scale: string;
+  entity_title_position: 'left' | 'center' | 'right';
+  entity_position: 'left' | 'center' | 'right';
 }

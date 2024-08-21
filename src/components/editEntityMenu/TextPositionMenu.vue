@@ -1,19 +1,57 @@
 <script setup lang="ts">
 import { changeOrderHomeEntity } from '@/app/helpers';
-import type { IImage } from '@/app/interfaces/entities';
+import type { IText } from '@/app/interfaces/entities';
 import { useDataStore } from '@/app/stores/data';
 import type { IEntity } from '@/app/interfaces/environment';
 
 interface Props {
-  entityData: IImage;
+  entityData: IText;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['editPosition', 'editTextPosition']);
+const emit = defineEmits(['editParagraphWidth', 'editPosition', 'editTitlePosition']);
 
-const position = computed(() => props.entityData.image_position);
+const position = computed(() => props.entityData.entity_position);
+const titlePosition = computed(() => props.entityData.entity_title_position);
 
 const speedDialMove = computed(() => {
-  const state = [];
+  let state = [];
+  switch (titlePosition.value) {
+    case 'left':
+      state.push({
+        label: 'Title center',
+        icon: 'pi pi-align-center',
+        command: () => emit('editTitlePosition', 'center')
+      });
+      state.push({
+        label: 'Title right',
+        icon: 'pi pi-align-right',
+        command: () => emit('editTitlePosition', 'right')
+      });
+      break;
+    case 'center':
+      state.push({
+        label: 'Title left',
+        icon: 'pi pi-align-left',
+        command: () => emit('editTitlePosition', 'left')
+      });
+      state.push({
+        label: 'Title right',
+        icon: 'pi pi-align-right',
+        command: () => emit('editTitlePosition', 'right')
+      });
+      break;
+    case 'right':
+      state.push({
+        label: 'Title left',
+        icon: 'pi pi-align-left',
+        command: () => emit('editTitlePosition', 'left')
+      });
+      state.push({
+        label: 'Title center',
+        icon: 'pi pi-align-center',
+        command: () => emit('editTitlePosition', 'center')
+      });
+  }
   switch (position.value) {
     case 'left':
       state.push({
@@ -70,20 +108,19 @@ const speedDialMove = computed(() => {
       command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'down')
     });
   }
-  if (props.entityData?.text || props.entityData?.text === '') {
-    if (props.entityData?.text_position === 'right') {
-      state.push({
-        label: 'Text left',
-        icon: 'pi pi-align-left',
-        command: () => emit('editTextPosition', 'left')
-      });
-    } else {
-      state.push({
-        label: 'Text right',
-        icon: 'pi pi-align-right',
-        command: () => emit('editTextPosition', 'right')
-      });
-    }
+  if (props.entityData.paragraph_size === 'full') {
+    state = state.filter(
+      (item) => item.label !== 'Left' && item.label !== 'Center' && item.label !== 'Right'
+    );
+    state.push({
+      label: 'Text half width',
+      command: () => emit('editParagraphWidth', 'half')
+    });
+  } else {
+    state.push({
+      label: 'Text full width',
+      command: () => emit('editParagraphWidth', 'full')
+    });
   }
   return state;
 });
@@ -91,7 +128,7 @@ const speedDialMove = computed(() => {
 
 <template>
   <div>
-    <SpeedDial :model="speedDialMove" direction="right" pt:root:class="speedDialRoot w-4">
+    <SpeedDial :model="speedDialMove" direction="right" pt:root:class="speedDialRoot size-12">
       <template #button="{ toggleCallback }">
         <button
           class="border p-6 size-10 rounded-full bg-blue-500 flex items-center justify-center"
@@ -105,7 +142,7 @@ const speedDialMove = computed(() => {
           :class="[
             'flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
             {
-              'text-red-400 font-semibold': item.icon.includes('trash')
+              'text-red-400 font-semibold': item?.icon?.includes('trash')
             }
           ]"
           @click="toggleCallback"

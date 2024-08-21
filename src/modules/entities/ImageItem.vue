@@ -2,11 +2,12 @@
 import type { IImage } from '@/app/interfaces/entities';
 import { deleteEntity, editEntity } from '@/app/helpers';
 import { useDataStore } from '@/app/stores/data';
-import { useElementSize, useTextareaAutosize, useVModel } from '@vueuse/core';
-import MoveMenu from '@/components/editEntityMenu/ImageMoveMenu.vue';
+import { useVModel, useWindowSize } from '@vueuse/core';
+import PositionMenu from '@/components/editEntityMenu/ImagePositionMenu.vue';
 import StateMenu from '@/components/editEntityMenu/ImageStateMenu.vue';
 import CropImageModal from '@/modules/CropImageModal.vue';
 import SizeMenu from '@/components/editEntityMenu/ImageSizeMenu.vue';
+import FontMenu from '@/components/editEntityMenu/TextFontMenu.vue';
 
 interface Props {
   entityData: IImage;
@@ -15,9 +16,6 @@ const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
 
-const imageContainer = ref();
-const { height: imageHeight } = useElementSize(imageContainer);
-
 function editTitle() {
   editEntity({ ...entityData.value, title: entityData.value.title }, entityData.value.entity_uuid);
 }
@@ -25,8 +23,11 @@ const editText = () => {
   editEntity({ ...entityData.value, text: entityData.value.text }, entityData.value.entity_uuid);
 };
 function addTitle() {
-  editEntity({ ...entityData.value, title: 'Title' }, entityData.value.entity_uuid);
-  entityData.value = { ...entityData.value, title: 'Title' };
+  editEntity(
+    { ...entityData.value, title: 'Title', entity_title_position: 'center' },
+    entityData.value.entity_uuid
+  );
+  entityData.value = { ...entityData.value, title: 'Title', entity_title_position: 'center' };
 }
 function removeTitle() {
   const newState = { ...entityData.value };
@@ -40,8 +41,8 @@ function addText() {
       ...entityData.value,
       text: 'Text',
       text_position: 'right',
-      text_size: 'medium',
-      paragraph_size: 'medium'
+      font_size: '20',
+      paragraph_size: 'full'
     },
     entityData.value.entity_uuid
   );
@@ -51,18 +52,29 @@ function removeText() {
   const newState = { ...entityData.value };
   newState.text = null;
   newState.text_position = null;
-  newState.text_size = null;
+  newState.font_size = null;
   newState.paragraph_size = null;
   editEntity({ ...newState }, entityData.value.entity_uuid);
   entityData.value = newState;
 }
 function editPosition(position: 'left' | 'center' | 'right') {
-  entityData.value.image_position = position;
-  editEntity({ ...entityData.value, image_position: position }, entityData.value.entity_uuid);
+  entityData.value.entity_position = position;
+  editEntity({ ...entityData.value, entity_position: position }, entityData.value.entity_uuid);
+}
+function editTitlePosition(position: 'left' | 'center' | 'right') {
+  entityData.value.entity_title_position = position;
+  editEntity(
+    { ...entityData.value, entity_title_position: position },
+    entityData.value.entity_uuid
+  );
 }
 function editTextPosition(position: 'left' | 'right') {
   entityData.value.text_position = position;
   editEntity({ ...entityData.value, text_position: position }, entityData.value.entity_uuid);
+}
+function editParagraphWidth(widthMode: 'full' | 'half') {
+  entityData.value.paragraph_size = widthMode;
+  editEntity({ ...entityData.value, paragraph_size: widthMode }, entityData.value.entity_uuid);
 }
 const dataStore = useDataStore();
 const homeEntities = computed(() => dataStore.homeEntities);
@@ -78,6 +90,7 @@ function saveImage(newUrl: string, newWidth: number, newHeight: number) {
   editEntity({ ...entityData.value }, entityData.value.entity_uuid);
   isModalCropImage.value = false;
 }
+
 function scaleImage(scale: string) {
   const initialWidth = Math.ceil(entityData.value.image_width / +entityData.value.image_scale);
   entityData.value.image_width = initialWidth * +scale;
@@ -86,7 +99,17 @@ function scaleImage(scale: string) {
   entityData.value.image_scale = scale;
   editEntity({ ...entityData.value }, entityData.value.entity_uuid);
 }
-const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
+function changeFontSize(newSize: '16' | '20' | '24' | '40' | '64') {
+  entityData.value.font_size = newSize;
+  editEntity({ ...entityData.value, font_size: newSize }, entityData.value.entity_uuid);
+}
+
+const { width: windowWidth } = useWindowSize();
+const textContainerWidth = computed(() => {
+  if (entityData.value?.paragraph_size === 'half')
+    return (windowWidth.value - 150 - entityData.value.image_width) / 2;
+  return windowWidth.value - 150 - entityData.value.image_width;
+});
 </script>
 
 <template>
@@ -94,9 +117,9 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
     :class="[
       'entityContainer relative flex py-8 px-16',
       {
-        'justify-start': entityData.image_position === 'left',
-        'justify-center': entityData.image_position === 'center',
-        'justify-end': entityData.image_position === 'right'
+        'justify-start': entityData.entity_position === 'left',
+        'justify-center': entityData.entity_position === 'center',
+        'justify-end': entityData.entity_position === 'right'
       }
     ]"
   >
@@ -113,11 +136,17 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
         v-model="entityData.title"
         @change="editTitle"
         placeholder="Enter title..."
-        class="w-full mb-4 font-bold text-2xl pl-2"
+        :style="`font-size: ${+entityData.font_size + 10}px`"
+        :class="[
+          'w-full mb-4 font-bold pl-2',
+          {
+            'text-center': entityData.entity_title_position === 'center',
+            'text-end': entityData.entity_title_position === 'right'
+          }
+        ]"
       />
-      <div class="flex gap-4">
+      <div class="flex gap-8" :style="`height: ${entityData.image_height}px`">
         <div
-          ref="imageContainer"
           :class="[
             'imageContainer relative leading-none min-h-[100px] min-w-[100px]',
             {
@@ -137,19 +166,24 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
             <SizeMenu :entityData="entityData" @scaleImage="scaleImage" />
           </div>
         </div>
-        <textarea
-          v-if="entityData.text_position"
-          ref="textarea"
-          v-model="entityData.text"
-          class="w-max block indent-5 resize-none outline-0 order-2"
-          @change="editText"
-          @input="triggerResize"
-          placeholder="Enter text..."
-          rows="2"
-          cols="50"
-        />
+        <div
+          class="textContainer relative leading-none"
+          :style="`width: ${textContainerWidth}px; height: ${entityData.image_height}px`"
+        >
+          <textarea
+            v-if="entityData.text_position"
+            ref="textarea"
+            v-model="entityData.text"
+            class="w-full indent-5 leading-normal overflow-auto resize-none outline-0 order-2"
+            @change="editText"
+            placeholder="Enter text..."
+            rows="7"
+            :style="`font-size: ${entityData.font_size}px; height: ${entityData.image_height}px;`"
+            spellcheck="false"
+          />
+        </div>
       </div>
-      <div class="speedDial absolute left-2 top-2 transition-all select-none">
+      <div class="speedDial absolute left-2 top-0 transition-all select-none">
         <StateMenu
           :entityData="entityData"
           @deleteEntity="deleteEntity"
@@ -161,13 +195,20 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
         />
       </div>
       <div
-        v-if="homeEntities.length > 1"
-        class="speedDial absolute left-2 bottom-2 transition-all select-none"
+        class="speedDial h-12 absolute left-2 top-1/2 -translate-y-1/2 transition-all select-none"
       >
-        <MoveMenu
+        <FontMenu :entityData="entityData" @changeFontSize="changeFontSize" />
+      </div>
+      <div
+        v-if="homeEntities.length > 1"
+        class="speedDial absolute left-2 bottom-0 transition-all select-none"
+      >
+        <PositionMenu
           :entityData="entityData"
           @editPosition="editPosition"
+          @editTitlePosition="editTitlePosition"
           @editTextPosition="editTextPosition"
+          @editParagraphWidth="editParagraphWidth"
         />
       </div>
     </div>

@@ -5,28 +5,24 @@ interface Props {
   entityData: IImage;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['scaleImage', 'editTextPosition']);
+const emit = defineEmits(['scaleImage']);
 
 const speedDialSize = computed(() => {
   let state = [
     {
       label: 'x0.25',
-      icon: 'pi pi-arrow-down-left-and-arrow-up-right-to-center',
       command: () => emit('scaleImage', '0.25')
     },
     {
       label: 'x0.5',
-      icon: 'pi pi-arrow-down-left-and-arrow-up-right-to-center',
       command: () => emit('scaleImage', '0.5')
     },
     {
       label: 'x0.75',
-      icon: 'pi pi-arrow-down-left-and-arrow-up-right-to-center',
       command: () => emit('scaleImage', '0.75')
     },
     {
       label: 'x1',
-      icon: 'pi pi-arrow-down-left-and-arrow-up-right-to-center',
       command: () => emit('scaleImage', '1')
     }
   ];
@@ -36,12 +32,26 @@ const speedDialSize = computed(() => {
   );
   if (initialImageWidth <= 400 || initialImageHeight <= 400) {
     state = state.filter((item) => item.label !== 'x0.25');
-    if (initialImageWidth <= 200 || initialImageHeight <= 200) {
+    if (
+      initialImageWidth <= 200 ||
+      initialImageHeight <= 200 ||
+      (initialImageWidth >= 1600 && props.entityData.text_position)
+    ) {
       state = state.filter((item) => item.label !== 'x0.5');
-      if (initialImageWidth <= 95 || initialImageHeight <= 95) {
+      if (
+        initialImageWidth <= 95 ||
+        initialImageHeight <= 95 ||
+        (initialImageWidth >= 1066 && props.entityData.text_position)
+      ) {
         state = state.filter((item) => item.label !== 'x0.75');
       }
     }
+  }
+  if (
+    (initialImageWidth >= 800 && props.entityData.text_position) ||
+    props.entityData.image_width < initialImageWidth
+  ) {
+    state = state.filter((item) => item.label !== 'x1');
   }
   return state.filter((item) => item.label !== `x${props.entityData.image_scale}`);
 });
@@ -49,27 +59,22 @@ const speedDialSizeBigger = computed(() => {
   let state = [
     {
       label: 'x1',
-      icon: 'pi pi-pencil',
       command: () => emit('scaleImage', '1')
     },
     {
       label: 'x1.25',
-      icon: 'pi pi-pencil',
       command: () => emit('scaleImage', '1.25')
     },
     {
       label: 'x1.5',
-      icon: 'pi pi-pencil',
       command: () => emit('scaleImage', '1.5')
     },
     {
       label: 'x1.75',
-      icon: 'pi pi-pencil',
       command: () => emit('scaleImage', '1.75')
     },
     {
       label: 'x2',
-      icon: 'pi pi-pencil',
       command: () => emit('scaleImage', '2')
     }
   ];
@@ -77,13 +82,35 @@ const speedDialSizeBigger = computed(() => {
   const initialImageHeight = Math.ceil(
     props.entityData.image_height / +props.entityData.image_scale
   );
-  if (initialImageWidth >= 960 || initialImageHeight >= 960) {
+  if (
+    (initialImageWidth >= 800 && props.entityData.text_position) ||
+    props.entityData.image_width > initialImageWidth
+  ) {
+    state = state.filter((item) => item.label !== 'x1');
+  }
+  if (
+    initialImageWidth >= 960 ||
+    initialImageHeight >= 960 ||
+    (initialImageWidth >= 640 && props.entityData.text_position)
+  ) {
     state = state.filter((item) => item.label !== 'x1.25');
-    if (initialImageWidth >= 800 || initialImageHeight >= 800) {
+    if (
+      initialImageWidth >= 800 ||
+      initialImageHeight >= 800 ||
+      (initialImageWidth >= 533 && props.entityData.text_position)
+    ) {
       state = state.filter((item) => item.label !== 'x1.5');
-      if (initialImageWidth >= 685 || initialImageHeight >= 685) {
+      if (
+        initialImageWidth >= 685 ||
+        initialImageHeight >= 685 ||
+        (initialImageWidth >= 457 && props.entityData.text_position)
+      ) {
         state = state.filter((item) => item.label !== 'x1.75');
-        if (initialImageWidth >= 600 || initialImageHeight >= 600) {
+        if (
+          initialImageWidth >= 600 ||
+          initialImageHeight >= 600 ||
+          (initialImageWidth >= 400 && props.entityData.text_position)
+        ) {
           state = state.filter((item) => item.label !== 'x2');
         }
       }

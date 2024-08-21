@@ -32,11 +32,13 @@ const speedDialState = computed(() => {
     });
   }
   if (!props.entityData?.text && props.entityData?.text !== '') {
-    state.push({
-      label: 'Text',
-      icon: 'pi pi-pencil',
-      command: () => emit('addText')
-    });
+    if (props.entityData.image_width < 800) {
+      state.push({
+        label: 'Text',
+        icon: 'pi pi-pencil',
+        command: () => emit('addText')
+      });
+    }
   }
   if (props.entityData?.text || props.entityData?.text === '') {
     state.push({
@@ -62,7 +64,7 @@ const speedDialState = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="relative z-50">
     <SpeedDial
       :model="speedDialState"
       direction="right"

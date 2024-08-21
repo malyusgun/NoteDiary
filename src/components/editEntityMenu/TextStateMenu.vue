@@ -36,7 +36,7 @@ const speedDialState = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="relative z-50">
     <SpeedDial :model="speedDialState" direction="right" pt:root:class="speedDialRoot size-12">
       <template #button="{ toggleCallback }">
         <button

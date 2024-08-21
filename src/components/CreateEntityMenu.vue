@@ -23,7 +23,8 @@ const addImage = async (files: FileList) => {
       entity_type: 'image',
       entity_uuid: imageUuid,
       image_url: image.src,
-      image_position: 'left',
+      entity_position: 'left',
+      entity_title_position: 'center',
       image_width: image.width,
       image_height: image.height,
       image_scale: '1'
@@ -44,7 +45,10 @@ const speedDialItems = ref([
       emit('addEntity', {
         entity_type: 'text',
         entity_uuid: uuidv4(),
-        text: ''
+        text: '',
+        paragraph_size: 'full',
+        font_size: '24',
+        entity_position: 'left'
       });
     }
   },

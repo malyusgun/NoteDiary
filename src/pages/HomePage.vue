@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useElementSize, useWindowSize } from '@vueuse/core';
+import { useElementSize } from '@vueuse/core';
 import { setDefaultHomeBackground } from '@/app/helpers';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { useDataStore } from '@/app/stores/data';
@@ -7,9 +7,6 @@ import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
-import EntityItem from '@/modules/EntityItem.vue';
-import CreateEntityMenu from '@/components/CreateEntityMenu.vue';
-import CropImageModal from '@/modules/CropImageModal.vue';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);
@@ -136,7 +133,7 @@ const splitterHeight = computed(() => {
   />
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .splitterPanelBackground > .changeImageBlock,
 .splitterPanelBackground > .returnDefaultImageBlock {
   opacity: 0;

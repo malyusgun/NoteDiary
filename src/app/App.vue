@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css';
-import BaseSidebarMenu from '@/modules/BaseSidebarMenu.vue';
 
 const visible = ref<boolean>(false);
 </script>

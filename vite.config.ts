@@ -16,7 +16,9 @@ export default defineConfig({
       template: {}
     }),
     Components({
-      resolvers: [PrimeVueResolver()]
+      resolvers: [PrimeVueResolver()],
+      dts: 'src/app/components.d.ts',
+      dirs: ['src/app', 'src/pages', 'src/modules', 'src/components', 'src/shared']
     }),
     AutoImport({
       include: [
@@ -88,9 +90,7 @@ export default defineConfig({
 
       // Custom resolvers, compatible with `unplugin-vue-components`
       // see https://github.com/antfu/unplugin-auto-import/pull/23/
-      resolvers: [
-        /* ... */
-      ],
+      resolvers: [],
 
       // Include auto-imported packages in Vite's `optimizeDeps` options
       // Recommend to enable

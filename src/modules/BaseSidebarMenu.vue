@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import LogoAndLabel from '@/components/LogoAndLabel.vue';
 import { useDataStore } from '@/app/stores/data';
-import UserInfoHeaderWithSettings from '@/components/UserInfoHeaderWithSettings.vue';
 
 const route = useRoute();
 const emit = defineEmits(['closeCallback']);

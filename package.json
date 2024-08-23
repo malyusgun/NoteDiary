@@ -14,10 +14,8 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.4",
-    "@supabase/supabase-js": "^2.45.1",
     "@vueuse/core": "^10.11.0",
     "@vueuse/integrations": "^10.11.0",
-    "cropperjs": "^1.6.2",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.4",

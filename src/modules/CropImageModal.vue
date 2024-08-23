@@ -90,7 +90,6 @@ function submitForm() {
   <div>
     <Dialog
       v-model:visible="isVisible"
-      modal
       :draggable="false"
       :style="`width: ${modalWidth}%; position: relative`"
     >

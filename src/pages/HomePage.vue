@@ -6,7 +6,9 @@ import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
-import type { IImageMainInfo } from '@/app/interfaces';
+import type { IImageMainInfo } from '@/app/interfaces/index.ts';
+import { createClient } from '@supabase/supabase-js';
+import { v4 as uuidv4 } from 'uuid';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);

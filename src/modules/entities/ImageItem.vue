@@ -15,7 +15,10 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
-
+onMounted(() => {
+  const prevUrl = entityData.value.image_url;
+  const newData = fetch('');
+});
 function editTitle() {
   editEntity({ ...entityData.value, title: entityData.value.title }, entityData.value.entity_uuid);
 }

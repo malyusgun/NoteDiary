@@ -12,17 +12,29 @@ const { open: uploadFile, onChange } = useFileDialog({
 const addImage = async (files: FileList) => {
   let image = new Image();
   const imageUuid = uuidv4();
-  const file = files[0];
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.addEventListener('load', () => {
-    image.src = String(reader.result);
-  });
-  image.onload = () => {
+  // const file = files[0];
+  // const reader = new FileReader();
+  // reader.readAsDataURL(file);
+  // const file = new FormData();
+  if (!files[0]) return;
+  // const mediaSource = new MediaSource();
+  // const url =
+  const url = URL.createObjectURL(files[0]);
+  image.src = url;
+  // file.set('file', files[0]);
+  // reader.addEventListener('load', () => {
+  //   image.src = String(reader.result);
+  // });
+  image.onload = async () => {
+    console.log('url: ', url);
+    const response = await fetch(url);
+    const blob = await response.blob();
+    console.log('blob: ', blob);
     emit('addEntity', {
       entity_type: 'image',
       entity_uuid: imageUuid,
-      image_url: image.src,
+      // image_url: image.src,
+      image_url: blob,
       entity_position: 'left',
       entity_title_position: 'center',
       image_width: image.width,

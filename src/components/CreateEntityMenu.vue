@@ -29,12 +29,12 @@ const addImage = async (files: FileList) => {
     console.log('url: ', url);
     const response = await fetch(url);
     const blob = await response.blob();
+    const buffer = await blob.arrayBuffer();
     console.log('blob: ', blob);
     emit('addEntity', {
       entity_type: 'image',
       entity_uuid: imageUuid,
-      // image_url: image.src,
-      image_url: blob,
+      image_blob: buffer,
       entity_position: 'left',
       entity_title_position: 'center',
       image_width: image.width,

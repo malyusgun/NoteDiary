@@ -2,6 +2,7 @@ import { useInterfaceStore } from '@/app/stores/interface';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useWebsocketStore } from '@/app/stores/websocket';
+import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 
 export async function uploadFile($event: Event) {
   const target = $event.target as HTMLInputElement;
@@ -58,3 +59,21 @@ export const changeOrderHomeEntity = (entityUuid: string, direction: 'up' | 'dow
   };
   websocketStore.sendData(data);
 };
+
+export function addUrlsToImageEntities(entities: IEntity[]) {
+  const filesWebsocketStore = useFilesWebsocketStore();
+  const filesBlob = filesWebsocketStore.filesBlob;
+  let index = 0;
+  console.log('filesBlob[0].data', filesBlob[0]);
+  console.log('filesBlob[0].data', filesBlob[0]);
+  console.log('filesBlob.length', filesBlob.length);
+  return entities.map((entity: IEntity) => {
+    if (!entity.image_width) return entity;
+    filesBlob[index] = new Blob([filesBlob[index]], { type: 'image/jpeg' });
+    entity.imageUrl = URL.createObjectURL(filesBlob[index]);
+    console.log('entity.imageUrl', entity.imageUrl);
+    index += 1;
+    console.log('filesBlob.length', filesBlob.length);
+    return entity;
+  });
+}

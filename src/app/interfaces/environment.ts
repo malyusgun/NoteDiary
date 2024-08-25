@@ -16,6 +16,7 @@ export interface IEntity {
   font_size?: string;
   paragraph_size?: string;
   text_position?: string;
+  image_blob?: string;
   image_url?: string;
   image_width?: number;
   image_height?: number;

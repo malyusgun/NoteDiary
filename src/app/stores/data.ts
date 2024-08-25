@@ -60,7 +60,7 @@ export const useDataStore = defineStore('dataStore', () => {
   }
 
   function setHomeEntities(entities: IEntity[]) {
-    homeEntities.value = entities;
+    homeEntities.value = [...entities];
   }
   return { sheets, homeEntities, editHomeEntities, setHomeEntities };
 });

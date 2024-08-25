@@ -2,17 +2,23 @@ import { defineStore } from 'pinia';
 import { useDataStore } from '@/app/stores/data';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useInterfaceStore } from '@/app/stores/interface';
+import { addUrlsToImageEntities } from '@/app/helpers';
+import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 
 export const useWebsocketStore = defineStore('websocketStore', () => {
   const socket = ref();
   const dataStore = useDataStore();
   const interfaceStore = useInterfaceStore();
+  const filesWebsocketStore = useFilesWebsocketStore();
   const homeEntities = computed(() => dataStore.homeEntities);
-
+  const file = ref();
+  const filesBlobLength = computed(() => filesWebsocketStore.filesBlob.length);
+  function setFileData(data: any) {
+    file.value = data;
+  }
   onMounted(() => {
     socket.value = new WebSocket('ws://localhost:5000');
     socket.value.onopen = () => {
-      console.log('Websocket opened');
       const getHomeEntitiesData = {
         event: 'getHomeEntities'
       };
@@ -23,12 +29,20 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
       socket.value.send(JSON.stringify(getHomeBackgroundUrlData));
     };
     socket.value.onmessage = (event: any) => {
+      console.log('event: ', event);
       const response = JSON.parse(event.data);
       console.log('response: ', response);
       switch (response.event) {
-        case 'getHomeEntities':
-          dataStore.editHomeEntities(response.data);
+        case 'getHomeEntities': {
+          const entities = response.data;
+          if (filesBlobLength.value) {
+            const entitiesAddedUrls = addUrlsToImageEntities(entities);
+            dataStore.editHomeEntities(entitiesAddedUrls);
+          } else {
+            dataStore.editHomeEntities(entities);
+          }
           break;
+        }
         case 'getHomeBackgroundUrl':
           interfaceStore.setHomeBackgroundUrlFromDB(response.data?.setting_value);
           break;
@@ -36,6 +50,18 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
           const entities = [...homeEntities.value];
           entities.push(response.data);
           dataStore.editHomeEntities([...entities]);
+          break;
+        }
+        case 'createImageHomeEntity': {
+          const data = {
+            event: 'createHomeEntity',
+            body: {
+              ...file.value
+            }
+          };
+          console.log('send now:');
+          sendData(data);
+          console.log('sent!');
           break;
         }
         case 'editHomeEntity': {
@@ -83,8 +109,15 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
     };
   });
 
+  watch(filesBlobLength, () => {
+    console.log('watch');
+    const entitiesAddedUrls = addUrlsToImageEntities(homeEntities.value);
+    console.log('entitiesAddedUrls', entitiesAddedUrls);
+    dataStore.setHomeEntities(entitiesAddedUrls);
+  });
+
   function sendData(data: any) {
     socket.value.send(JSON.stringify(data));
   }
-  return { sendData };
+  return { sendData, setFileData };
 });

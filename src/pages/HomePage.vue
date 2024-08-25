@@ -7,8 +7,8 @@ import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces/index.ts';
-import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 
 const backgroundImage = ref();
 const { height: backgroundImageHeight } = useElementSize(backgroundImage);
@@ -21,12 +21,19 @@ const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
 const authorizationStore = useAuthorizationStore();
 const websocketStore = useWebsocketStore();
+const filesWebsocketStore = useFilesWebsocketStore();
 const entities = computed(() => dataStore.homeEntities);
-
+watchEffect(() => {
+  console.log('entities', entities.value, entities);
+});
 const backgroundUrl = computed<string>(() => interfaceStore.homeBackgroundUrl);
 const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultHomeBackgroundUrl);
 
-const addEntity = (newEntity: IEntity) => {
+function addEntity(newEntity: IEntity) {
+  if (newEntity.image_blob) {
+    websocketStore.setFileData(newEntity);
+    return filesWebsocketStore.sendData(newEntity.image_blob);
+  }
   const data = {
     event: 'createHomeEntity',
     body: {
@@ -34,9 +41,9 @@ const addEntity = (newEntity: IEntity) => {
     }
   };
   websocketStore.sendData(data);
-};
+}
 
-const imageInfo = ref<IImageMainInfo>({
+const backgroundImageInfo = ref<IImageMainInfo>({
   image_url: backgroundUrl.value,
   image_width: 0,
   image_height: 0
@@ -53,9 +60,9 @@ function uploadFile($event: Event) {
     const url = URL.createObjectURL(file);
     image.src = url;
     image.onload = function () {
-      imageInfo.value.image_url = url;
-      imageInfo.value.image_width = image.width;
-      imageInfo.value.image_height = image.height;
+      backgroundImageInfo.value.image_url = url;
+      backgroundImageInfo.value.image_width = image.width;
+      backgroundImageInfo.value.image_height = image.height;
       openUploadFileModal();
     };
   }
@@ -69,6 +76,15 @@ function saveImage(finalImageUrl: string) {
 const splitterHeight = computed(() => {
   return splitterPanelBackgroundHeight.value + entitiesHeight.value + 100;
 });
+
+// function submitImage(e) {
+//   console.log('e.target.files[0]: ', e.target.files[0]);
+//   fetch('http://localhost:8000', {
+//     method: 'post',
+//     headers: { 'Content-Type': `multipart/form-data; boundary=8800-5553535` },
+//     body: e.target.files[0]
+//   });
+// }
 </script>
 
 <template>
@@ -77,7 +93,7 @@ const splitterHeight = computed(() => {
   </header>
   <CropImageModal
     v-model:isVisible="isModalUploadFile"
-    v-model:imageInfo="imageInfo"
+    v-model:imageInfo="backgroundImageInfo"
     @saveImage="saveImage"
   />
   <main class="flex flex-col">
@@ -95,6 +111,9 @@ const splitterHeight = computed(() => {
         <div
           class="changeImageBlock absolute top-2 right-2 bg-black p-2 rounded-md hover:text-gray-300 transition-all select-none"
         >
+          <!--          <form method="post" enctype="multipart/form-data">-->
+          <!--            <input type="file" name="image" @change="submitImage($event)" />-->
+          <!--          </form>-->
           <input
             type="file"
             @change="uploadFile($event)"
@@ -107,7 +126,7 @@ const splitterHeight = computed(() => {
         </div>
         <button
           @click.prevent="setDefaultHomeBackground"
-          v-if="imageInfo.image_url !== defaultBackgroundUrl"
+          v-if="backgroundImageInfo.image_url !== defaultBackgroundUrl"
           class="returnDefaultImageBlock absolute top-16 right-2 bg-blue-600 p-2 transition-all rounded-md border-2 border-solid border-black select-none"
         >
           Return default image

@@ -1,0 +1,78 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/base",
+    "plugin:vue/vue3-essential",
+    "plugin:vue/vue3-strongly-recommended",
+    "plugin:vue/vue3-recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module"
+  },
+  "plugins": ["vue", "@typescript-eslint", "prettier"],
+  "ignorePatterns": ["*.json", "*.html"],
+  "rules": {
+    "no-undef": "off",
+    "vue/no-unused-vars": "warn",
+    "no-unused-vars": "warn",
+    "no-empty-function": "warn",
+    "@typescript-eslint/no-empty-function": "warn",
+
+    "prettier/prettier": [
+      "error",
+      {
+        "tabWidth": 2,
+        "semi": true,
+        "singleQuote": true,
+        "arrowParens": "always",
+        "printWidth": 100,
+        "bracketSpacing": true,
+        "vueIndentScriptAndStyle": false,
+        "endOfLine": "auto"
+      }
+    ],
+    "radix": "off",
+    "camelcase": "off",
+    "global-require": "off",
+    "object-curly-newline": "off",
+    "import/first": "off",
+    "import/extensions": "off",
+    "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/named": "off",
+    "no-return-assign": ["error", "except-parens"],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-param-reassign": "off",
+    "no-confusing-arrow": "off",
+    "no-unused-expressions": "off",
+    "no-shadow": "off",
+    "no-restricted-syntax": "off",
+    "no-use-before-define": "off",
+    "no-redeclare": "off",
+    "@typescript-eslint/no-redeclare": ["error"],
+    "@typescript-eslint/no-use-before-define": "error",
+    "@typescript-eslint/no-shadow": "error",
+    "@typescript-eslint/no-unused-expressions": "error",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": "allow-with-description" }],
+    "vue/attribute-hyphenation": "off",
+    "vue/no-v-html": "off",
+    "vue/max-attributes-per-line": "off",
+    "vue/no-v-model-argument": "off",
+    "vue/v-on-event-hyphenation": "off",
+    "vue/require-default-prop": "off",
+    "vue/no-multiple-template-root": "off",
+    "vue/multi-word-component-names": "off"
+  }
+}

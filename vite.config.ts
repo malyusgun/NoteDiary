@@ -13,7 +13,11 @@ export default defineConfig({
   },
   plugins: [
     vue({
-      template: {}
+      template: {
+        compilerOptions: {
+          // isCustomElement: (tag) => ['StateMenu', 'FontMenu'].includes(tag)
+        }
+      }
     }),
     Components({
       resolvers: [PrimeVueResolver()],
@@ -44,11 +48,6 @@ export default defineConfig({
           axios: [
             // default imports
             ['default', 'axios'] // import { default as axios } from 'axios',
-          ],
-          '[package-name]': [
-            '[import-names]',
-            // alias
-            ['[from]', '[alias]']
           ]
         },
         // example type import

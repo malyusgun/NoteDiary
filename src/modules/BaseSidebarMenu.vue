@@ -2,17 +2,11 @@
 import { useDataStore } from '@/app/stores/data';
 
 const route = useRoute();
-const emit = defineEmits(['closeCallback']);
 const dataStore = useDataStore();
+const emit = defineEmits(['closeCallback']);
+
 const sheets = ref();
-
-const expandAll = () => {
-  for (let sheet of sheets.value) {
-    expandSheet(sheet);
-  }
-
-  expandedKeys.value = { ...expandedKeys.value };
-};
+const expandedKeys = ref({});
 
 const expandSheet = (sheet) => {
   if (sheet.children && sheet.children.length) {
@@ -23,12 +17,17 @@ const expandSheet = (sheet) => {
     }
   }
 };
+const expandAll = () => {
+  for (let sheet of sheets.value) {
+    expandSheet(sheet);
+  }
+  expandedKeys.value = { ...expandedKeys.value };
+};
+
 onMounted(() => {
   sheets.value = dataStore.sheets;
   expandAll();
 });
-
-const expandedKeys = ref({});
 </script>
 
 <template>
@@ -37,10 +36,10 @@ const expandedKeys = ref({});
       <LogoAndLabel />
       <Button
         severity="contrast"
-        @click="emit('closeCallback')"
         icon="pi pi-times"
         rounded
         outlined
+        @click="emit('closeCallback')"
       ></Button>
     </section>
     <section class="flex items-center justify-between mb-6">
@@ -56,8 +55,8 @@ const expandedKeys = ref({});
         <span v-else><i class="pi pi-home text-gray-400 pr-2"></i>Главное меню</span>
       </div>
       <Tree
-        :value="sheets"
         v-model:expandedKeys="expandedKeys"
+        :value="sheets"
         pt:root:class="pl-0"
         pt:sheetLabel:class="text-white"
       >

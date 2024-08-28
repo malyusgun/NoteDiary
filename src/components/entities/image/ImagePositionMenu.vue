@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { changeOrderHomeEntity } from '@/app/helpers';
-import type { IImage } from '@/app/interfaces/entities';
 import { useDataStore } from '@/app/stores/data';
+import type { IImage } from '@/app/interfaces/entities';
 import type { IEntity } from '@/app/interfaces/environment';
+import { changeOrderHomeEntity } from '@/app/helpers';
 
 interface Props {
   entityData: IImage;
@@ -15,53 +15,66 @@ const emit = defineEmits([
   'editParagraphWidth'
 ]);
 
+const dataStore = useDataStore();
+const homeEntities = computed(() => dataStore.homeEntities);
 const position = computed(() => props.entityData.entity_position);
 const titlePosition = computed(() => props.entityData.entity_title_position);
+const entityIndex = homeEntities.value.findIndex(
+  (entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid
+);
 
 const speedDialMove = computed(() => {
   let state = [];
-  switch (position.value) {
+  const left = {
+    label: 'Left',
+    icon: 'pi pi-arrow-left',
+    command: () => emit('editPosition', 'left')
+  };
+  const center = {
+    label: 'Center',
+    icon: 'pi pi-align-center',
+    command: () => emit('editPosition', 'center')
+  };
+  const right = {
+    label: 'Right',
+    icon: 'pi pi-arrow-right',
+    command: () => emit('editPosition', 'right')
+  };
+  const titleLeft = {
+    label: 'Title left',
+    icon: 'pi pi-align-left',
+    command: () => emit('editTitlePosition', 'left')
+  };
+  const titleCenter = {
+    label: 'Title center',
+    icon: 'pi pi-align-center',
+    command: () => emit('editTitlePosition', 'center')
+  };
+  const titleRight = {
+    label: 'Title right',
+    icon: 'pi pi-align-right',
+    command: () => emit('editTitlePosition', 'right')
+  };
+  switch (titlePosition.value) {
     case 'left':
-      state.push({
-        label: 'Center',
-        icon: 'pi pi-align-center',
-        command: () => emit('editPosition', 'center')
-      });
-      state.push({
-        label: 'Right',
-        icon: 'pi pi-arrow-right',
-        command: () => emit('editPosition', 'right')
-      });
+      state.push(titleCenter, titleRight);
       break;
     case 'center':
-      state.push({
-        label: 'Left',
-        icon: 'pi pi-arrow-left',
-        command: () => emit('editPosition', 'left')
-      });
-      state.push({
-        label: 'Right',
-        icon: 'pi pi-arrow-right',
-        command: () => emit('editPosition', 'right')
-      });
+      state.push(titleLeft, titleRight);
       break;
     case 'right':
-      state.push({
-        label: 'Left',
-        icon: 'pi pi-arrow-left',
-        command: () => emit('editPosition', 'left')
-      });
-      state.push({
-        label: 'Center',
-        icon: 'pi pi-align-center',
-        command: () => emit('editPosition', 'center')
-      });
+      state.push(titleLeft, titleCenter);
   }
-  const dataStore = useDataStore();
-  const entities = dataStore.homeEntities;
-  const entityIndex = entities.findIndex(
-    (entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid
-  );
+  switch (position.value) {
+    case 'left':
+      state.push(center, right);
+      break;
+    case 'center':
+      state.push(left, right);
+      break;
+    case 'right':
+      state.push(left, center);
+  }
   if (entityIndex !== 0) {
     state.push({
       label: 'Up',
@@ -69,49 +82,12 @@ const speedDialMove = computed(() => {
       command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'up')
     });
   }
-  if (entityIndex !== entities.length - 1) {
+  if (entityIndex !== homeEntities.value.length - 1) {
     state.push({
       label: 'Down',
       icon: 'pi pi-arrow-down',
       command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'down')
     });
-  }
-  switch (titlePosition.value) {
-    case 'left':
-      state.push({
-        label: 'Title center',
-        icon: 'pi pi-align-center',
-        command: () => emit('editTitlePosition', 'center')
-      });
-      state.push({
-        label: 'Title right',
-        icon: 'pi pi-align-right',
-        command: () => emit('editTitlePosition', 'right')
-      });
-      break;
-    case 'center':
-      state.push({
-        label: 'Title left',
-        icon: 'pi pi-align-left',
-        command: () => emit('editTitlePosition', 'left')
-      });
-      state.push({
-        label: 'Title right',
-        icon: 'pi pi-align-right',
-        command: () => emit('editTitlePosition', 'right')
-      });
-      break;
-    case 'right':
-      state.push({
-        label: 'Title left',
-        icon: 'pi pi-align-left',
-        command: () => emit('editTitlePosition', 'left')
-      });
-      state.push({
-        label: 'Title center',
-        icon: 'pi pi-align-center',
-        command: () => emit('editTitlePosition', 'center')
-      });
   }
   if (props.entityData?.text || props.entityData?.text === '') {
     if (props.entityData?.text_position === 'right') {
@@ -163,7 +139,8 @@ const speedDialMove = computed(() => {
       <template #item="{ item, toggleCallback }">
         <div
           :class="[
-            'flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
+            'flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border' +
+              ' rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
             {
               'text-red-400 font-semibold': item?.icon?.includes('trash')
             }

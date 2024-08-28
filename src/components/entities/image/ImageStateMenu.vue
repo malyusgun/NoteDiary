@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { deleteEntity } from '@/app/helpers';
 import type { IImage } from '@/app/interfaces/entities';
+import { deleteEntity } from '@/app/helpers';
 
 interface Props {
   entityData: IImage;
@@ -12,7 +12,7 @@ const emit = defineEmits([
   'removeTitle',
   'addText',
   'removeText',
-  'openUploadFileModal'
+  'openCropImageModal'
 ]);
 
 const speedDialState = computed(() => {
@@ -51,7 +51,7 @@ const speedDialState = computed(() => {
     state.push({
       label: 'Crop',
       icon: 'pi pi-expand',
-      command: () => emit('openUploadFileModal')
+      command: () => emit('openCropImageModal')
     });
   }
   state.push({
@@ -82,7 +82,8 @@ const speedDialState = computed(() => {
       <template #item="{ item, toggleCallback }">
         <div
           :class="[
-            ' flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
+            ' flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border rounded' +
+              ' border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
             {
               'text-red-400 font-semibold': item.icon.includes('trash') || item.icon.includes('ban')
             }

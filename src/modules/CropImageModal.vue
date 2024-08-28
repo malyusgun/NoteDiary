@@ -25,13 +25,13 @@ const stageSize = ref({
 
 watch(
   () => isVisible.value,
-  async () => {
-    if (imageInfo.value.image_url && isVisible.value) {
-      imageInstance.src = imageInfo.value.image_url;
+  () => {
+    if (imageInfo.value.imageUrl && isVisible.value) {
+      imageInstance.src = imageInfo.value.imageUrl;
       imageInstance.onload = () => {
         const imageHeight = imageInfo.value.image_height;
         const imageWidth = imageInfo.value.image_width;
-        imageInstance.src = imageInfo.value.image_url;
+        imageInstance.src = imageInfo.value.imageUrl;
         if (imageWidth < (imageHeight * windowWidth.value) / windowHeight.value) {
           imageInstance.onload = () => {
             if (imageHeight < windowHeight.value * 0.75 - 20) {
@@ -77,20 +77,22 @@ const modalWidth = computed(() => {
     return (100 * (stageSize.value.width + 60)) / windowWidth.value;
   } else return 63;
 });
-function onCropperChange({ canvas }) {
+const onCropperChange = async ({ canvas }) => {
+  imageInstance.width = canvas.width;
+  imageInstance.height = canvas.height;
+  console.log('on change size: ', imageInstance.width, imageInstance.height);
   finalImageUrl.value = canvas.toDataURL();
-}
-function submitForm() {
+};
+const submitForm = () => {
   emit('saveImage', finalImageUrl.value, imageInstance.width, imageInstance.height);
   finalImageUrl.value = '';
-}
+};
 </script>
 
 <template>
   <div>
     <Dialog
       v-model:visible="isVisible"
-      modal
       :draggable="false"
       :style="`width: ${modalWidth}%; position: relative`"
     >
@@ -112,8 +114,8 @@ function submitForm() {
         </div>
       </template>
       <button
-        @click.prevent="submitForm"
         class="absolute top-0 left-2 -translate-y-full bg-blue-600 p-2 px-4 text-lg font-bold transition-all border-0 border-t-2 border-t-solid border-t-black rounded-t-lg select-none"
+        @click.prevent="submitForm"
       >
         Save image
       </button>
@@ -122,9 +124,9 @@ function submitForm() {
       >
         <Cropper
           :src="imageInstance.src"
-          @change="onCropperChange"
           :minWidth="200"
           :minHeight="200"
+          @change="onCropperChange"
         ></Cropper>
       </div>
     </Dialog>

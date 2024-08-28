@@ -49,8 +49,8 @@ const speedDialSizeFont = computed(() => {
     >
       <template #button="{ toggleCallback }">
         <button
-          @click="toggleCallback"
           class="border p-6 size-10 rounded-full bg-blue-500 flex items-center justify-center"
+          @click="toggleCallback"
         >
           <p>
             <span style="font-size: 1.5rem">T</span><span style="font-size: 1rem">T</span

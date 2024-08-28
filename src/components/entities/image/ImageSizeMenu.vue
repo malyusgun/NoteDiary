@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { IImage } from '@/app/interfaces/entities';
+import {
+  getImageSpeedDialSizeBiggerLabelsToRemove,
+  getImageSpeedDialSizeSmallerLabelsToRemove
+} from '@/app/helpers';
 
 interface Props {
   entityData: IImage;
@@ -7,7 +11,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['scaleImage']);
 
-const speedDialSize = computed(() => {
+const speedDialSizeSmaller = computed(() => {
   let state = [
     {
       label: 'x0.25',
@@ -26,35 +30,11 @@ const speedDialSize = computed(() => {
       command: () => emit('scaleImage', '1')
     }
   ];
-  const initialImageWidth = Math.ceil(props.entityData.image_width / +props.entityData.image_scale);
-  const initialImageHeight = Math.ceil(
-    props.entityData.image_height / +props.entityData.image_scale
-  );
-  if (initialImageWidth <= 400 || initialImageHeight <= 400) {
-    state = state.filter((item) => item.label !== 'x0.25');
-    if (
-      initialImageWidth <= 200 ||
-      initialImageHeight <= 200 ||
-      (initialImageWidth >= 1600 && props.entityData.text_position)
-    ) {
-      state = state.filter((item) => item.label !== 'x0.5');
-      if (
-        initialImageWidth <= 95 ||
-        initialImageHeight <= 95 ||
-        (initialImageWidth >= 1066 && props.entityData.text_position)
-      ) {
-        state = state.filter((item) => item.label !== 'x0.75');
-      }
-    }
-  }
-  if (
-    (initialImageWidth >= 800 && props.entityData.text_position) ||
-    props.entityData.image_width < initialImageWidth
-  ) {
-    state = state.filter((item) => item.label !== 'x1');
-  }
+  const labelsToRemove = getImageSpeedDialSizeSmallerLabelsToRemove(props.entityData);
+  state = state.filter((item) => !~labelsToRemove.indexOf(item.label));
   return state.filter((item) => item.label !== `x${props.entityData.image_scale}`);
 });
+
 const speedDialSizeBigger = computed(() => {
   let state = [
     {
@@ -78,44 +58,8 @@ const speedDialSizeBigger = computed(() => {
       command: () => emit('scaleImage', '2')
     }
   ];
-  const initialImageWidth = Math.ceil(props.entityData.image_width / +props.entityData.image_scale);
-  const initialImageHeight = Math.ceil(
-    props.entityData.image_height / +props.entityData.image_scale
-  );
-  if (
-    (initialImageWidth >= 800 && props.entityData.text_position) ||
-    props.entityData.image_width > initialImageWidth
-  ) {
-    state = state.filter((item) => item.label !== 'x1');
-  }
-  if (
-    initialImageWidth >= 960 ||
-    initialImageHeight >= 960 ||
-    (initialImageWidth >= 640 && props.entityData.text_position)
-  ) {
-    state = state.filter((item) => item.label !== 'x1.25');
-    if (
-      initialImageWidth >= 800 ||
-      initialImageHeight >= 800 ||
-      (initialImageWidth >= 533 && props.entityData.text_position)
-    ) {
-      state = state.filter((item) => item.label !== 'x1.5');
-      if (
-        initialImageWidth >= 685 ||
-        initialImageHeight >= 685 ||
-        (initialImageWidth >= 457 && props.entityData.text_position)
-      ) {
-        state = state.filter((item) => item.label !== 'x1.75');
-        if (
-          initialImageWidth >= 600 ||
-          initialImageHeight >= 600 ||
-          (initialImageWidth >= 400 && props.entityData.text_position)
-        ) {
-          state = state.filter((item) => item.label !== 'x2');
-        }
-      }
-    }
-  }
+  const labelsToRemove = getImageSpeedDialSizeBiggerLabelsToRemove(props.entityData);
+  state = state.filter((item) => !~labelsToRemove.indexOf(item.label));
   return state.filter((item) => item.label !== `x${props.entityData.image_scale}`);
 });
 </script>
@@ -126,8 +70,8 @@ const speedDialSizeBigger = computed(() => {
     :style="`width: ${props.entityData.image_width}px; height: ${props.entityData.image_height}px`"
   >
     <SpeedDial
-      v-if="speedDialSize.length"
-      :model="speedDialSize"
+      v-if="speedDialSizeSmaller.length"
+      :model="speedDialSizeSmaller"
       :radius="70"
       type="semi-circle"
       direction="left"

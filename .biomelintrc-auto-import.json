@@ -14,8 +14,6 @@
       "RouteLocationRaw",
       "VNode",
       "WritableComputedRef",
-      "[alias]",
-      "[import-names]",
       "axios",
       "computed",
       "createApp",

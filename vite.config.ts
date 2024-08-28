@@ -13,10 +13,16 @@ export default defineConfig({
   },
   plugins: [
     vue({
-      template: {}
+      template: {
+        compilerOptions: {
+          // isCustomElement: (tag) => ['StateMenu', 'FontMenu'].includes(tag)
+        }
+      }
     }),
     Components({
-      resolvers: [PrimeVueResolver()]
+      resolvers: [PrimeVueResolver()],
+      dts: 'src/app/components.d.ts',
+      dirs: ['src/app', 'src/pages', 'src/modules', 'src/components', 'src/shared']
     }),
     AutoImport({
       include: [
@@ -42,11 +48,6 @@ export default defineConfig({
           axios: [
             // default imports
             ['default', 'axios'] // import { default as axios } from 'axios',
-          ],
-          '[package-name]': [
-            '[import-names]',
-            // alias
-            ['[from]', '[alias]']
           ]
         },
         // example type import
@@ -88,9 +89,7 @@ export default defineConfig({
 
       // Custom resolvers, compatible with `unplugin-vue-components`
       // see https://github.com/antfu/unplugin-auto-import/pull/23/
-      resolvers: [
-        /* ... */
-      ],
+      resolvers: [],
 
       // Include auto-imported packages in Vite's `optimizeDeps` options
       // Recommend to enable

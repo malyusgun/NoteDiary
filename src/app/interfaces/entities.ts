@@ -3,18 +3,18 @@ import type { IEntity } from '@/app/interfaces/environment';
 export interface ITable extends IEntity {
   entity_type: 'table';
   entity_uuid: string;
-  title?: string;
-  text?: string;
+  title?: string | null;
+  text?: string | null;
   table_columns: ITableColumn[];
   table_data: {
-    [key: string]: any;
+    [key: string]: never;
   }[];
 }
-interface ITableColumn {
+export interface ITableColumn {
   column_uuid: string;
   name: string;
   type: ITableColumnTypes;
-  data: any;
+  data: never;
 }
 type ITableColumnTypes =
   | 'text'
@@ -29,7 +29,7 @@ type ITableColumnTypes =
 export interface IText extends IEntity {
   entity_type: 'text';
   entity_uuid: string;
-  title?: string;
+  title?: string | null;
   text: string;
   font_size?: '16' | '20' | '24' | '40' | '64';
   paragraph_size?: 'full' | 'half';
@@ -40,12 +40,12 @@ export interface IText extends IEntity {
 export interface IImage extends IEntity {
   entity_type: 'image';
   entity_uuid: string;
-  title?: string;
-  text?: string;
-  font_size?: '16' | '20' | '24' | '40' | '64';
-  paragraph_size?: 'full' | 'half';
-  text_position?: 'left' | 'right';
-  image_url: string;
+  title?: string | null;
+  text?: string | null;
+  font_size?: '16' | '20' | '24' | '40' | '64' | null;
+  paragraph_size?: 'full' | 'half' | null;
+  text_position?: 'left' | 'right' | null;
+  imageUrl: string;
   image_width: number;
   image_height: number;
   image_scale: string;

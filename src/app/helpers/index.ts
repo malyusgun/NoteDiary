@@ -1,33 +1,51 @@
 import { useInterfaceStore } from '@/app/stores/interface';
-import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useWebsocketStore } from '@/app/stores/websocket';
+import type { IEntity } from '@/app/interfaces/environment';
+import { checkIsImage } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
+import type { IImage } from '@/app/interfaces/entities';
 
-export async function uploadFile($event: Event) {
-  const target = $event.target as HTMLInputElement;
-  if (target && target.files && target.files[0]) {
-    const file = target.files[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.addEventListener('load', () => {
-      const url = reader.result;
-      const interfaceStore = useInterfaceStore();
-      interfaceStore.changeHomeBackgroundUrl(url);
-      localStorage.setItem('homeBackgroundUrl', url);
-    });
-  }
-}
-
-export function setDefaultHomeBackground() {
+export const setDefaultHomeBackground = () => {
   const interfaceStore = useInterfaceStore();
-  interfaceStore.changeHomeBackgroundUrl(
-    'https://wallpapers.com/images/featured/minimalist-7xpryajznty61ra3.jpg'
-  );
-  localStorage.removeItem('homeBackgroundUrl');
-}
+  interfaceStore.resetHomeBackground();
+};
 
-export const editEntity = (newState: IEntity, entityUuid: string) => {
+export const fetchForHomeEntities = () => {
+  const dataStore = useDataStore();
+  const interfaceStore = useInterfaceStore();
+  const websocketStore = useWebsocketStore();
+  const filesWebsocketStore = useFilesWebsocketStore();
+  const filesBuffer = filesWebsocketStore.filesBuffer;
+  if (filesBuffer.length) {
+    filesBuffer[0] = new Blob([filesBuffer[0].data], { type: 'image/jpeg' });
+    interfaceStore.setHomeBackgroundFromDB(URL.createObjectURL(filesBuffer[0]));
+  }
+  if (!dataStore.homeEntities.length) {
+    const getHomeEntitiesData = {
+      event: 'getHomeEntities'
+    };
+    websocketStore.sendData(getHomeEntitiesData);
+  }
+  filesWebsocketStore.removeFirstFilesBuffer();
+};
+
+export const createHomeEntity = (newEntity: IEntity) => {
+  const websocketStore = useWebsocketStore();
+  if (newEntity.image_buffer) {
+    websocketStore.setFileData(newEntity);
+    const filesWebsocketStore = useFilesWebsocketStore();
+    return filesWebsocketStore.sendData(newEntity.image_buffer);
+  }
+  const data = {
+    event: 'createHomeEntity',
+    body: newEntity
+  };
+  websocketStore.sendData(data);
+};
+
+export const editEntity = (newState: IEntity) => {
+  newState = checkIsImage(newState);
   const websocketStore = useWebsocketStore();
   const data = {
     event: 'editHomeEntity',
@@ -60,20 +78,73 @@ export const changeOrderHomeEntity = (entityUuid: string, direction: 'up' | 'dow
   websocketStore.sendData(data);
 };
 
-export function addUrlsToImageEntities(entities: IEntity[]) {
-  const filesWebsocketStore = useFilesWebsocketStore();
-  const filesBlob = filesWebsocketStore.filesBlob;
-  let index = 0;
-  console.log('filesBlob[0].data', filesBlob[0]);
-  console.log('filesBlob[0].data', filesBlob[0]);
-  console.log('filesBlob.length', filesBlob.length);
-  return entities.map((entity: IEntity) => {
-    if (!entity.image_width) return entity;
-    filesBlob[index] = new Blob([filesBlob[index]], { type: 'image/jpeg' });
-    entity.imageUrl = URL.createObjectURL(filesBlob[index]);
-    console.log('entity.imageUrl', entity.imageUrl);
-    index += 1;
-    console.log('filesBlob.length', filesBlob.length);
-    return entity;
-  });
-}
+export const getImageSpeedDialSizeSmallerLabelsToRemove = (entity: IImage) => {
+  const elementsLabelsToRemove = [];
+  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
+  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
+  if (initialImageWidth <= 400 || initialImageHeight <= 400) {
+    elementsLabelsToRemove.push('x0.25');
+    if (
+      initialImageWidth <= 200 ||
+      initialImageHeight <= 200 ||
+      (initialImageWidth >= 1600 && entity.text_position)
+    ) {
+      elementsLabelsToRemove.push('x0.5');
+      if (
+        initialImageWidth <= 95 ||
+        initialImageHeight <= 95 ||
+        (initialImageWidth >= 1066 && entity.text_position)
+      ) {
+        elementsLabelsToRemove.push('x0.75');
+      }
+    }
+  }
+  if (
+    (initialImageWidth >= 800 && entity.text_position) ||
+    entity.image_width < initialImageWidth
+  ) {
+    elementsLabelsToRemove.push('x1');
+  }
+  return elementsLabelsToRemove;
+};
+
+export const getImageSpeedDialSizeBiggerLabelsToRemove = (entity: IImage) => {
+  const elementsLabelsToRemove = [];
+  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
+  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
+  if (
+    (initialImageWidth >= 800 && entity.text_position) ||
+    entity.image_width > initialImageWidth
+  ) {
+    elementsLabelsToRemove.push('x1');
+  }
+  if (
+    initialImageWidth >= 960 ||
+    initialImageHeight >= 960 ||
+    (initialImageWidth >= 640 && entity.text_position)
+  ) {
+    elementsLabelsToRemove.push('x1.25');
+    if (
+      initialImageWidth >= 800 ||
+      initialImageHeight >= 800 ||
+      (initialImageWidth >= 533 && entity.text_position)
+    ) {
+      elementsLabelsToRemove.push('x1.5');
+      if (
+        initialImageWidth >= 685 ||
+        initialImageHeight >= 685 ||
+        (initialImageWidth >= 457 && entity.text_position)
+      ) {
+        elementsLabelsToRemove.push('x1.75');
+        if (
+          initialImageWidth >= 600 ||
+          initialImageHeight >= 600 ||
+          (initialImageWidth >= 400 && entity.text_position)
+        ) {
+          elementsLabelsToRemove.push('x2');
+        }
+      }
+    }
+  }
+  return elementsLabelsToRemove;
+};

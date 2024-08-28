@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useElementSize } from '@vueuse/core';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
@@ -13,28 +12,10 @@ const interfaceStore = useInterfaceStore();
 const authorizationStore = useAuthorizationStore();
 const websocketStore = useWebsocketStore();
 
-const backgroundImage = ref();
-const { width: backgroundImageWidth, height: backgroundImageHeight } =
-  useElementSize(backgroundImage);
-const backgroundSize = computed(() => {
-  if (backgroundImageWidth.value > backgroundImageHeight.value) {
-    return 'auto 100%';
-  } else {
-    return '100% auto';
-  }
-});
-const entitiesContainer = ref();
-const { height: entitiesHeight } = useElementSize(entitiesContainer);
-const splitterPanelBackground = ref();
-const { height: splitterPanelBackgroundHeight } = useElementSize(splitterPanelBackground);
-
 const entities = computed(() => dataStore.homeEntities);
 const backgroundUrl = computed<string>(() => interfaceStore.homeBackground);
 const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultHomeBackground);
 const isFetchedForBackground = computed(() => interfaceStore.isFetchedForBackground);
-const splitterHeight = computed(() => {
-  return splitterPanelBackgroundHeight.value + entitiesHeight.value + 100;
-});
 
 const isModalUploadFile = ref<boolean>(false);
 const backgroundImageInfo = ref<IImageMainInfo>({
@@ -91,50 +72,32 @@ const saveImage = (finalImageUrl: string) => {
     @saveImage="saveImage"
   />
   <main class="flex flex-col">
-    <Splitter
-      :style="`height: ${splitterHeight}px;`"
-      layout="vertical"
-      stateKey="homeSplitter"
-      stateStorage="local"
-      gutterSize="10"
-    >
-      <SplitterPanel
-        :pt:root:style="`position: relative; background-image: url(${backgroundUrl});
-         background-size: 100% auto; max-height: ${backgroundImageHeight - 3}px; min-height: 200px;`"
-        class="splitterPanelBackground"
-      >
-        <div ref="splitterPanelBackground" class="w-full h-full"></div>
-        <PageBackgroundMenu
-          :isBackgroundDefault="backgroundUrl !== defaultBackgroundUrl"
-          @uploadFile="uploadFile"
-          @setDefaultBackground="setDefaultHomeBackground"
-        />
-      </SplitterPanel>
-      <SplitterPanel class="flex items-start justify-center">
-        <Suspense>
-          <div ref="entitiesContainer" class="w-full pt-4">
-            <EntitiesList :entities="entities" @createEntity="createEntity" />
-          </div>
-          <template #fallback><BaseLoader /></template
-        ></Suspense>
-      </SplitterPanel>
-    </Splitter>
+    <article class="backgroundContainer relative min-h-[200px]">
+      <img :src="backgroundUrl" alt="Background image" class="w-full" />
+      <PageBackgroundMenu
+        :isBackgroundDefault="backgroundUrl !== defaultBackgroundUrl"
+        @uploadFile="uploadFile"
+        @setDefaultBackground="setDefaultHomeBackground"
+      />
+    </article>
+    <article class="flex items-start justify-center">
+      <Suspense>
+        <div ref="entitiesContainer" class="w-full pt-4">
+          <EntitiesList :entities="entities" @createEntity="createEntity" />
+        </div>
+        <template #fallback><BaseLoader /></template
+      ></Suspense>
+    </article>
   </main>
-  <img
-    ref="backgroundImage"
-    :src="backgroundUrl"
-    alt="background image"
-    class="absolute w-full -top-full -left-full"
-  />
 </template>
 
 <style lang="scss">
-.splitterPanelBackground > .changeImageBlock,
-.splitterPanelBackground > .returnDefaultImageBlock {
+.backgroundContainer > .changeImageBlock,
+.backgroundContainer > .returnDefaultImageBlock {
   opacity: 0;
 }
-.splitterPanelBackground:hover > .changeImageBlock,
-.splitterPanelBackground:hover > .returnDefaultImageBlock {
+.backgroundContainer:hover > .changeImageBlock,
+.backgroundContainer:hover > .returnDefaultImageBlock {
   opacity: 100;
 }
 input[type=file], /* FF, IE7+, chrome (except button) */

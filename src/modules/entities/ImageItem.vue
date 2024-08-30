@@ -66,22 +66,23 @@ const openCropImageModal = () => (isModalCropImage.value = true);
         :entityData="entityData"
         @editTitle="editTitle"
       />
-      <div class="flex gap-[32px]" :style="`height: ${entityData.image_height}px`">
+      <div style="gap: 32px" class="flex" :style="`height: ${entityData.image_height}px`">
         <div
           :class="[
-            'imageContainer relative leading-none min-h-[100px] min-w-[100px]',
+            'imageContainer relative leading-none',
             {
               'order-3': entityData.text_position === 'left'
             }
           ]"
-          :style="`width: ${entityData.image_width}px; height: ${entityData.image_height}px`"
+          :style="`width: ${entityData.image_width}px; height: ${entityData.image_height}px; min-width: 100px; min-height: 100px`"
         >
           <img
             :src="entityData?.imageUrl"
             :alt="`Image ${entityData?.title}` || 'Image'"
             :width="entityData.image_width"
             :height="entityData.image_height"
-            class="'max-h-[700px] min-h-[100px] object-contain order-1'"
+            style="min-height: 100px; max-height: 700px"
+            class="object-contain order-1"
           />
           <div class="speedDialSize absolute left-0 top-0 transition-all select-none">
             <ImageSizeMenu :entityData="entityData" @scaleImage="scaleImage" />

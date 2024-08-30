@@ -48,7 +48,7 @@ onMounted(() => {
     <Divider />
     <nav>
       <h3 class="text-xl">Menu</h3>
-      <div class="ml-[58px] mt-4 -mb-2 select-none font-bold">
+      <div style="margin-left: 58px" class="mt-4 -mb-2 select-none font-bold">
         <a v-if="route.path !== '/'" href="/"
           ><i class="pi pi-home text-gray-400 pr-2"></i>Главное меню</a
         >

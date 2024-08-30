@@ -65,6 +65,25 @@ const saveImage = (finalImageUrl: string) => {
 <template>
   <header>
     <h1 class="text-center text-5xl font-bold py-4">Home page</h1>
+    <section
+      class="telegramContainer fixed z-50 bottom-8 right-8 cursor-pointer border-3 border-solid border-white rounded-full transition-all duration-300"
+    >
+      <p
+        class="telegramText absolute w-96 h-20 p-4 text-white font-medium bg-black bg-opacity-70 rounded-full transition-all duration-300 pointer-events-none"
+      >
+        Хотите написать жалобу, есть пожелания или вопросы? Напишите нам!
+      </p>
+      <a href="https://t.me/shelfNoteBot" target="_blank">
+        <div
+          class="size-14 rounded-full"
+          style="
+            background-image: url('/Telegram.png');
+            background-size: contain;
+            background-color: white;
+          "
+        ></div>
+      </a>
+    </section>
   </header>
   <CropImageModal
     v-model:isVisible="isModalUploadFile"
@@ -72,7 +91,7 @@ const saveImage = (finalImageUrl: string) => {
     @saveImage="saveImage"
   />
   <main class="flex flex-col">
-    <article class="backgroundContainer relative min-h-[200px]">
+    <article style="min-height: 200px" class="backgroundContainer relative">
       <img :src="backgroundUrl" alt="Background image" class="w-full" />
       <PageBackgroundMenu
         :isBackgroundDefault="backgroundUrl !== defaultBackgroundUrl"
@@ -99,6 +118,19 @@ const saveImage = (finalImageUrl: string) => {
 .backgroundContainer:hover > .changeImageBlock,
 .backgroundContainer:hover > .returnDefaultImageBlock {
   opacity: 100;
+}
+.telegramContainer > .telegramText {
+  opacity: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.telegramContainer:hover > .telegramText {
+  opacity: 100;
+  right: 104%;
+}
+.telegramContainer:hover > a {
+  filter: brightness(0.75);
 }
 input[type=file], /* FF, IE7+, chrome (except button) */
 input[type=file]::-webkit-file-upload-button {

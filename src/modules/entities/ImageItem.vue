@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useVModel, useWindowSize } from '@vueuse/core';
+import { useElementSize, useVModel, useWindowSize } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers';
 import { cropImage } from '@/app/helpers/images';
@@ -12,6 +12,7 @@ const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
 
 const isModalCropImage = ref<boolean>(false);
+const isEditMode = ref<boolean>(false);
 const { width: windowWidth } = useWindowSize();
 
 const textContainerWidth = computed(() => {
@@ -45,9 +46,10 @@ const openCropImageModal = () => (isModalCropImage.value = true);
 </script>
 
 <template>
-  <div
+  <section
+    ref="container"
     :class="[
-      'entityContainer relative flex py-8 px-16',
+      'entityContainer relative flex py-2 px-16 transition-all',
       {
         'justify-start': entityData.entity_position === 'left',
         'justify-center': entityData.entity_position === 'center',
@@ -105,12 +107,27 @@ const openCropImageModal = () => (isModalCropImage.value = true);
           />
         </div>
       </div>
-      <ImageMenu v-model:entityData="entityData" @openCropImageModal="openCropImageModal" />
+      <div class="speedDial absolute left-2 top-0">
+        <span>Edit mode</span>
+        <ToggleSwitch v-model="isEditMode" />
+      </div>
+      <ImageMenu
+        v-show="isEditMode"
+        v-model:entityData="entityData"
+        @openCropImageModal="openCropImageModal"
+      />
     </div>
-  </div>
+  </section>
 </template>
 
-<style>
+<style scoped>
+.entityContainer {
+  min-height: min-content;
+  transition: all 0.2s ease;
+}
+.entityContainer:hover {
+  min-height: 180px;
+}
 .entityContainer .speedDial {
   opacity: 0;
 }

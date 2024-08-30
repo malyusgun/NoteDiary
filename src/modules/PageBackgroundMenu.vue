@@ -16,7 +16,7 @@ const emit = defineEmits(['uploadFile', 'setDefaultBackground']);
       title="Change image"
       accept="image/*"
       style="padding-right: 135px; margin-right: -135px"
-      class="w-2py-2 -my-2 pl-2 -ml-2 opacity-0"
+      class="w-2 py-2 -my-2 pl-2 -ml-2 opacity-0"
       @change="$emit('uploadFile', $event)"
     />
     <span><i class="pi pi-image mr-2"></i>Change image</span>

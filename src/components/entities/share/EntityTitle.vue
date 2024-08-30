@@ -20,7 +20,7 @@ const title = useVModel(props, 'title', emit);
     placeholder="Enter title..."
     :style="`font-size: ${+entityData.font_size + 10}px`"
     :class="[
-      'w-full mb-4 font-bold pl-2',
+      'w-full my-4 font-bold pl-2',
       {
         'text-center': entityData.entity_title_position === 'center',
         'text-end': entityData.entity_title_position === 'right'

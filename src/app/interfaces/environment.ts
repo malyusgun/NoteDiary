@@ -13,6 +13,8 @@ export interface IEntity {
   user_nick_name?: string;
   entity_order?: number;
   entity_type: string;
+  divider_height?: number;
+  divider_type?: 'solid' | 'dashed' | 'dotted';
   title?: string | null;
   text?: string | null;
   font_size?: string | null;

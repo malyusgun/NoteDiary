@@ -8,7 +8,7 @@ export const addUrlsToImageEntities = (entities: IEntity[]) => {
   const filesBuffer = filesWebsocketStore.filesBuffer;
   let index = 0;
   const entitiesToReturn = entities.map((entity: IEntity) => {
-    if (!entity.image_width) return entity;
+    if (!entity?.image_width) return entity;
     if (entity.imageUrl) return entity;
     if (filesWebsocketStore.imageUrl) {
       // редактирование сущности изображения
@@ -26,7 +26,7 @@ export const addUrlsToImageEntities = (entities: IEntity[]) => {
 };
 
 export const checkIsImage = (entity: IEntity) => {
-  if (!entity.image_width) {
+  if (!entity?.image_width) {
     return entity;
   }
   const entityToReturn = { ...entity };

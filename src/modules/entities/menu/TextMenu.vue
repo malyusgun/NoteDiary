@@ -47,10 +47,10 @@ const editParagraphWidth = (widthMode: 'full' | 'half') => {
       @removeTitle="removeTitle"
     />
   </div>
-  <div class="speedDial h-12 absolute left-2 top-1/2 -translate-y-1/2 transition-all select-none">
+  <div class="speedDial h-12 absolute left-2 top-0 translate-y-full transition-all select-none">
     <TextFontMenu :entityData="entityData" @changeFontSize="changeFontSize" />
   </div>
-  <div class="speedDial absolute left-2 bottom-0 transition-all select-none">
+  <div class="speedDial absolute left-2 top-0 translate-y-24 transition-all select-none">
     <TextPositionMenu
       :entityData="entityData"
       @editPosition="editPosition"

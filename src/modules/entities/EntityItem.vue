@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
-import type { IImage, IText } from '@/app/interfaces/entities';
+import type { IDivider, IImage, IText } from '@/app/interfaces/entities';
 interface Props {
   entity: IEntity;
 }
@@ -12,11 +12,9 @@ const entity = useVModel(props, 'entity', emit);
 
 <template>
   <div>
+    <DividerItem v-if="entity.entity_type === 'divider'" v-model:entityData="entity as IDivider" />
     <TextItem v-if="entity.entity_type === 'text'" :entityData="entity as IText" />
     <ImageItem v-if="entity.entity_type === 'image'" v-model:entityData="entity as IImage" />
-    <div class="px-16">
-      <BaseDivider />
-    </div>
   </div>
 </template>
 

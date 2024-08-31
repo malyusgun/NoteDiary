@@ -122,7 +122,9 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
 
   watch([filesBufferLength, homeEntities], () => {
     if (
-      (homeEntities.value.length && filesBufferLength.value === imageEntitiesCount.value) ||
+      (homeEntities.value.length &&
+        filesBufferLength.value === imageEntitiesCount.value &&
+        imageEntitiesCount.value) ||
       (isInitialAddUrlsToImageEntitiesFinished.value && filesBufferLength.value)
     ) {
       const entitiesAddedUrls = addUrlsToImageEntities(homeEntities.value);

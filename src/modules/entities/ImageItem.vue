@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { useElementSize, useVModel, useWindowSize } from '@vueuse/core';
+import { useVModel, useWindowSize } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers';
 import { cropImage } from '@/app/helpers/images';
 
 interface Props {
   entityData: IImage;
+  isEditMode: boolean;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
 
 const isModalCropImage = ref<boolean>(false);
-const isEditMode = ref<boolean>(false);
 const { width: windowWidth } = useWindowSize();
 
 const textContainerWidth = computed(() => {
@@ -49,7 +49,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
   <section
     ref="container"
     :class="[
-      'entityContainer relative flex py-2 px-16 transition-all',
+      'entityContainer relative flex px-16 transition-all',
       {
         'justify-start': entityData.entity_position === 'left',
         'justify-center': entityData.entity_position === 'center',
@@ -66,6 +66,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
       <EntityTitle
         v-model:title="entityData.title"
         :entityData="entityData"
+        :isEditMode="isEditMode"
         @editTitle="editTitle"
       />
       <div style="gap: 32px" class="flex" :style="`height: ${entityData.image_height}px`">
@@ -87,7 +88,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
             class="object-contain order-1"
           />
           <div class="speedDialSize absolute left-0 top-0 transition-all select-none">
-            <ImageSizeMenu :entityData="entityData" @scaleImage="scaleImage" />
+            <ImageSizeMenu v-if="isEditMode" :entityData="entityData" @scaleImage="scaleImage" />
           </div>
         </div>
         <div
@@ -98,7 +99,12 @@ const openCropImageModal = () => (isModalCropImage.value = true);
           <textarea
             ref="textarea"
             v-model="entityData.text"
-            class="w-full indent-5 leading-normal overflow-auto resize-none outline-0 order-2"
+            :class="[
+              'w-full indent-5 leading-normal overflow-auto resize-none outline-0 order-2',
+              {
+                'pointer-events-none': !isEditMode
+              }
+            ]"
             placeholder="Enter text..."
             rows="7"
             :style="`font-size: ${entityData.font_size}px; height: ${entityData.image_height}px;`"
@@ -107,26 +113,29 @@ const openCropImageModal = () => (isModalCropImage.value = true);
           />
         </div>
       </div>
-      <div class="speedDial absolute left-2 top-0">
-        <span>Edit mode</span>
-        <ToggleSwitch v-model="isEditMode" />
-      </div>
       <ImageMenu
-        v-show="isEditMode"
+        v-if="isEditMode"
         v-model:entityData="entityData"
         @openCropImageModal="openCropImageModal"
       />
+      <div
+        v-if="!entityData?.title && entityData.image_height < 137"
+        class="aggregateHigh h-0 transition-all"
+      ></div>
+      <div
+        v-if="!entityData?.title && entityData.image_height >= 137 && entityData.image_height < 167"
+        class="aggregateShort h-0 transition-all"
+      ></div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.entityContainer {
-  min-height: min-content;
-  transition: all 0.2s ease;
+.entityContainer:hover .aggregateHigh {
+  height: 65px;
 }
-.entityContainer:hover {
-  min-height: 180px;
+.entityContainer:hover .aggregateShort {
+  height: 30px;
 }
 .entityContainer .speedDial {
   opacity: 0;

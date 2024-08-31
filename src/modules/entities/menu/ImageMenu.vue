@@ -70,9 +70,10 @@ const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
 </script>
 
 <template>
-  <div class="speedDial absolute left-2 top-0 transition-all select-none">
+  <section style="height: 146px" class="speedDial absolute left-2 top-0 transition-all select-none">
     <ImageStateMenu
       :entityData="entityData"
+      class="h-12"
       @deleteEntity="deleteEntity"
       @addTitle="addTitle"
       @removeTitle="removeTitle"
@@ -80,25 +81,19 @@ const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
       @removeText="removeText"
       @openCropImageModal="$emit('openCropImageModal')"
     />
-  </div>
-  <div
-    v-if="entityData?.text || entityData?.title"
-    class="speedDial h-12 absolute left-2 top-0 translate-y-full transition-all select-none"
-  >
-    <TextFontMenu :entityData="entityData" @changeFontSize="changeFontSize" />
-  </div>
-  <div
-    v-if="homeEntities.length > 1"
-    class="speedDial absolute left-2 top-0 translate-y-24 transition-all select-none"
-  >
-    <ImagePositionMenu
-      :entityData="entityData"
-      @editPosition="editPosition"
-      @editTitlePosition="editTitlePosition"
-      @editTextPosition="editTextPosition"
-      @editParagraphWidth="editParagraphWidth"
-    />
-  </div>
+    <div v-if="entityData?.text || entityData?.title">
+      <TextFontMenu :entityData="entityData" class="h-12" @changeFontSize="changeFontSize" />
+    </div>
+    <div v-if="homeEntities.length > 1">
+      <ImagePositionMenu
+        :entityData="entityData"
+        @editPosition="editPosition"
+        @editTitlePosition="editTitlePosition"
+        @editTextPosition="editTextPosition"
+        @editParagraphWidth="editParagraphWidth"
+      />
+    </div>
+  </section>
 </template>
 
 <style scoped></style>

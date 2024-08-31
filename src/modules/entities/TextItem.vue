@@ -5,6 +5,7 @@ import { editEntity } from '@/app/helpers';
 
 interface Props {
   entityData: IText;
+  isEditMode: boolean;
 }
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
@@ -18,12 +19,11 @@ const editText = () => {
 };
 
 const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
-const { height: containerHeight } = useElementSize(container);
+const { height: textareaHeight } = useElementSize(textarea);
 </script>
 
 <template>
   <section
-    ref="container"
     :class="[
       'entityContainer relative flex px-16',
       {
@@ -44,13 +44,19 @@ const { height: containerHeight } = useElementSize(container);
       <EntityTitle
         v-model:title="entityData.title"
         :entityData="entityData"
+        :isEditMode="isEditMode"
         @editTitle="editTitle"
       />
       <div class="relative leading-none">
         <textarea
           ref="textarea"
           v-model="entityData.text"
-          class="w-full indent-5 leading-normal resize-none outline-0"
+          :class="[
+            'w-full indent-5 leading-normal resize-none outline-0',
+            {
+              'pointer-events-none': !isEditMode
+            }
+          ]"
           :style="`font-size: ${entityData.font_size}px;`"
           placeholder="Enter text..."
           rows="1"
@@ -59,8 +65,25 @@ const { height: containerHeight } = useElementSize(container);
           @input="triggerResize"
         />
       </div>
-      <div v-if="containerHeight < 145" class="aggregate transition-all h-0"></div>
-      <TextMenu v-model:entityData="entityData" />
+      <div
+        v-if="!entityData?.title && textareaHeight < 87 && isEditMode"
+        class="aggregateHigh transition-all h-0"
+      ></div>
+      <div
+        v-if="
+          (!entityData?.title && textareaHeight >= 87 && textareaHeight < 132 && isEditMode) ||
+          (entityData?.title && textareaHeight < 65 && isEditMode)
+        "
+        class="aggregateMedium transition-all h-0"
+      ></div>
+      <div
+        v-if="
+          (!entityData?.title && textareaHeight >= 132 && textareaHeight < 167 && isEditMode) ||
+          (entityData?.title && textareaHeight >= 65 && textareaHeight < 100 && isEditMode)
+        "
+        class="aggregateShort transition-all h-0"
+      ></div>
+      <TextMenu v-if="isEditMode" v-model:entityData="entityData" />
     </div>
   </section>
 </template>
@@ -72,9 +95,14 @@ const { height: containerHeight } = useElementSize(container);
 .entityContainer:hover .speedDial {
   opacity: 100;
 }
-.entityContainer:hover .aggregate {
-  height: 100px;
-  transition: all 0.2s ease-in-out;
+.entityContainer:hover .aggregateHigh {
+  height: 140px;
+}
+.entityContainer:hover .aggregateMedium {
+  height: 80px;
+}
+.entityContainer:hover .aggregateShort {
+  height: 35px;
 }
 input::placeholder {
   font-weight: 400;

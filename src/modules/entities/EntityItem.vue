@@ -4,6 +4,7 @@ import { useVModel } from '@vueuse/core';
 import type { IDivider, IImage, IText } from '@/app/interfaces/entities';
 interface Props {
   entity: IEntity;
+  isEditMode: boolean;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
@@ -12,9 +13,21 @@ const entity = useVModel(props, 'entity', emit);
 
 <template>
   <div>
-    <DividerItem v-if="entity.entity_type === 'divider'" v-model:entityData="entity as IDivider" />
-    <TextItem v-if="entity.entity_type === 'text'" :entityData="entity as IText" />
-    <ImageItem v-if="entity.entity_type === 'image'" v-model:entityData="entity as IImage" />
+    <DividerItem
+      v-if="entity.entity_type === 'divider'"
+      v-model:entityData="entity as IDivider"
+      :isEditMode="isEditMode"
+    />
+    <TextItem
+      v-if="entity.entity_type === 'text'"
+      :entityData="entity as IText"
+      :isEditMode="isEditMode"
+    />
+    <ImageItem
+      v-if="entity.entity_type === 'image'"
+      v-model:entityData="entity as IImage"
+      :isEditMode="isEditMode"
+    />
   </div>
 </template>
 

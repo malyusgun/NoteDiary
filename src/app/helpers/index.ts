@@ -120,25 +120,25 @@ export const getImageSpeedDialSizeBiggerLabelsToRemove = (entity: IImage) => {
   }
   if (
     initialImageWidth >= 960 ||
-    initialImageHeight >= 960 ||
+    initialImageHeight >= 560 ||
     (initialImageWidth >= 640 && entity.text_position)
   ) {
     elementsLabelsToRemove.push('x1.25');
     if (
       initialImageWidth >= 800 ||
-      initialImageHeight >= 800 ||
+      initialImageHeight >= 467 ||
       (initialImageWidth >= 533 && entity.text_position)
     ) {
       elementsLabelsToRemove.push('x1.5');
       if (
         initialImageWidth >= 685 ||
-        initialImageHeight >= 685 ||
+        initialImageHeight >= 400 ||
         (initialImageWidth >= 457 && entity.text_position)
       ) {
         elementsLabelsToRemove.push('x1.75');
         if (
           initialImageWidth >= 600 ||
-          initialImageHeight >= 600 ||
+          initialImageHeight >= 350 ||
           (initialImageWidth >= 400 && entity.text_position)
         ) {
           elementsLabelsToRemove.push('x2');

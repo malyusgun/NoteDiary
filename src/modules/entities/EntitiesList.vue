@@ -3,6 +3,7 @@ import type { IEntity } from '@/app/interfaces/environment';
 
 interface Props {
   entities: IEntity[];
+  isEditMode: boolean;
 }
 defineProps<Props>();
 const emit = defineEmits(['createEntity']);
@@ -17,6 +18,7 @@ const createEntity = (entity: IEntity) => {
     v-for="entitiesItem of entities"
     :key="entitiesItem.entity_uuid"
     :entity="entitiesItem"
+    :isEditMode="isEditMode"
   />
   <div class="relative mt-2">
     <CreateEntityMenu @createEntity="createEntity" />

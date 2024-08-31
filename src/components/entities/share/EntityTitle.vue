@@ -5,6 +5,7 @@ import { useVModel } from '@vueuse/core';
 interface Props {
   title?: string | null;
   entityData: IEntity;
+  isEditMode: boolean;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:title', 'editTitle']);
@@ -20,10 +21,11 @@ const title = useVModel(props, 'title', emit);
     placeholder="Enter title..."
     :style="`font-size: ${+entityData.font_size + 10}px`"
     :class="[
-      'w-full my-4 font-bold pl-2',
+      'w-full mb-4 font-bold pl-2',
       {
         'text-center': entityData.entity_title_position === 'center',
-        'text-end': entityData.entity_title_position === 'right'
+        'text-end': entityData.entity_title_position === 'right',
+        'pointer-events-none': !isEditMode
       }
     ]"
     @change="$emit('editTitle')"

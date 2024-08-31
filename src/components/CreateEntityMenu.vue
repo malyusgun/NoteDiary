@@ -27,9 +27,15 @@ const addImage = async (files: FileList) => {
     const buffer = await blob.arrayBuffer();
     const { width: windowWidth } = useWindowSize();
     const maxWidth = windowWidth.value - 128;
+    const maxHeight = 700;
     if (image.width > maxWidth) {
-      image.height = Math.floor(maxWidth / image.width) * image.height;
+      image.height = Math.floor((maxWidth / image.width) * image.height);
       image.width = maxWidth;
+    }
+    if (image.height > maxHeight) {
+      image.width = Math.floor((maxHeight / image.height) * image.width);
+      console.log('image.width', image.width);
+      image.height = maxHeight;
     }
     emit('createEntity', {
       entity_type: 'image',
@@ -112,7 +118,7 @@ const speedDialItems = ref([
   <SpeedDial
     :model="speedDialItems"
     direction="right"
-    :button-props="{ severity: 'info', rounded: true }"
+    :button-props="{ severity: 'primary', rounded: true }"
     style="position: absolute; left: 5%; top: 0"
   >
     <template #item="{ item, toggleCallback }">

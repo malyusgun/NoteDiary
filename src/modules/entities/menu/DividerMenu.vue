@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { deleteEntity, editEntity } from '@/app/helpers';
+import { changeOrderHomeEntity, deleteEntity, editEntity } from '@/app/helpers';
 import type { IDivider } from '@/app/interfaces/entities';
 import { useVModel } from '@vueuse/core';
+import type { IEntity } from '@/app/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
 
 interface Props {
   entityData: IDivider;
@@ -9,6 +11,14 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
+
+const dataStore = useDataStore();
+const homeEntities = computed(() => dataStore.homeEntities);
+const entityIndex = computed(() =>
+  homeEntities.value.findIndex(
+    (entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid
+  )
+);
 
 const changeHeight = (height: number) => {
   entityData.value.divider_height = height;
@@ -63,6 +73,20 @@ const speedDialSettings = computed(() => {
     state.push(smallHeight, mediumHeight, extraLargeHeight);
   } else {
     state.push(smallHeight, mediumHeight, largeHeight);
+  }
+  if (entityIndex.value !== 0) {
+    state.push({
+      label: 'Up',
+      icon: 'pi pi-arrow-up',
+      command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'up')
+    });
+  }
+  if (entityIndex.value !== homeEntities.value.length - 1) {
+    state.push({
+      label: 'Down',
+      icon: 'pi pi-arrow-down',
+      command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'down')
+    });
   }
   state.push({
     label: 'Delete',

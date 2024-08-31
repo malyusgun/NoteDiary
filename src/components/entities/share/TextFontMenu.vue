@@ -61,7 +61,7 @@ const speedDialSizeFont = computed(() => {
       <template #item="{ item, toggleCallback }">
         <div
           :class="[
-            'w-20 text-md font-semibold bg-opacity-70 items-center justify-between -translate-y-4 p-4 border rounded-md border-surface-200 dark:border-surface-700 cursor-pointer',
+            'text-md font-semibold bg-opacity-70 -translate-y-4 p-4 border rounded-md border-surface-200 dark:border-surface-700 cursor-pointer',
             {
               'bg-violet-500': item.label === 'Extra large',
               'bg-red-500': item.label === 'Large',

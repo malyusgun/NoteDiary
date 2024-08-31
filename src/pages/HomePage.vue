@@ -6,6 +6,7 @@ import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces/index.ts';
 import { createHomeEntity, fetchForHomeEntities, setDefaultHomeBackground } from '@/app/helpers';
+import TelegramSection from '@/modules/TelegramSection.vue';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
@@ -17,6 +18,7 @@ const backgroundUrl = computed<string>(() => interfaceStore.homeBackground);
 const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultHomeBackground);
 const isFetchedForBackground = computed(() => interfaceStore.isFetchedForBackground);
 
+const isEditMode = ref<boolean>();
 const isModalUploadFile = ref<boolean>(false);
 const backgroundImageInfo = ref<IImageMainInfo>({
   imageUrl: backgroundUrl.value,
@@ -63,28 +65,8 @@ const saveImage = (finalImageUrl: string) => {
 </script>
 
 <template>
-  <header>
-    <h1 class="text-center text-5xl font-bold py-4">Home page</h1>
-    <section
-      class="telegramContainer fixed z-50 bottom-8 right-8 cursor-pointer border-3 border-solid border-white rounded-full transition-all duration-300"
-    >
-      <p
-        class="telegramText absolute w-96 h-20 p-4 text-white font-medium bg-black bg-opacity-70 rounded-full transition-all duration-300 pointer-events-none"
-      >
-        Хотите написать жалобу, есть пожелания или вопросы? Напишите нам!
-      </p>
-      <a href="https://t.me/shelfNoteBot" target="_blank">
-        <div
-          class="size-14 rounded-full"
-          style="
-            background-image: url('/Telegram.png');
-            background-size: contain;
-            background-color: white;
-          "
-        ></div>
-      </a>
-    </section>
-  </header>
+  <PageHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
+  <TelegramSection />
   <CropImageModal
     v-model:isVisible="isModalUploadFile"
     v-model:imageInfo="backgroundImageInfo"
@@ -102,7 +84,11 @@ const saveImage = (finalImageUrl: string) => {
     <article class="flex items-start justify-center">
       <Suspense>
         <div ref="entitiesContainer" class="w-full pt-4">
-          <EntitiesList :entities="entities" @createEntity="createEntity" />
+          <EntitiesList
+            :entities="entities"
+            :isEditMode="isEditMode"
+            @createEntity="createEntity"
+          />
         </div>
         <template #fallback><BaseLoader /></template
       ></Suspense>

@@ -57,6 +57,7 @@ export const useDataStore = defineStore('dataStore', () => {
 
   function editHomeEntities(newState: IEntity) {
     homeEntities.value = newState;
+    console.log('homeEntities.value', homeEntities.value);
   }
 
   function setHomeEntities(entities: IEntity[]) {

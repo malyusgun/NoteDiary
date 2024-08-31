@@ -26,6 +26,13 @@ type ITableColumnTypes =
   | 'rating'
   | 'knob';
 
+export interface IDivider extends IEntity {
+  entity_type: 'divider';
+  entity_uuid: string;
+  divider_height: number;
+  divider_type: 'solid' | 'dashed' | 'dotted';
+}
+
 export interface IText extends IEntity {
   entity_type: 'text';
   entity_uuid: string;

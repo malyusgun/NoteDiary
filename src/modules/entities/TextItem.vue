@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useTextareaAutosize } from '@vueuse/core';
+import { useElementSize, useTextareaAutosize } from '@vueuse/core';
 import type { IText } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers';
 
 interface Props {
   entityData: IText;
+  isEditMode: boolean;
 }
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
+const container = ref();
 
 const editTitle = () => {
   editEntity({ ...entityData.value, title: entityData.value.title });
@@ -17,12 +19,13 @@ const editText = () => {
 };
 
 const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
+const { height: textareaHeight } = useElementSize(textarea);
 </script>
 
 <template>
-  <div
+  <section
     :class="[
-      'entityContainer relative flex py-8 px-16',
+      'entityContainer relative flex px-16',
       {
         'justify-start': entityData.entity_position === 'left',
         'justify-center': entityData.entity_position === 'center',
@@ -41,24 +44,48 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
       <EntityTitle
         v-model:title="entityData.title"
         :entityData="entityData"
+        :isEditMode="isEditMode"
         @editTitle="editTitle"
       />
       <div class="relative leading-none">
         <textarea
           ref="textarea"
           v-model="entityData.text"
-          class="w-full indent-5 leading-normal resize-none outline-0"
+          :class="[
+            'w-full indent-5 leading-normal resize-none outline-0',
+            {
+              'pointer-events-none': !isEditMode
+            }
+          ]"
           :style="`font-size: ${entityData.font_size}px;`"
           placeholder="Enter text..."
-          rows="3"
+          rows="1"
           spellcheck="false"
           @change="editText"
           @input="triggerResize"
         />
       </div>
-      <TextMenu v-model:entityData="entityData" />
+      <div
+        v-if="!entityData?.title && textareaHeight < 87 && isEditMode"
+        class="aggregateHigh transition-all h-0"
+      ></div>
+      <div
+        v-if="
+          (!entityData?.title && textareaHeight >= 87 && textareaHeight < 132 && isEditMode) ||
+          (entityData?.title && textareaHeight < 65 && isEditMode)
+        "
+        class="aggregateMedium transition-all h-0"
+      ></div>
+      <div
+        v-if="
+          (!entityData?.title && textareaHeight >= 132 && textareaHeight < 167 && isEditMode) ||
+          (entityData?.title && textareaHeight >= 65 && textareaHeight < 100 && isEditMode)
+        "
+        class="aggregateShort transition-all h-0"
+      ></div>
+      <TextMenu v-if="isEditMode" v-model:entityData="entityData" />
     </div>
-  </div>
+  </section>
 </template>
 
 <style>
@@ -67,6 +94,15 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
 }
 .entityContainer:hover .speedDial {
   opacity: 100;
+}
+.entityContainer:hover .aggregateHigh {
+  height: 140px;
+}
+.entityContainer:hover .aggregateMedium {
+  height: 80px;
+}
+.entityContainer:hover .aggregateShort {
+  height: 35px;
 }
 input::placeholder {
   font-weight: 400;

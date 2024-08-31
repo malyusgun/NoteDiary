@@ -27,9 +27,15 @@ const addImage = async (files: FileList) => {
     const buffer = await blob.arrayBuffer();
     const { width: windowWidth } = useWindowSize();
     const maxWidth = windowWidth.value - 128;
+    const maxHeight = 700;
     if (image.width > maxWidth) {
-      image.height = Math.floor(maxWidth / image.width) * image.height;
+      image.height = Math.floor((maxWidth / image.width) * image.height);
       image.width = maxWidth;
+    }
+    if (image.height > maxHeight) {
+      image.width = Math.floor((maxHeight / image.height) * image.width);
+      console.log('image.width', image.width);
+      image.height = maxHeight;
     }
     emit('createEntity', {
       entity_type: 'image',
@@ -50,6 +56,18 @@ onChange((files) => {
 });
 
 const speedDialItems = ref([
+  {
+    label: 'Divider',
+    icon: 'pi pi-pause',
+    command: () => {
+      emit('createEntity', {
+        entity_type: 'divider',
+        entity_uuid: uuidv4(),
+        divider_height: 1,
+        divider_type: 'solid'
+      });
+    }
+  },
   {
     label: 'Text',
     icon: 'pi pi-pencil',
@@ -100,7 +118,7 @@ const speedDialItems = ref([
   <SpeedDial
     :model="speedDialItems"
     direction="right"
-    :button-props="{ severity: 'info', rounded: true }"
+    :button-props="{ severity: 'primary', rounded: true }"
     style="position: absolute; left: 5%; top: 0"
   >
     <template #item="{ item, toggleCallback }">
@@ -108,7 +126,19 @@ const speedDialItems = ref([
         class="flex flex-col items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer"
         @click="toggleCallback"
       >
-        <span :class="item.icon" />
+        <span v-show="item.label !== 'Divider'" :class="item.icon" />
+        <svg
+          v-show="item.label === 'Divider'"
+          fill="#fff"
+          width="20px"
+          height="20px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3.293,20.707a1,1,0,0,1,0-1.414l16-16a1,1,0,1,1,1.414,1.414l-16,16A1,1,0,0,1,3.293,20.707Z"
+          />
+        </svg>
         <span>
           {{ item.label }}
         </span>

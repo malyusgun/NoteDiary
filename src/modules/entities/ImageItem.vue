@@ -6,6 +6,7 @@ import { cropImage } from '@/app/helpers/images';
 
 interface Props {
   entityData: IImage;
+  isEditMode: boolean;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
@@ -45,9 +46,10 @@ const openCropImageModal = () => (isModalCropImage.value = true);
 </script>
 
 <template>
-  <div
+  <section
+    ref="container"
     :class="[
-      'entityContainer relative flex py-8 px-16',
+      'entityContainer relative flex px-16 transition-all',
       {
         'justify-start': entityData.entity_position === 'left',
         'justify-center': entityData.entity_position === 'center',
@@ -64,6 +66,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
       <EntityTitle
         v-model:title="entityData.title"
         :entityData="entityData"
+        :isEditMode="isEditMode"
         @editTitle="editTitle"
       />
       <div style="gap: 32px" class="flex" :style="`height: ${entityData.image_height}px`">
@@ -85,7 +88,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
             class="object-contain order-1"
           />
           <div class="speedDialSize absolute left-0 top-0 transition-all select-none">
-            <ImageSizeMenu :entityData="entityData" @scaleImage="scaleImage" />
+            <ImageSizeMenu v-if="isEditMode" :entityData="entityData" @scaleImage="scaleImage" />
           </div>
         </div>
         <div
@@ -96,7 +99,12 @@ const openCropImageModal = () => (isModalCropImage.value = true);
           <textarea
             ref="textarea"
             v-model="entityData.text"
-            class="w-full indent-5 leading-normal overflow-auto resize-none outline-0 order-2"
+            :class="[
+              'w-full indent-5 leading-normal overflow-auto resize-none outline-0 order-2',
+              {
+                'pointer-events-none': !isEditMode
+              }
+            ]"
             placeholder="Enter text..."
             rows="7"
             :style="`font-size: ${entityData.font_size}px; height: ${entityData.image_height}px;`"
@@ -105,12 +113,30 @@ const openCropImageModal = () => (isModalCropImage.value = true);
           />
         </div>
       </div>
-      <ImageMenu v-model:entityData="entityData" @openCropImageModal="openCropImageModal" />
+      <ImageMenu
+        v-if="isEditMode"
+        v-model:entityData="entityData"
+        @openCropImageModal="openCropImageModal"
+      />
+      <div
+        v-if="!entityData?.title && entityData.image_height < 137"
+        class="aggregateHigh h-0 transition-all"
+      ></div>
+      <div
+        v-if="!entityData?.title && entityData.image_height >= 137 && entityData.image_height < 167"
+        class="aggregateShort h-0 transition-all"
+      ></div>
     </div>
-  </div>
+  </section>
 </template>
 
-<style>
+<style scoped>
+.entityContainer:hover .aggregateHigh {
+  height: 65px;
+}
+.entityContainer:hover .aggregateShort {
+  height: 30px;
+}
 .entityContainer .speedDial {
   opacity: 0;
 }

@@ -13,7 +13,7 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
   const filesBufferLength = computed(() => filesWebsocketStore.filesBuffer.length);
   const homeEntities = computed(() => dataStore.homeEntities);
   const imageEntitiesCount = computed(
-    () => homeEntities.value.filter((entity) => entity.image_width).length
+    () => homeEntities.value.filter((entity) => entity?.image_width).length
   );
 
   const socket = ref();
@@ -50,7 +50,7 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
         }
         case 'createHomeEntity': {
           const entities = [...homeEntities.value];
-          if (response.data.image_width) {
+          if (response.data?.image_width) {
             response.data.imageUrl = filesWebsocketStore.imageUrl;
             filesWebsocketStore.cleanImageUrl();
           }
@@ -74,7 +74,7 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
           let entities = [...homeEntities.value];
           entities = entities.map((entity: IEntity) => {
             if (entity.entity_uuid !== response.data.entity_uuid) return entity;
-            if (response.data.image_width) {
+            if (response.data?.image_width) {
               response.data.imageUrl = filesWebsocketStore.imageUrl;
               filesWebsocketStore.cleanImageUrl();
             }
@@ -122,7 +122,9 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
 
   watch([filesBufferLength, homeEntities], () => {
     if (
-      (homeEntities.value.length && filesBufferLength.value === imageEntitiesCount.value) ||
+      (homeEntities.value.length &&
+        filesBufferLength.value === imageEntitiesCount.value &&
+        imageEntitiesCount.value) ||
       (isInitialAddUrlsToImageEntitiesFinished.value && filesBufferLength.value)
     ) {
       const entitiesAddedUrls = addUrlsToImageEntities(homeEntities.value);

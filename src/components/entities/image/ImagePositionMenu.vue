@@ -19,8 +19,10 @@ const dataStore = useDataStore();
 const homeEntities = computed(() => dataStore.homeEntities);
 const position = computed(() => props.entityData.entity_position);
 const titlePosition = computed(() => props.entityData.entity_title_position);
-const entityIndex = homeEntities.value.findIndex(
-  (entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid
+const entityIndex = computed(() =>
+  homeEntities.value.findIndex(
+    (entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid
+  )
 );
 
 const speedDialMove = computed(() => {
@@ -75,14 +77,14 @@ const speedDialMove = computed(() => {
     case 'right':
       state.push(left, center);
   }
-  if (entityIndex !== 0) {
+  if (entityIndex.value !== 0) {
     state.push({
       label: 'Up',
       icon: 'pi pi-arrow-up',
       command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'up')
     });
   }
-  if (entityIndex !== homeEntities.value.length - 1) {
+  if (entityIndex.value !== homeEntities.value.length - 1) {
     state.push({
       label: 'Down',
       icon: 'pi pi-arrow-down',

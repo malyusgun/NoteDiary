@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { useElementSize, useTextareaAutosize } from '@vueuse/core';
-import type { IText } from '@/app/interfaces/entities';
+import type { IParagraph } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers';
 
 interface Props {
-  entityData: IText;
+  entityData: IParagraph;
   isEditMode: boolean;
 }
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
-const container = ref();
 
 const editTitle = () => {
   editEntity({ ...entityData.value, title: entityData.value.title });

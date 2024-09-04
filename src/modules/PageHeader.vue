@@ -17,7 +17,7 @@ const isEditMode = useVModel(props, 'isEditMode', emit);
       class="absolute right-6 top-6 -my-2 py-2 flex items-center justify-center gap-2"
       @click.prevent="isEditMode = !isEditMode"
     >
-      <span class="font-medium">Edit mode</span>
+      <span class="font-medium select-none">Edit mode</span>
       <ToggleSwitch v-model="isEditMode" />
     </button>
   </header>

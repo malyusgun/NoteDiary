@@ -33,6 +33,7 @@ export const useFilesWebsocketStore = defineStore('filesWebsocketStore', () => {
     imageUrl.value = '';
   }
   function sendData(data: unknown) {
+    console.log('data: ', data);
     socket.value.send(data);
   }
   return {

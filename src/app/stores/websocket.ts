@@ -4,16 +4,20 @@ import type { IEntity } from '@/app/interfaces/environment';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { addUrlsToImageEntities } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
+import { useAuthorizationStore } from '@/app/stores/authorization';
+import cookies from '@/app/plugins/Cookie';
 
 export const useWebsocketStore = defineStore('websocketStore', () => {
   const dataStore = useDataStore();
+  const authorizationStore = useAuthorizationStore();
   const interfaceStore = useInterfaceStore();
   const filesWebsocketStore = useFilesWebsocketStore();
 
+  const router = useRouter();
   const filesBufferLength = computed(() => filesWebsocketStore.filesBuffer.length);
-  const homeEntities = computed(() => dataStore.homeEntities);
+  const entities = computed(() => dataStore.entities);
   const imageEntitiesCount = computed(
-    () => homeEntities.value.filter((entity) => entity?.image_width).length
+    () => entities.value.filter((entity) => entity?.image_width).length
   );
 
   const socket = ref();
@@ -24,55 +28,120 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
   onMounted(() => {
     socket.value = new WebSocket('ws://localhost:5000');
     socket.value.onopen = async () => {
-      socket.value.send(JSON.stringify(initialDataToSend.value));
+      const userUuid = cookies.get('user_uuid');
+      console.log('userUuid', userUuid);
+      if (userUuid) {
+        const getUserData = {
+          event: 'getUser',
+          body: {
+            user_uuid: userUuid
+          }
+        };
+        sendData(getUserData);
+        const pageUuid = cookies.get('current_page_uuid');
+        const getPageData = {
+          event: 'getPage',
+          body: {
+            page_uuid: pageUuid
+          }
+        };
+        sendData(getPageData);
+      }
+      if (initialDataToSend.value) socket.value.send(JSON.stringify(initialDataToSend.value));
     };
     socket.value.onmessage = async (event: any) => {
       const response = JSON.parse(event.data);
       console.log('response: ', response);
       switch (response.event) {
-        case 'getHomeEntities': {
-          const entities = response.data;
-          if (imageEntitiesCount.value && filesBufferLength.value === imageEntitiesCount.value) {
-            const entitiesAddedUrls = addUrlsToImageEntities(entities);
-            dataStore.editHomeEntities(entitiesAddedUrls);
-          } else {
-            dataStore.editHomeEntities(entities);
-          }
+        // create
+        case 'createUser': {
+          cookies.set('user_uuid', response.data.user_uuid);
+          const pagesUuid = response.data.pages_uuid;
+          const homePageUuid = pagesUuid[0];
+          const userSettings = response.data.settings;
+          cookies.set('favorite_color', userSettings.favorite_color);
+          cookies.set('home_uuid', homePageUuid);
+          const getUserData = {
+            event: 'getUser',
+            body: {
+              user_uuid: response.data.user_uuid
+            }
+          };
+          sendData(getUserData);
+          const getPageData = {
+            event: 'getPage',
+            body: {
+              page_uuid: homePageUuid
+            }
+          };
+          sendData(getPageData);
+          await router.push(`/${homePageUuid}`);
           break;
         }
-        case 'getHomeBackground': {
-          const blob = new Blob([response.data.setting_value.data], {
-            type: `image/jpeg`
-          });
-          const url = URL.createObjectURL(blob);
-          interfaceStore.setHomeBackgroundFromDB(url);
+        case 'createPage': {
+          dataStore.addPageData(response.data);
           break;
         }
-        case 'createHomeEntity': {
-          const entities = [...homeEntities.value];
+        case 'createEntity': {
+          const newState = [...entities.value];
           if (response.data?.image_width) {
             response.data.imageUrl = filesWebsocketStore.imageUrl;
             filesWebsocketStore.cleanImageUrl();
           }
-          entities.push(response.data);
-          dataStore.editHomeEntities([...entities]);
+          newState.push(response.data);
+          dataStore.editEntities([...newState]);
           break;
         }
-        case 'createImageHomeEntity': {
+        case 'createImageEntity': {
           if (!file.value) break;
+          const page_uuid = cookies.get('current_page_uuid');
           const data = {
-            event: 'createHomeEntity',
+            event: 'createEntity',
             body: {
-              ...file.value
+              ...file.value,
+              page_uuid
             }
           };
           file.value = null;
           sendData(data);
           break;
         }
-        case 'editHomeEntity': {
-          let entities = [...homeEntities.value];
-          entities = entities.map((entity: IEntity) => {
+        // read
+        case 'getUser': {
+          authorizationStore.setUserNickName(response.data.nick_name);
+          authorizationStore.setUserData(response.data);
+          dataStore.setPagesData(response.data.pages_uuid);
+          console.log('getUser response.data: ', response.data);
+          break;
+        }
+        case 'getPage': {
+          dataStore.setCurrentPageUuid(response.data.page_uuid);
+          dataStore.setCurrentPageData(response.data);
+          console.log('getPage response.data: ', response.data);
+          break;
+        }
+        case 'getPageEntities': {
+          const newState = response.data;
+          if (imageEntitiesCount.value && filesBufferLength.value === imageEntitiesCount.value) {
+            const entitiesAddedUrls = addUrlsToImageEntities(newState);
+            dataStore.editEntities(entitiesAddedUrls);
+          } else {
+            dataStore.editEntities(newState);
+          }
+          break;
+        }
+        case 'getPageBackground': {
+          const blob = new Blob([response.data.setting_value.data], {
+            type: `image/jpeg`
+          });
+          const url = URL.createObjectURL(blob);
+          interfaceStore.setPageBackgroundFromDB(url);
+          break;
+        }
+        // update
+        case 'editEntity': {
+          let newState = [...entities.value];
+          newState = newState.map((entity: IEntity) => {
             if (entity.entity_uuid !== response.data.entity_uuid) return entity;
             if (response.data?.image_width) {
               response.data.imageUrl = filesWebsocketStore.imageUrl;
@@ -80,34 +149,31 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
             }
             return response.data;
           });
-          dataStore.editHomeEntities(entities);
+          dataStore.editEntities(newState);
           break;
         }
-        case 'deleteHomeEntity': {
-          let newState = [...homeEntities.value];
+        case 'changeEntitiesOrder': {
+          const mainEntity = response.data.main;
+          const mainEntityIndex = entities.value.findIndex(
+            (entity) => entity.entity_uuid === mainEntity.entity_uuid
+          );
+          const newState = [...entities.value];
+          if (mainEntity.entity_order > newState[mainEntityIndex].entity_order!) {
+            newState[mainEntityIndex + 1].entity_order = newState[mainEntityIndex].entity_order;
+          } else {
+            newState[mainEntityIndex - 1].entity_order = newState[mainEntityIndex].entity_order;
+          }
+          newState[mainEntityIndex] = { ...mainEntity };
+          dataStore.editEntities(newState);
+          break;
+        }
+        // delete
+        case 'deleteEntity': {
+          let newState = [...entities.value];
           newState = newState.filter(
             (entity: IEntity) => entity.entity_uuid !== response.data.entity_uuid
           );
-          dataStore.editHomeEntities(newState);
-          break;
-        }
-        case 'changeOrderHomeEntity': {
-          const newState = [...homeEntities.value];
-          const entityIndex = newState.findIndex(
-            (entity: IEntity) => entity.entity_uuid === response.data.entity_uuid
-          );
-          if (response.data.direction === 'up') {
-            [newState[entityIndex], newState[entityIndex - 1]] = [
-              newState[entityIndex - 1],
-              newState[entityIndex]
-            ];
-          } else {
-            [newState[entityIndex], newState[entityIndex + 1]] = [
-              newState[entityIndex + 1],
-              newState[entityIndex]
-            ];
-          }
-          dataStore.editHomeEntities(newState);
+          dataStore.editEntities(newState);
           break;
         }
       }
@@ -120,25 +186,25 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
     };
   });
 
-  watch([filesBufferLength, homeEntities], () => {
+  watch([filesBufferLength, entities], () => {
     if (
-      (homeEntities.value.length &&
+      (entities.value.length &&
         filesBufferLength.value === imageEntitiesCount.value &&
         imageEntitiesCount.value) ||
       (isInitialAddUrlsToImageEntitiesFinished.value && filesBufferLength.value)
     ) {
-      const entitiesAddedUrls = addUrlsToImageEntities(homeEntities.value);
-      dataStore.setHomeEntities(entitiesAddedUrls);
+      const entitiesAddedUrls = addUrlsToImageEntities(entities.value);
+      dataStore.editEntities(entitiesAddedUrls);
       isInitialAddUrlsToImageEntitiesFinished.value = true;
     }
   });
-  function setFileData(data: any) {
+  function setFileData(data: IEntity) {
     file.value = data;
   }
-  function setInitialDataToSend(data: any) {
+  function setInitialDataToSend(data) {
     initialDataToSend.value = data;
   }
-  function sendData(data: any) {
+  function sendData(data) {
     socket.value.send(JSON.stringify(data));
   }
   return {

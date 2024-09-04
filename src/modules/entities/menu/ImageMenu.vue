@@ -12,7 +12,7 @@ const emit = defineEmits(['update:entityData', 'openCropImageModal']);
 const entityData = useVModel(props, 'entityData', emit);
 
 const dataStore = useDataStore();
-const homeEntities = computed(() => dataStore.homeEntities);
+const entities = computed(() => dataStore.entities);
 
 const addTitle = () => {
   editEntity({
@@ -84,7 +84,7 @@ const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
     <div v-if="entityData?.text || entityData?.title">
       <TextFontMenu :entityData="entityData" class="h-12" @changeFontSize="changeFontSize" />
     </div>
-    <div v-if="homeEntities.length > 1">
+    <div v-if="entities.length > 1">
       <ImagePositionMenu
         :entityData="entityData"
         @editPosition="editPosition"

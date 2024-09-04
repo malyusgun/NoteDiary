@@ -80,7 +80,6 @@ const modalWidth = computed(() => {
 const onCropperChange = async ({ canvas }) => {
   imageInstance.width = canvas.width;
   imageInstance.height = canvas.height;
-  console.log('on change size: ', imageInstance.width, imageInstance.height);
   finalImageUrl.value = canvas.toDataURL();
 };
 const submitForm = () => {

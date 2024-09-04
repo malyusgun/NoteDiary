@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { deleteEntity, editEntity } from '@/app/helpers';
-import type { IText } from '@/app/interfaces/entities';
+import type { IParagraph } from '@/app/interfaces/entities';
 import { useVModel } from '@vueuse/core';
 
 interface Props {
-  entityData: IText;
+  entityData: IParagraph;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);

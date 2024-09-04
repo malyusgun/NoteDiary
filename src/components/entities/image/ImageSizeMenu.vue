@@ -66,7 +66,7 @@ const speedDialSizeBigger = computed(() => {
 
 <template>
   <div
-    class="flex items-center justify-center relative z-50"
+    class="flex items-center justify-center relative z-40"
     :style="`width: ${props.entityData.image_width}px; height: ${props.entityData.image_height}px`"
   >
     <SpeedDial

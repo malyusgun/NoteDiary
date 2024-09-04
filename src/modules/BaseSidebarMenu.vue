@@ -3,7 +3,7 @@ import { useDataStore } from '@/app/stores/data';
 
 const route = useRoute();
 const dataStore = useDataStore();
-const emit = defineEmits(['closeCallback']);
+const emit = defineEmits(['closeMenu']);
 
 const sheets = ref();
 const expandedKeys = ref({});
@@ -32,19 +32,7 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col h-full p-4">
-    <section class="flex justify-between items-center mb-6">
-      <LogoAndLabel />
-      <Button
-        severity="contrast"
-        icon="pi pi-times"
-        rounded
-        outlined
-        @click="emit('closeCallback')"
-      ></Button>
-    </section>
-    <section class="flex items-center justify-between mb-6">
-      <UserInfoHeaderWithSettings />
-    </section>
+    <MenuHeader @closeMenu="emit('closeMenu')" />
     <Divider />
     <nav>
       <h3 class="text-xl">Menu</h3>

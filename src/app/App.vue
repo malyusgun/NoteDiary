@@ -1,29 +1,20 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css';
-
-const visible = ref<boolean>(false);
+import cookies from '@/app/plugins/Cookie';
+onMounted(() => {
+  const home_uuidFromLS = cookies.get('home_uuid');
+  const router = useRouter();
+  if (!home_uuidFromLS) {
+    router.push('/signUp');
+  } else {
+    router.push(`/${home_uuidFromLS}`);
+  }
+});
 </script>
 
 <template>
   <Suspense>
-    <div>
-      <router-view />
-      <div class="fixed top-0 left-0 z-50">
-        <Button
-          label="Menu"
-          iconPos="top"
-          icon="pi pi-bars"
-          severity="contrast"
-          size="small"
-          @click.prevent="visible = !visible"
-        />
-      </div>
-      <Drawer v-model:visible="visible">
-        <template #container="{ closeCallback }">
-          <BaseSidebarMenu class="relative z-50" @closeCallback="closeCallback" />
-        </template>
-      </Drawer>
-    </div>
+    <router-view />
     <template #fallback><BaseLoader /></template>
   </Suspense>
 </template>

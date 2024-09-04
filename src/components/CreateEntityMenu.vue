@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { v4 as uuidv4 } from 'uuid';
 import { useFileDialog, useWindowSize } from '@vueuse/core';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
+import { useDataStore } from '@/app/stores/data';
 
 const emit = defineEmits(['createEntity']);
 
@@ -11,11 +11,12 @@ const { open: uploadFile, onChange } = useFileDialog({
   reset: true
 });
 const authorizationStore = useAuthorizationStore();
+const dataStore = useDataStore();
 const userNickName = computed(() => authorizationStore.userNickName);
+const entitiesCount = computed(() => dataStore.entities.length);
 
 const addImage = async (files: FileList) => {
   let image = new Image();
-  const imageUuid = uuidv4();
   if (!files[0]) return;
   const url = URL.createObjectURL(files[0]);
   image.src = url;
@@ -34,12 +35,11 @@ const addImage = async (files: FileList) => {
     }
     if (image.height > maxHeight) {
       image.width = Math.floor((maxHeight / image.height) * image.width);
-      console.log('image.width', image.width);
       image.height = maxHeight;
     }
     emit('createEntity', {
       entity_type: 'image',
-      entity_uuid: imageUuid,
+      entity_order: entitiesCount.value + 1,
       image_buffer: buffer,
       entity_position: 'left',
       entity_title_position: 'center',
@@ -62,19 +62,19 @@ const speedDialItems = ref([
     command: () => {
       emit('createEntity', {
         entity_type: 'divider',
-        entity_uuid: uuidv4(),
+        entity_order: entitiesCount.value + 1,
         divider_height: 1,
         divider_type: 'solid'
       });
     }
   },
   {
-    label: 'Text',
+    label: 'Paragraph',
     icon: 'pi pi-pencil',
     command: () => {
       emit('createEntity', {
-        entity_type: 'text',
-        entity_uuid: uuidv4(),
+        entity_type: 'paragraph',
+        entity_order: entitiesCount.value + 1,
         text: '',
         paragraph_size: 'full',
         font_size: '24',
@@ -93,7 +93,7 @@ const speedDialItems = ref([
     command: () => {
       emit('createEntity', {
         entity_type: 'table',
-        entity_uuid: uuidv4(),
+        entity_order: entitiesCount.value + 1,
         table_columns: [
           {
             name: 'Name',

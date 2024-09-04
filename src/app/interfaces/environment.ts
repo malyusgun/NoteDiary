@@ -1,10 +1,14 @@
 import type { ITableColumn } from '@/app/interfaces/entities';
 
-export interface ISheet {
-  sheet_uuid: string;
-  title: string;
-  address: string;
-  entities: IEntity[];
+export interface IPageInfo {
+  page_uuid: string;
+  page_title: string;
+  page_icon: string;
+  page_navigation_order: string;
+  entities?: {
+    entity_uuid: string;
+    entity_type: 'divider' | 'paragraph' | 'image' | 'table';
+  }[];
 }
 
 export interface IEntity {
@@ -33,7 +37,7 @@ export interface IEntity {
   }[];
 }
 
-export type TThemes =
+export type TColors =
   | 'green-blue'
   | 'red-yellow'
   | 'darkBlue-pink-orange'

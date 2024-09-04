@@ -33,8 +33,8 @@ export interface IDivider extends IEntity {
   divider_type: 'solid' | 'dashed' | 'dotted';
 }
 
-export interface IText extends IEntity {
-  entity_type: 'text';
+export interface IParagraph extends IEntity {
+  entity_type: 'paragraph';
   entity_uuid: string;
   title?: string | null;
   text: string;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
-import type { IDivider, IImage, IText } from '@/app/interfaces/entities';
+import type { IDivider, IImage, IParagraph } from '@/app/interfaces/entities';
 interface Props {
   entity: IEntity;
   isEditMode: boolean;
@@ -19,8 +19,8 @@ const entity = useVModel(props, 'entity', emit);
       :isEditMode="isEditMode"
     />
     <TextItem
-      v-if="entity.entity_type === 'text'"
-      :entityData="entity as IText"
+      v-if="entity.entity_type === 'paragraph'"
+      :entityData="entity as IParagraph"
       :isEditMode="isEditMode"
     />
     <ImageItem

@@ -21,7 +21,8 @@ const createEntity = (entity: IEntity) => {
     :isEditMode="isEditMode"
   />
   <div class="relative mt-2">
-    <CreateEntityMenu @createEntity="createEntity" />
+    <CreateEntityMenu v-if="isEditMode" @createEntity="createEntity" />
+    <div v-else style="height: 68px"></div>
   </div>
 </template>
 

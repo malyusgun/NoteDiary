@@ -1,18 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from '@/pages/HomePage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomePage
-    },
-    {
       path: '/:sheetUuid',
       name: 'sheet',
-      component: () => import('../../pages/[uuid]/SheetPage.vue')
+      component: () => import('@/pages/[uuid]/SheetPage.vue')
+    },
+    {
+      path: '/signUp',
+      name: 'signUp',
+      component: () => import('@/pages/authorization/signUp.vue')
     }
   ]
 });

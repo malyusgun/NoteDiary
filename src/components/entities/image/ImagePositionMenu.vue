@@ -2,7 +2,7 @@
 import { useDataStore } from '@/app/stores/data';
 import type { IImage } from '@/app/interfaces/entities';
 import type { IEntity } from '@/app/interfaces/environment';
-import { changeOrderHomeEntity } from '@/app/helpers';
+import { changeEntitiesOrder } from '@/app/helpers';
 
 interface Props {
   entityData: IImage;
@@ -16,13 +16,11 @@ const emit = defineEmits([
 ]);
 
 const dataStore = useDataStore();
-const homeEntities = computed(() => dataStore.homeEntities);
+const entities = computed(() => dataStore.entities);
 const position = computed(() => props.entityData.entity_position);
 const titlePosition = computed(() => props.entityData.entity_title_position);
 const entityIndex = computed(() =>
-  homeEntities.value.findIndex(
-    (entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid
-  )
+  entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
 );
 
 const speedDialMove = computed(() => {
@@ -81,14 +79,14 @@ const speedDialMove = computed(() => {
     state.push({
       label: 'Up',
       icon: 'pi pi-arrow-up',
-      command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'up')
+      command: () => changeEntitiesOrder(props.entityData.entity_uuid, 'up')
     });
   }
-  if (entityIndex.value !== homeEntities.value.length - 1) {
+  if (entityIndex.value !== entities.value.length - 1) {
     state.push({
       label: 'Down',
       icon: 'pi pi-arrow-down',
-      command: () => changeOrderHomeEntity(props.entityData.entity_uuid, 'down')
+      command: () => changeEntitiesOrder(props.entityData.entity_uuid, 'down')
     });
   }
   if (props.entityData?.text || props.entityData?.text === '') {

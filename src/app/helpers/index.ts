@@ -5,13 +5,13 @@ import type { IEntity } from '@/app/interfaces/environment';
 import { checkIsImage } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import type { IImage } from '@/app/interfaces/entities';
+import cookies from '@/app/plugins/Cookie';
 
-export const setDefaultHomeBackground = () => {
+export const setDefaultPageBackground = () => {
   const interfaceStore = useInterfaceStore();
-  interfaceStore.resetHomeBackground();
+  interfaceStore.resetPageBackground();
 };
-
-export const fetchForHomeEntities = () => {
+export const fetchForEntities = (page_uuid: string) => {
   const dataStore = useDataStore();
   const interfaceStore = useInterfaceStore();
   const websocketStore = useWebsocketStore();
@@ -19,27 +19,29 @@ export const fetchForHomeEntities = () => {
   const filesBuffer = filesWebsocketStore.filesBuffer;
   if (filesBuffer.length) {
     filesBuffer[0] = new Blob([filesBuffer[0].data], { type: 'image/jpeg' });
-    interfaceStore.setHomeBackgroundFromDB(URL.createObjectURL(filesBuffer[0]));
+    interfaceStore.setPageBackgroundFromDB(URL.createObjectURL(filesBuffer[0]));
   }
-  if (!dataStore.homeEntities.length) {
-    const getHomeEntitiesData = {
-      event: 'getHomeEntities'
+  if (!dataStore.entities.length) {
+    const getEntitiesData = {
+      event: 'getPageEntities',
+      body: { page_uuid }
     };
-    websocketStore.sendData(getHomeEntitiesData);
+    websocketStore.sendData(getEntitiesData);
   }
   filesWebsocketStore.removeFirstFilesBuffer();
 };
 
-export const createHomeEntity = (newEntity: IEntity) => {
+export const createEntity = (newEntity: IEntity) => {
   const websocketStore = useWebsocketStore();
+  const page_uuid = cookies.get('current_page_uuid');
   if (newEntity.image_buffer) {
     websocketStore.setFileData(newEntity);
     const filesWebsocketStore = useFilesWebsocketStore();
     return filesWebsocketStore.sendData(newEntity.image_buffer);
   }
   const data = {
-    event: 'createHomeEntity',
-    body: newEntity
+    event: 'createEntity',
+    body: { ...newEntity, page_uuid }
   };
   websocketStore.sendData(data);
 };
@@ -48,7 +50,7 @@ export const editEntity = (newState: IEntity) => {
   newState = checkIsImage(newState);
   const websocketStore = useWebsocketStore();
   const data = {
-    event: 'editHomeEntity',
+    event: 'editEntity',
     body: { ...newState }
   };
   websocketStore.sendData(data);
@@ -57,22 +59,28 @@ export const editEntity = (newState: IEntity) => {
 export const deleteEntity = (entityUuid: string) => {
   const dataStore = useDataStore();
   const websocketStore = useWebsocketStore();
-  const entities = dataStore.homeEntities;
+  const entities = dataStore.entities;
   const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
   const data = {
-    event: 'deleteHomeEntity',
+    event: 'deleteEntity',
     body: { ...entityToDelete }
   };
   websocketStore.sendData(data);
 };
 
-export const changeOrderHomeEntity = (entityUuid: string, direction: 'up' | 'down') => {
+export const changeEntitiesOrder = (entityUuid: string, direction: 'up' | 'down') => {
   const websocketStore = useWebsocketStore();
+  const dataStore = useDataStore();
+  const entities = dataStore.entities;
+  const mainEntity = entities.find((entity: IEntity) => entity.entity_uuid === entityUuid)!;
+  const mainEntityIndex = entities.indexOf(mainEntity);
+  const targetEntityIndex = direction === 'up' ? mainEntityIndex - 1 : mainEntityIndex + 1;
+  const targetEntity = entities[targetEntityIndex];
   const data = {
-    event: 'changeOrderHomeEntity',
+    event: 'changeEntitiesOrder',
     body: {
-      entity_uuid: entityUuid,
-      direction
+      main: mainEntity,
+      target: targetEntity
     }
   };
   websocketStore.sendData(data);

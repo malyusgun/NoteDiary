@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { deleteEntity } from '@/app/helpers';
-import type { IText } from '@/app/interfaces/entities';
+import type { IParagraph } from '@/app/interfaces/entities';
 
 interface Props {
-  entityData: IText;
+  entityData: IParagraph;
 }
 
 const props = defineProps<Props>();
@@ -36,7 +36,7 @@ const speedDialState = computed(() => {
 </script>
 
 <template>
-  <div class="relative z-50">
+  <div class="relative z-40">
     <SpeedDial :model="speedDialState" direction="right" pt:root:class="speedDialRoot size-12">
       <template #button="{ toggleCallback }">
         <button

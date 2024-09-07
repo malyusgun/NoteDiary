@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./App.vue')['default']
     AuthorizationForm: typeof import('./../modules/authorization/AuthorizationForm.vue')['default']
-    Avatar: typeof import('primevue/avatar')['default']
     BaseDivider: typeof import('./../shared/BaseDivider.vue')['default']
     BaseLoader: typeof import('./../shared/BaseLoader.vue')['default']
     BaseSidebarMenu: typeof import('./../modules/BaseSidebarMenu.vue')['default']
@@ -33,7 +32,6 @@ declare module 'vue' {
     ImageStateMenu: typeof import('./../components/entities/image/ImageStateMenu.vue')['default']
     LogoAndLabel: typeof import('./../components/LogoAndLabel.vue')['default']
     MenuHeader: typeof import('./../modules/MenuHeader.vue')['default']
-    page: typeof import('./../modules/Home page.vue')['default']
     PageBackgroundMenu: typeof import('./../modules/PageBackgroundMenu.vue')['default']
     PageHeader: typeof import('./../modules/PageHeader.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -51,6 +49,5 @@ declare module 'vue' {
     TextStateMenu: typeof import('./../components/entities/text/TextStateMenu.vue')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     Tree: typeof import('primevue/tree')['default']
-    UserInfoHeaderWithSettings: typeof import('./../components/UserInfoHeaderWithSettings.vue')['default']
   }
 }

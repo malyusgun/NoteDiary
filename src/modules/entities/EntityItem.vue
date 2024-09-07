@@ -15,7 +15,7 @@ const entity = useVModel(props, 'entity', emit);
   <div>
     <DividerItem
       v-if="entity.entity_type === 'divider'"
-      v-model:entityData="entity as IDivider"
+      :entityData="entity as IDivider"
       :isEditMode="isEditMode"
     />
     <TextItem
@@ -25,7 +25,7 @@ const entity = useVModel(props, 'entity', emit);
     />
     <ImageItem
       v-if="entity.entity_type === 'image'"
-      v-model:entityData="entity as IImage"
+      :entityData="entity as IImage"
       :isEditMode="isEditMode"
     />
   </div>

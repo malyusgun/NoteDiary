@@ -90,11 +90,12 @@ const submitForm = () => {
 
 <template>
   <div>
-    <Dialog
-      v-model:visible="isVisible"
-      :draggable="false"
-      :style="`width: ${modalWidth}%; position: relative`"
-    >
+    <!--    <Dialog-->
+    <!--      v-model:visible="isVisible"-->
+    <!--      :draggable="false"-->
+    <!--      :style="`width: ${modalWidth}%; position: relative`"-->
+    <!--    >-->
+    <BaseModal v-model:isVisible="isVisible" :style="`width: ${modalWidth}%; position: relative`">
       <template #header>
         <div class="mx-auto select-none">
           <i
@@ -128,7 +129,8 @@ const submitForm = () => {
           @change="onCropperChange"
         ></Cropper>
       </div>
-    </Dialog>
+    </BaseModal>
+    <!--    </Dialog>-->
   </div>
 </template>
 

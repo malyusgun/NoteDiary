@@ -33,7 +33,7 @@ onMounted(() => {
 <template>
   <div class="flex flex-col h-full p-4">
     <MenuHeader @closeMenu="emit('closeMenu')" />
-    <Divider />
+    <BaseDivider />
     <nav>
       <h3 class="text-xl">Menu</h3>
       <div style="margin-left: 58px" class="mt-4 -mb-2 select-none font-bold">

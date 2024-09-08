@@ -8,6 +8,8 @@ import type { IImageMainInfo } from '@/app/interfaces';
 import { createEntity, fetchForEntities, setDefaultPageBackground } from '@/app/helpers';
 import TelegramSection from '@/modules/TelegramSection.vue';
 import cookies from '@/app/plugins/Cookie';
+import HamgurgerMenu from '@/shared/icons/HamgurgerMenu.vue';
+import BaseDrawer from '@/shared/BaseDrawer.vue';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
@@ -74,25 +76,25 @@ const saveImage = (finalImageUrl: string) => {
   interfaceStore.editPageBackground(finalImageUrl);
   isModalUploadFile.value = false;
 };
+const closeMenu = () => (isMenuVisible.value = false);
 </script>
 
 <template>
   <PageHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
   <div class="fixed top-0 left-0 z-50">
-    <Button
-      label="Menu"
-      iconPos="top"
-      icon="pi pi-bars"
-      severity="contrast"
-      size="small"
-      @click.prevent="isMenuVisible = !isMenuVisible"
-    />
+    <button @click.prevent="isMenuVisible = !isMenuVisible">
+      Menu
+      <HamgurgerMenu color="black" size="30" />
+    </button>
   </div>
-  <Drawer v-model:visible="isMenuVisible">
-    <template #container="{ closeCallback }">
-      <BaseSidebarMenu class="relative z-50" @closeMenu="closeCallback" />
-    </template>
-  </Drawer>
+  <BaseDrawer theme="dark" :isVisible="isMenuVisible">
+    <BaseSidebarMenu class="relative z-50" @closeMenu="closeMenu" />
+  </BaseDrawer>
+  <!--  <Drawer v-model:visible="isMenuVisible">-->
+  <!--    <template #container="{ closeCallback }">-->
+  <!--      <BaseSidebarMenu class="relative z-50" @closeMenu="closeCallback" />-->
+  <!--    </template>-->
+  <!--  </Drawer>-->
   <TelegramSection />
   <CropImageModal
     v-model:isVisible="isModalUploadFile"

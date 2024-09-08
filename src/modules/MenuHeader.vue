@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuthorizationStore } from '@/app/stores/authorization';
+import CloseCircle from '@/shared/icons/CloseCircle.vue';
 
 const emit = defineEmits(['closeMenu']);
 const authorizationStore = useAuthorizationStore();
@@ -13,13 +14,9 @@ const logout = () => {
 <template>
   <section class="flex justify-between items-center mb-4">
     <LogoAndLabel />
-    <Button
-      severity="danger"
-      icon="pi pi-times"
-      rounded
-      outlined
-      @click="emit('closeMenu')"
-    ></Button>
+    <button @click="emit('closeMenu')">
+      <CloseCircle color="red" size="30" />
+    </button>
   </section>
   <section class="flex items-center justify-between">
     <div>

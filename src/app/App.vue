@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import 'primeicons/primeicons.css';
 import cookies from '@/app/plugins/Cookie';
 onMounted(() => {
   const home_uuidFromLS = cookies.get('home_uuid');

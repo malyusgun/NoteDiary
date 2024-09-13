@@ -1,87 +1,147 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
+import { computed } from 'vue';
 
 interface Props {
   isActive: boolean;
-  size?: 'large' | 'extraLarge';
-  color?: string;
+  size?: 'small' | 'large';
+  theme?:
+    | 'white'
+    | 'slate'
+    | 'blue'
+    | 'sky'
+    | 'teal'
+    | 'lime'
+    | 'green'
+    | 'yellow'
+    | 'orange'
+    | 'pink'
+    | 'fuchsia'
+    | 'purple'
+    | 'indigo'
+    | 'rose'
+    | 'red';
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:isActive']);
 const isActive = useVModel(props, 'isActive', emit);
+
+const colorTheme = computed(() => {
+  switch (props.theme) {
+    case 'white':
+      return '#ffffff';
+    case 'slate':
+      return '#64748b';
+    case 'blue':
+      return '#3b82f6';
+    case 'sky':
+      return '#0ea5e9';
+    case 'teal':
+      return '#14b8a6';
+    case 'lime':
+      return '#84cc16';
+    case 'green':
+      return '#22c55e';
+    case 'yellow':
+      return '#eab308';
+    case 'orange':
+      return '#f97316';
+    case 'pink':
+      return '#ec4899';
+    case 'fuchsia':
+      return '#d946ef';
+    case 'purple':
+      return '#a855f7';
+    case 'indigo':
+      return '#6366f1';
+    case 'rose':
+      return '#f43f5e';
+    case 'red':
+      return '#ef4444';
+  }
+  return '#0ea5e9';
+});
+const sizes = computed(() => {
+  if (!props?.size)
+    return {
+      containerWidth: 35,
+      containerHeight: 21,
+      padding: 3,
+      borderRadius: 11,
+      circleSize: 15,
+      transformXCircle: 14
+    };
+  switch (props.size) {
+    case 'small':
+      return {
+        containerWidth: 30,
+        containerHeight: 18,
+        padding: 2,
+        borderRadius: 9,
+        circleSize: 14,
+        transformXCircle: 12
+      };
+    case 'large':
+      return {
+        containerWidth: 40,
+        containerHeight: 24,
+        padding: 3,
+        borderRadius: 12,
+        circleSize: 18,
+        transformXCircle: 14
+      };
+  }
+  return '';
+});
 </script>
 
 <template>
   <button
-    :style="`background-color: ${color ?? '#0ea5e9'}`"
-    :class="[
-      'switcher',
-      {
-        largeSwitcher: size === 'large',
-        extraLargeSwitcher: size === 'extraLarge',
-        activeSwitcher: isActive
-      }
-    ]"
+    :style="`min-width: ${sizes.containerWidth}px; min-height: ${sizes.containerHeight}px; border-radius: ${sizes.borderRadius}px; padding: ${sizes.padding}px;`"
+    class="switcher"
     @click.prevent="isActive = !isActive"
   >
-    <div
+    <span
+      :style="`background-color: ${colorTheme ?? '#0ea5e9'}; border-radius: ${sizes.borderRadius}px;`"
       :class="[
-        'switcherCircle',
+        'activeBackground',
         {
-          largeSwitcherCircle: size === 'large',
-          extraLargeSwitcherCircle: size === 'extraLarge',
-          activeSwitcherCircle: isActive
+          inactiveBackground: !isActive
         }
       ]"
-    ></div>
+    ></span>
+    <span
+      :style="`width: ${sizes.circleSize}px; height: ${sizes.circleSize}px; transform: translateX(${isActive ? sizes.transformXCircle : 0}px);`"
+      class="switcherCircle"
+    ></span>
   </button>
 </template>
 
 <style scoped>
 .switcher {
-  display: flex;
-  justify-content: start;
-  width: 30px;
-  height: 18px;
-  padding: 2px;
-  border-radius: 9px;
+  position: relative;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
 }
-.switcher:hover {
+.activeBackground {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: background-color 0.2s ease-in-out;
+}
+.inactiveBackground {
+  background-color: rgba(187, 197, 204, 0.66) !important;
+  transition: background-color 0.2s ease-in-out;
+}
+.switcher:hover .inactiveBackground {
   filter: brightness(90%);
 }
-.activeSwitcher {
-  justify-content: end;
-  background-color: black !important;
-}
-.largeSwitcher {
-  width: 35px;
-  height: 21px;
-  border-radius: 11px;
-}
-.extraLargeSwitcher {
-  width: 40px;
-  height: 24px;
-  border-radius: 12px;
-}
 .switcherCircle {
-  width: 14px;
-  height: 14px;
+  display: block;
   background-color: white;
   border-radius: 50%;
-  float: left;
-  transition: all 0.2s ease-in-out;
-}
-.activeSwitcherCircle {
-  float: right;
-}
-.largeSwitcherCircle {
-  width: 17px;
-  height: 17px;
-}
-.extraLargeSwitcherCircle {
-  width: 20px;
-  height: 20px;
+  transition: transform 0.2s ease-in-out;
 }
 </style>

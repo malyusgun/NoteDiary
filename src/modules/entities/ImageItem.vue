@@ -118,14 +118,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
         v-model:entityData="entityData"
         @openCropImageModal="openCropImageModal"
       />
-      <div
-        v-if="!entityData?.title && entityData.image_height < 137"
-        class="aggregateHigh h-0 transition-all"
-      ></div>
-      <div
-        v-if="!entityData?.title && entityData.image_height >= 137 && entityData.image_height < 167"
-        class="aggregateShort h-0 transition-all"
-      ></div>
+      <EntityPositionSettings />
     </div>
   </section>
 </template>

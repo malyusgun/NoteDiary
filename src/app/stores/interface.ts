@@ -4,6 +4,7 @@ import { useWebsocketStore } from '@/app/stores/websocket';
 export const useInterfaceStore = defineStore('interfaceStore', () => {
   const websocketStore = useWebsocketStore();
 
+  const isDarkMode = ref<boolean>(true);
   const defaultPageBackground = ref<string>(
     'https://t3.ftcdn.net/jpg/05/01/28/98/360_F_501289843_4ITbthNCydFQGgJmoZe4IQKchItBubqZ.jpg'
   );
@@ -44,6 +45,7 @@ export const useInterfaceStore = defineStore('interfaceStore', () => {
     pageBackground.value = url;
   }
   return {
+    isDarkMode,
     pageBackground,
     defaultPageBackground,
     isFetchedForBackground,

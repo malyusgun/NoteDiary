@@ -64,25 +64,8 @@ const { height: textareaHeight } = useElementSize(textarea);
           @input="triggerResize"
         />
       </div>
-      <div
-        v-if="!entityData?.title && textareaHeight < 87 && isEditMode"
-        class="aggregateHigh transition-all h-0"
-      ></div>
-      <div
-        v-if="
-          (!entityData?.title && textareaHeight >= 87 && textareaHeight < 132 && isEditMode) ||
-          (entityData?.title && textareaHeight < 65 && isEditMode)
-        "
-        class="aggregateMedium transition-all h-0"
-      ></div>
-      <div
-        v-if="
-          (!entityData?.title && textareaHeight >= 132 && textareaHeight < 167 && isEditMode) ||
-          (entityData?.title && textareaHeight >= 65 && textareaHeight < 100 && isEditMode)
-        "
-        class="aggregateShort transition-all h-0"
-      ></div>
       <TextMenu v-if="isEditMode" v-model:entityData="entityData" />
+      <EntityPositionSettings />
     </div>
   </section>
 </template>

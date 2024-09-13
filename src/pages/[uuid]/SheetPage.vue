@@ -6,10 +6,7 @@ import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
 import { createEntity, fetchForEntities, setDefaultPageBackground } from '@/app/helpers';
-import TelegramSection from '@/modules/TelegramSection.vue';
 import cookies from '@/app/plugins/Cookie';
-import HamgurgerMenu from '@/shared/icons/HamgurgerMenu.vue';
-import BaseDrawer from '@/shared/BaseDrawer.vue';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
@@ -21,6 +18,7 @@ const entities = computed(() => dataStore.entities);
 const backgroundUrl = computed<string>(() => interfaceStore.pageBackground);
 const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultPageBackground);
 const isFetchedForBackground = computed(() => interfaceStore.isFetchedForBackground);
+const isDarkMode = computed(() => interfaceStore.isDarkMode);
 // const pageTitle = computed(() => dataStore.currentPage.page_title);
 
 const isMenuVisible = ref<boolean>(false);
@@ -82,14 +80,18 @@ const closeMenu = () => (isMenuVisible.value = false);
 <template>
   <PageHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
   <div class="fixed top-0 left-0 z-50">
-    <button @click.prevent="isMenuVisible = !isMenuVisible">
+    <button
+      class="px-4 py-2 text-white font-bold hover:bg-slate-800 transition-all rounded-md"
+      @click.prevent="isMenuVisible = !isMenuVisible"
+    >
       Menu
-      <HamgurgerMenu color="black" size="30" />
+      <HamgurgerMenu color="white" size="40" />
     </button>
   </div>
-  <BaseDrawer theme="dark" :isVisible="isMenuVisible">
+  <Drawer v-model:isVisible="isMenuVisible" theme="black">
+    <template #header><MenuHeader /></template>
     <BaseSidebarMenu class="relative z-50" @closeMenu="closeMenu" />
-  </BaseDrawer>
+  </Drawer>
   <!--  <Drawer v-model:visible="isMenuVisible">-->
   <!--    <template #container="{ closeCallback }">-->
   <!--      <BaseSidebarMenu class="relative z-50" @closeMenu="closeCallback" />-->
@@ -101,7 +103,11 @@ const closeMenu = () => (isMenuVisible.value = false);
     v-model:imageInfo="backgroundImageInfo"
     @saveImage="saveImage"
   />
-  <main id="pageContainer" class="flex flex-col">
+  <main
+    id="pageContainer"
+    class="flex flex-col"
+    :style="`background-color: ${isDarkMode ? 'black' : 'light'}`"
+  >
     <article style="min-height: 200px" class="backgroundContainer relative">
       <img
         :src="backgroundUrl"

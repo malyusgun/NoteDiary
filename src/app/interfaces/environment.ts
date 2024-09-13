@@ -37,11 +37,20 @@ export interface IEntity {
   }[];
 }
 
-export type TColors =
-  | 'green-blue'
-  | 'red-yellow'
-  | 'darkBlue-pink-orange'
-  | 'pink-lightBlue-green'
-  | 'pink-red-orange'
-  | 'pink-purple'
-  | 'purple-pink';
+export type TTheme =
+  | 'white'
+  | 'slate'
+  | 'blue'
+  | 'sky'
+  | 'teal'
+  | 'lime'
+  | 'green'
+  | 'yellow'
+  | 'orange'
+  | 'pink'
+  | 'fuchsia'
+  | 'purple'
+  | 'indigo'
+  | 'rose'
+  | 'red'
+  | 'black';

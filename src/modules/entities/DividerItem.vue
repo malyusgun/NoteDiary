@@ -10,8 +10,9 @@ defineProps<Props>();
 
 <template>
   <section class="entityContainer relative px-16 py-6">
-    <BaseDivider :type="entityData.divider_type" :height="entityData.divider_height" />
-    <DividerMenu v-if="isEditMode" :entityData="entityData" />
+    <Divider :type="entityData.divider_type" :height="entityData.divider_height" />
+    <DividerSettings v-if="isEditMode" :entityData="entityData" />
+    <EntityPositionSettings />
   </section>
 </template>
 

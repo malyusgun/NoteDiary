@@ -7,6 +7,7 @@ import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
 import { createEntity, fetchForEntities, setDefaultPageBackground } from '@/app/helpers';
 import cookies from '@/app/plugins/Cookie';
+import PageMenuButton from '@/components/PageMenuButton.vue';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
@@ -74,29 +75,16 @@ const saveImage = (finalImageUrl: string) => {
   interfaceStore.editPageBackground(finalImageUrl);
   isModalUploadFile.value = false;
 };
-const closeMenu = () => (isMenuVisible.value = false);
+const openMenu = () => (isMenuVisible.value = true);
 </script>
 
 <template>
   <PageHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
-  <div class="fixed top-0 left-0 z-50">
-    <button
-      class="px-4 py-2 text-white font-bold hover:bg-slate-800 transition-all rounded-md"
-      @click.prevent="isMenuVisible = !isMenuVisible"
-    >
-      Menu
-      <HamgurgerMenu color="white" size="40" />
-    </button>
-  </div>
+  <PageMenuButton @openMenu="openMenu" />
   <Drawer v-model:isVisible="isMenuVisible" theme="black">
     <template #header><MenuHeader /></template>
-    <BaseSidebarMenu class="relative z-50" @closeMenu="closeMenu" />
+    <BaseSidebarMenu class="relative z-50" />
   </Drawer>
-  <!--  <Drawer v-model:visible="isMenuVisible">-->
-  <!--    <template #container="{ closeCallback }">-->
-  <!--      <BaseSidebarMenu class="relative z-50" @closeMenu="closeCallback" />-->
-  <!--    </template>-->
-  <!--  </Drawer>-->
   <TelegramSection />
   <CropImageModal
     v-model:isVisible="isModalUploadFile"
@@ -156,9 +144,5 @@ const closeMenu = () => (isMenuVisible.value = false);
 }
 .telegramContainer:hover > a {
   filter: brightness(0.75);
-}
-input[type=file], /* FF, IE7+, chrome (except button) */
-input[type=file]::-webkit-file-upload-button {
-  cursor: pointer;
 }
 </style>

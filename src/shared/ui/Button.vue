@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 interface Props {
-  label?: string
-  iconPos?: 'left' | 'top' | 'right' | 'bottom'
-  textStyle?: 'bold' | 'italic'
-  border?: 'white' | 'black'
+  label?: string;
+  iconPos?: 'left' | 'top' | 'right' | 'bottom';
+  textStyle?: 'bold' | 'italic';
+  border?: 'white' | 'black';
   theme?:
     | 'white'
     | 'slate'
@@ -22,52 +22,52 @@ interface Props {
     | 'indigo'
     | 'rose'
     | 'red'
-    | 'black'
+    | 'black';
 }
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 const colorTheme = computed(() => {
-  if (!props?.theme) return '#0ea5e9'
+  if (!props?.theme) return '#0ea5e9';
   switch (props?.theme) {
     case 'white':
-      return '#ffffff'
+      return '#ffffff';
     case 'slate':
-      return '#64748b'
+      return '#64748b';
     case 'blue':
-      return '#3b82f6'
+      return '#3b82f6';
     case 'sky':
-      return '#0ea5e9'
+      return '#0ea5e9';
     case 'teal':
-      return '#14b8a6'
+      return '#14b8a6';
     case 'lime':
-      return '#84cc16'
+      return '#84cc16';
     case 'green':
-      return '#22c55e'
+      return '#22c55e';
     case 'yellow':
-      return '#eab308'
+      return '#eab308';
     case 'orange':
-      return '#f97316'
+      return '#f97316';
     case 'pink':
-      return '#ec4899'
+      return '#ec4899';
     case 'fuchsia':
-      return '#d946ef'
+      return '#d946ef';
     case 'purple':
-      return '#a855f7'
+      return '#a855f7';
     case 'indigo':
-      return '#6366f1'
+      return '#6366f1';
     case 'rose':
-      return '#f43f5e'
+      return '#f43f5e';
     case 'red':
-      return '#ef4444'
+      return '#ef4444';
     case 'black':
-      return '#000000'
+      return '#000000';
   }
-  return '#ffffff'
-})
+  return '#ffffff';
+});
 const textColor = computed(() => {
-  if (!props.theme) return '#ffffff'
-  if (props.theme === 'white') return '#000000'
-  return '#ffffff'
-})
+  if (!props.theme) return '#ffffff';
+  if (props.theme === 'white') return '#000000';
+  return '#ffffff';
+});
 </script>
 
 <template>

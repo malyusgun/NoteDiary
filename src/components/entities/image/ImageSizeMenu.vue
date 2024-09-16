@@ -3,7 +3,7 @@ import type { IImage } from '@/app/interfaces/entities';
 import {
   getImageSpeedDialSizeBiggerLabelsToRemove,
   getImageSpeedDialSizeSmallerLabelsToRemove
-} from '@/app/helpers';
+} from '@/app/helpers/images';
 
 interface Props {
   entityData: IImage;

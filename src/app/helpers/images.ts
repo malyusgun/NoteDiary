@@ -2,6 +2,12 @@ import type { IEntity } from '@/app/interfaces/environment';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import type { IImage } from '@/app/interfaces/entities';
 import { useWebsocketStore } from '@/app/stores/websocket';
+import { useInterfaceStore } from '@/app/stores/interface';
+
+export const setDefaultPageBackground = () => {
+  const interfaceStore = useInterfaceStore();
+  interfaceStore.resetPageBackground();
+};
 
 export const addUrlsToImageEntities = (entities: IEntity[]) => {
   const filesWebsocketStore = useFilesWebsocketStore();
@@ -49,4 +55,75 @@ export const cropImage = async (newUrl: string, entity: IImage) => {
     body: { ...entity }
   };
   websocketStore.sendData(data);
+};
+
+export const getImageSpeedDialSizeSmallerLabelsToRemove = (entity: IImage) => {
+  const elementsLabelsToRemove = [];
+  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
+  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
+  if (initialImageWidth <= 400 || initialImageHeight <= 400) {
+    elementsLabelsToRemove.push('x0.25');
+    if (
+      initialImageWidth <= 200 ||
+      initialImageHeight <= 200 ||
+      (initialImageWidth >= 1600 && entity.text_position)
+    ) {
+      elementsLabelsToRemove.push('x0.5');
+      if (
+        initialImageWidth <= 95 ||
+        initialImageHeight <= 95 ||
+        (initialImageWidth >= 1066 && entity.text_position)
+      ) {
+        elementsLabelsToRemove.push('x0.75');
+      }
+    }
+  }
+  if (
+    (initialImageWidth >= 800 && entity.text_position) ||
+    entity.image_width < initialImageWidth
+  ) {
+    elementsLabelsToRemove.push('x1');
+  }
+  return elementsLabelsToRemove;
+};
+
+export const getImageSpeedDialSizeBiggerLabelsToRemove = (entity: IImage) => {
+  const elementsLabelsToRemove = [];
+  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
+  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
+  if (
+    (initialImageWidth >= 800 && entity.text_position) ||
+    entity.image_width > initialImageWidth
+  ) {
+    elementsLabelsToRemove.push('x1');
+  }
+  if (
+    initialImageWidth >= 960 ||
+    initialImageHeight >= 560 ||
+    (initialImageWidth >= 640 && entity.text_position)
+  ) {
+    elementsLabelsToRemove.push('x1.25');
+    if (
+      initialImageWidth >= 800 ||
+      initialImageHeight >= 467 ||
+      (initialImageWidth >= 533 && entity.text_position)
+    ) {
+      elementsLabelsToRemove.push('x1.5');
+      if (
+        initialImageWidth >= 685 ||
+        initialImageHeight >= 400 ||
+        (initialImageWidth >= 457 && entity.text_position)
+      ) {
+        elementsLabelsToRemove.push('x1.75');
+        if (
+          initialImageWidth >= 600 ||
+          initialImageHeight >= 350 ||
+          (initialImageWidth >= 400 && entity.text_position)
+        ) {
+          elementsLabelsToRemove.push('x2');
+        }
+      }
+    }
+  }
+  return elementsLabelsToRemove;
 };

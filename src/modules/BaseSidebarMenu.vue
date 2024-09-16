@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useDataStore } from '@/app/stores/data';
-import Tree from '@/shared/Tree.vue';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import HomeIcon from '@/shared/icons/HomeIcon.vue';
 

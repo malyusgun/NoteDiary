@@ -2,6 +2,7 @@
 import { useVModel } from '@vueuse/core';
 import cookies from '@/app/plugins/Cookie';
 import type { TTheme } from '@/app/interfaces/environment';
+import { convertThemeToColorWhiteDefault } from '@/app/helpers';
 
 interface Props {
   title: string;
@@ -10,7 +11,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['update:isEditMode']);
 const isEditMode = useVModel(props, 'isEditMode', emit);
-const themeColor: TTheme = cookies.get('favorite_color');
+const themeColor = cookies.get('favorite_color');
 </script>
 
 <template>

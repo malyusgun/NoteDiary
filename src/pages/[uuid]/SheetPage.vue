@@ -5,8 +5,9 @@ import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
-import { createEntity, fetchForEntities, setDefaultPageBackground } from '@/app/helpers';
+import { createEntity, fetchForEntities } from '@/app/helpers';
 import cookies from '@/app/plugins/Cookie';
+import { setDefaultPageBackground } from '@/app/helpers/images';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();

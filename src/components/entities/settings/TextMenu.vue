@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { deleteEntity, editEntity } from '@/app/helpers';
+import { convertThemeToColorWhiteDefault, deleteEntity, editEntity } from '@/app/helpers';
 import type { IParagraph } from '@/app/interfaces/entities';
 import { useVModel } from '@vueuse/core';
 import type { TTheme } from '@/app/interfaces/environment';
@@ -39,13 +39,13 @@ const editParagraphWidth = (widthMode: 'full' | 'half') => {
   entityData.value.paragraph_size = widthMode;
   editEntity({ ...entityData.value, paragraph_size: widthMode });
 };
-const themeColor: TTheme = cookies.get('favorite_color');
+const themeColor = convertThemeToColorWhiteDefault(cookies.get('favorite_color'));
 </script>
 
 <template>
   <div
     :style="`background-color: ${themeColor}`"
-    class="absolute left-2 top-0 transition-all select-none size-12 p-2 flex justify-center items-center rounded-full hover:brightness-75 cursor-pointer"
+    class="speedDial absolute left-2 top-0 transition-all select-none size-12 p-2 flex justify-center items-center rounded-full hover:brightness-75 cursor-pointer"
     @click.prevent="isModal = true"
   >
     <SettingsIcon color="white" size="25" />

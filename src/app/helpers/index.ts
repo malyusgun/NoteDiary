@@ -1,16 +1,11 @@
 import { useInterfaceStore } from '@/app/stores/interface';
 import { useDataStore } from '@/app/stores/data';
 import { useWebsocketStore } from '@/app/stores/websocket';
-import type { IEntity } from '@/app/interfaces/environment';
+import type { IEntity, TTheme } from '@/app/interfaces/environment';
 import { checkIsImage } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
-import type { IImage } from '@/app/interfaces/entities';
 import cookies from '@/app/plugins/Cookie';
 
-export const setDefaultPageBackground = () => {
-  const interfaceStore = useInterfaceStore();
-  interfaceStore.resetPageBackground();
-};
 export const fetchForEntities = (page_uuid: string) => {
   const dataStore = useDataStore();
   const interfaceStore = useInterfaceStore();
@@ -86,73 +81,41 @@ export const changeEntitiesOrder = (entityUuid: string, direction: 'up' | 'down'
   websocketStore.sendData(data);
 };
 
-export const getImageSpeedDialSizeSmallerLabelsToRemove = (entity: IImage) => {
-  const elementsLabelsToRemove = [];
-  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
-  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
-  if (initialImageWidth <= 400 || initialImageHeight <= 400) {
-    elementsLabelsToRemove.push('x0.25');
-    if (
-      initialImageWidth <= 200 ||
-      initialImageHeight <= 200 ||
-      (initialImageWidth >= 1600 && entity.text_position)
-    ) {
-      elementsLabelsToRemove.push('x0.5');
-      if (
-        initialImageWidth <= 95 ||
-        initialImageHeight <= 95 ||
-        (initialImageWidth >= 1066 && entity.text_position)
-      ) {
-        elementsLabelsToRemove.push('x0.75');
-      }
-    }
+export const convertThemeToColorWhiteDefault = (theme: string) => {
+  if (!theme) return '#0ea5e9';
+  switch (theme) {
+    case 'white':
+      return '#ffffff';
+    case 'slate':
+      return '#64748b';
+    case 'blue':
+      return '#3b82f6';
+    case 'sky':
+      return '#0ea5e9';
+    case 'teal':
+      return '#14b8a6';
+    case 'lime':
+      return '#84cc16';
+    case 'green':
+      return '#22c55e';
+    case 'yellow':
+      return '#eab308';
+    case 'orange':
+      return '#f97316';
+    case 'pink':
+      return '#ec4899';
+    case 'fuchsia':
+      return '#d946ef';
+    case 'purple':
+      return '#a855f7';
+    case 'indigo':
+      return '#6366f1';
+    case 'rose':
+      return '#f43f5e';
+    case 'red':
+      return '#ef4444';
+    case 'black':
+      return '#000000';
   }
-  if (
-    (initialImageWidth >= 800 && entity.text_position) ||
-    entity.image_width < initialImageWidth
-  ) {
-    elementsLabelsToRemove.push('x1');
-  }
-  return elementsLabelsToRemove;
-};
-
-export const getImageSpeedDialSizeBiggerLabelsToRemove = (entity: IImage) => {
-  const elementsLabelsToRemove = [];
-  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
-  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
-  if (
-    (initialImageWidth >= 800 && entity.text_position) ||
-    entity.image_width > initialImageWidth
-  ) {
-    elementsLabelsToRemove.push('x1');
-  }
-  if (
-    initialImageWidth >= 960 ||
-    initialImageHeight >= 560 ||
-    (initialImageWidth >= 640 && entity.text_position)
-  ) {
-    elementsLabelsToRemove.push('x1.25');
-    if (
-      initialImageWidth >= 800 ||
-      initialImageHeight >= 467 ||
-      (initialImageWidth >= 533 && entity.text_position)
-    ) {
-      elementsLabelsToRemove.push('x1.5');
-      if (
-        initialImageWidth >= 685 ||
-        initialImageHeight >= 400 ||
-        (initialImageWidth >= 457 && entity.text_position)
-      ) {
-        elementsLabelsToRemove.push('x1.75');
-        if (
-          initialImageWidth >= 600 ||
-          initialImageHeight >= 350 ||
-          (initialImageWidth >= 400 && entity.text_position)
-        ) {
-          elementsLabelsToRemove.push('x2');
-        }
-      }
-    }
-  }
-  return elementsLabelsToRemove;
+  return '#ffffff';
 };

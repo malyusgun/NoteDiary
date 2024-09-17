@@ -6,14 +6,21 @@ import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from
 interface Props {
   value: string | number;
   width?: number;
+  min?: number;
+  max?: number;
+  step?: number;
   size?: 'small' | 'medium' | 'large' | 'extraLarge';
   theme?: string;
   backgroundColor?: string;
   orientation?: 'horizontal' | 'vertical';
   isSmooth?: any;
+  options?: {
+    label: string;
+    value: number;
+  }[];
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['update:isActive']);
+const emit = defineEmits(['update:value']);
 const value = useVModel(props, 'value', emit);
 const sliderButtonSize = computed(() => {
   if (!props.size) return '40px';
@@ -36,8 +43,46 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
 </script>
 
 <template>
-  <div class="slideContainer" :style="`width: ${width}px`">
-    <input v-model="value" type="range" class="slider" />
+  <div
+    :class="[
+      'slideContainer',
+      {
+        verticalSlider: orientation === 'vertical'
+      }
+    ]"
+    :style="`width: ${width ?? 200}px`"
+  >
+    <input
+      v-model="value"
+      type="range"
+      class="slider"
+      :min="min ?? 0"
+      :max="max ?? 100"
+      :step="step ?? 1"
+    />
+    <input type="range" list="values" class="opacity-0 size-0" />
+
+    <div v-if="options?.length">
+      <ul
+        class="marksList"
+        :style="`width: ${width ?? 200}px; margin-bottom: 5px; font-size: 10px`"
+      >
+        <li v-for="option of options">|</li>
+      </ul>
+      <datalist
+        id="values"
+        :class="[
+          '',
+          {
+            datalistVertical: orientation === 'vertical'
+          }
+        ]"
+      >
+        <template v-for="option of options" :key="option.value">
+          <option :value="option.value" :label="option.label"></option>
+        </template>
+      </datalist>
+    </div>
   </div>
 </template>
 
@@ -79,5 +124,24 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
   height: v-bind(sliderButtonSize);
   background: v-bind(themeColor);
   cursor: pointer;
+}
+.verticalSlider {
+  transform: rotate(270deg);
+}
+datalist {
+  display: flex;
+  justify-content: space-between;
+  width: v-bind(width);
+}
+.datalistVertical {
+  flex-direction: column;
+  writing-mode: vertical-lr;
+}
+option {
+  padding: 0;
+}
+.marksList {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

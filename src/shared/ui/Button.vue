@@ -1,11 +1,46 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from '@/app/helpers';
 
 interface Props {
   label?: string;
   iconPos?: 'left' | 'top' | 'right' | 'bottom';
   textStyle?: 'bold' | 'italic';
-  border?: 'white' | 'black';
+  border?:
+    | 'white'
+    | 'slate'
+    | 'blue'
+    | 'sky'
+    | 'teal'
+    | 'lime'
+    | 'green'
+    | 'yellow'
+    | 'orange'
+    | 'pink'
+    | 'fuchsia'
+    | 'purple'
+    | 'indigo'
+    | 'rose'
+    | 'red'
+    | 'black';
+  size?: 'small' | 'medium' | 'large' | 'extraLarge';
+  textColor?:
+    | 'white'
+    | 'slate'
+    | 'blue'
+    | 'sky'
+    | 'teal'
+    | 'lime'
+    | 'green'
+    | 'yellow'
+    | 'orange'
+    | 'pink'
+    | 'fuchsia'
+    | 'purple'
+    | 'indigo'
+    | 'rose'
+    | 'red'
+    | 'black';
   theme?:
     | 'white'
     | 'slate'
@@ -25,48 +60,34 @@ interface Props {
     | 'black';
 }
 const props = defineProps<Props>();
-const themeColor = computed(() => {
-  if (!props?.theme) return '#0ea5e9';
-  switch (props?.theme) {
-    case 'white':
-      return '#ffffff';
-    case 'slate':
-      return '#64748b';
-    case 'blue':
-      return '#3b82f6';
-    case 'sky':
-      return '#0ea5e9';
-    case 'teal':
-      return '#14b8a6';
-    case 'lime':
-      return '#84cc16';
-    case 'green':
-      return '#22c55e';
-    case 'yellow':
-      return '#eab308';
-    case 'orange':
-      return '#f97316';
-    case 'pink':
-      return '#ec4899';
-    case 'fuchsia':
-      return '#d946ef';
-    case 'purple':
-      return '#a855f7';
-    case 'indigo':
-      return '#6366f1';
-    case 'rose':
-      return '#f43f5e';
-    case 'red':
-      return '#ef4444';
-    case 'black':
-      return '#000000';
+const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
+const textColor = computed(() => convertThemeToColorBlackDefault(props.textColor));
+const borderColor = computed(() => convertThemeToColorBlackDefault(props.border));
+const textSize = computed(() => {
+  if (!props?.size) return '16px';
+  switch (props.size) {
+    case 'small':
+      return '12px';
+    case 'medium':
+      return '16px';
+    case 'large':
+      return '20px';
+    case 'extraLarge':
+      return '24px';
   }
-  return '#ffffff';
 });
-const textColor = computed(() => {
-  if (!props.theme) return '#000000';
-  if (props.theme === 'white') return '#000000';
-  return '#ffffff';
+const buttonPadding = computed(() => {
+  if (!props?.size) return '0.75rem 0.5rem';
+  switch (props.size) {
+    case 'small':
+      return '0.5rem 0.375rem';
+    case 'medium':
+      return '0.75rem 0.5rem';
+    case 'large':
+      return '1.2rem 0.8rem';
+    case 'extraLarge':
+      return '1.8rem 1.2rem';
+  }
 });
 </script>
 
@@ -75,11 +96,10 @@ const textColor = computed(() => {
     :class="[
       'button',
       {
-        'flex-column': iconPos === 'top' || iconPos === 'bottom',
-        'border-black': theme === 'white' || border === 'black',
-        'border-white': border === 'white'
+        'flex-column': iconPos === 'top' || iconPos === 'bottom'
       }
     ]"
+    :style="`padding: ${buttonPadding}; border: 1px solid ${borderColor}`"
   >
     <span :style="`background-color: ${themeColor}`" class="background"></span>
     <span
@@ -93,7 +113,7 @@ const textColor = computed(() => {
       <slot name="icon" />
     </span>
     <span
-      :style="`color: ${textColor}`"
+      :style="`color: ${textColor}; font-size: ${textSize}`"
       :class="[
         'text',
         {
@@ -111,6 +131,7 @@ const textColor = computed(() => {
   position: relative;
   border-radius: 5px;
   display: flex;
+  gap: 5px;
   align-items: center;
   user-select: none;
 }
@@ -132,17 +153,8 @@ const textColor = computed(() => {
   align-items: center;
   justify-content: center;
 }
-.text {
-  padding: 0.75rem 0.5rem;
-}
 .flex-column {
   flex-direction: column;
-}
-.border-black {
-  border: 1px solid black;
-}
-.border-white {
-  border: 1px solid white;
 }
 .order-2 {
   order: 2;

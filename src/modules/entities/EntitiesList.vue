@@ -24,7 +24,7 @@ const createEntity = (entity: IEntity) => {
     <Transition name="bounce">
       <CreateEntityMenu v-if="isEditMode" @createEntity="createEntity" />
     </Transition>
-    <div v-if="!isEditMode" style="height: 50px"></div>
+    <div v-if="!isEditMode" style="height: 55px"></div>
   </div>
 </template>
 

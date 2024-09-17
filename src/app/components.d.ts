@@ -55,6 +55,7 @@ declare module 'vue' {
     SidebarMenuHeader: typeof import('./../modules/SidebarMenuHeader.vue')['default']
     SignIn: typeof import('./../pages/authorization/signIn.vue')['default']
     SignUp: typeof import('./../pages/authorization/signUp.vue')['default']
+    Slider: typeof import('./../shared/ui/Slider.vue')['default']
     SolidIcon: typeof import('./../shared/icons/SolidIcon.vue')['default']
     TableIcon: typeof import('./../shared/icons/TableIcon.vue')['default']
     TelegramSection: typeof import('./../modules/TelegramSection.vue')['default']

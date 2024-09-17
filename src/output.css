@@ -1278,6 +1278,10 @@ video {
   opacity: 0.5;
 }
 
+.outline {
+  outline-style: solid;
+}
+
 .outline-0 {
   outline-width: 0px;
 }

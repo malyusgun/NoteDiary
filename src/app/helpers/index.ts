@@ -119,3 +119,42 @@ export const convertThemeToColorWhiteDefault = (theme: string | undefined) => {
   }
   return '#ffffff';
 };
+
+export const convertThemeToColorBlackDefault = (theme: string | undefined) => {
+  if (!theme) return '#000000';
+  switch (theme) {
+    case 'white':
+      return '#ffffff';
+    case 'slate':
+      return '#64748b';
+    case 'blue':
+      return '#3b82f6';
+    case 'sky':
+      return '#0ea5e9';
+    case 'teal':
+      return '#14b8a6';
+    case 'lime':
+      return '#84cc16';
+    case 'green':
+      return '#22c55e';
+    case 'yellow':
+      return '#eab308';
+    case 'orange':
+      return '#f97316';
+    case 'pink':
+      return '#ec4899';
+    case 'fuchsia':
+      return '#d946ef';
+    case 'purple':
+      return '#a855f7';
+    case 'indigo':
+      return '#6366f1';
+    case 'rose':
+      return '#f43f5e';
+    case 'red':
+      return '#ef4444';
+    case 'black':
+      return '#000000';
+  }
+  return '#000000';
+};

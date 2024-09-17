@@ -123,7 +123,7 @@ const speedDialItems = ref([
 </script>
 
 <template>
-  <MenuDial v-model:isActive="isMenu" :items="speedDialItems" size="extraLarge" :theme="themeColor">
+  <MenuDial v-model:isActive="isMenu" :items="speedDialItems" size="large" :theme="themeColor">
     <template #1IconAfter>
       <HorizontalLineIcon color="white" size="25" />
     </template>

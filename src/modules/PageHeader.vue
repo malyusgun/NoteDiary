@@ -11,7 +11,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['update:isEditMode']);
 const isEditMode = useVModel(props, 'isEditMode', emit);
-const themeColor = cookies.get('favorite_color');
+const themeColor: TTheme = cookies.get('favorite_color');
 </script>
 
 <template>

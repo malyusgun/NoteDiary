@@ -33,36 +33,12 @@ const speedDialState = computed(() => {
   });
   return state;
 });
+const isMenu = ref(false);
 </script>
 
 <template>
   <div class="relative z-40">
-    <SpeedDial :model="speedDialState" direction="right" pt:root:class="speedDialRoot size-12">
-      <template #button="{ toggleCallback }">
-        <button
-          class="border p-6 size-10 rounded-full bg-blue-500 flex items-center justify-center"
-          @click="toggleCallback"
-        >
-          <i class="pi pi-pen-to-square"></i>
-        </button>
-      </template>
-      <template #item="{ item, toggleCallback }">
-        <div
-          :class="[
-            'flex flex-col bg-black bg-opacity-80 items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer',
-            {
-              'text-red-400 font-semibold': item.icon.includes('trash')
-            }
-          ]"
-          @click="toggleCallback"
-        >
-          <span :class="item.icon" />
-          <span class="text-center">
-            {{ item.label }}
-          </span>
-        </div>
-      </template>
-    </SpeedDial>
+    <MenuDial v-model:isActive="isMenu" :items="speedDialState" size="large"></MenuDial>
   </div>
 </template>
 

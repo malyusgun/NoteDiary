@@ -5,9 +5,9 @@ import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
-import { createEntity, fetchForEntities, setDefaultPageBackground } from '@/app/helpers';
-import TelegramSection from '@/modules/TelegramSection.vue';
+import { createEntity, fetchForEntities } from '@/app/helpers';
 import cookies from '@/app/plugins/Cookie';
+import { setDefaultPageBackground } from '@/app/helpers/images';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
@@ -19,6 +19,7 @@ const entities = computed(() => dataStore.entities);
 const backgroundUrl = computed<string>(() => interfaceStore.pageBackground);
 const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultPageBackground);
 const isFetchedForBackground = computed(() => interfaceStore.isFetchedForBackground);
+const isDarkMode = computed(() => interfaceStore.isDarkMode);
 // const pageTitle = computed(() => dataStore.currentPage.page_title);
 
 const isMenuVisible = ref<boolean>(false);
@@ -74,24 +75,15 @@ const saveImage = (finalImageUrl: string) => {
   interfaceStore.editPageBackground(finalImageUrl);
   isModalUploadFile.value = false;
 };
+const openMenu = () => (isMenuVisible.value = true);
 </script>
 
 <template>
   <PageHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
-  <div class="fixed top-0 left-0 z-50">
-    <Button
-      label="Menu"
-      iconPos="top"
-      icon="pi pi-bars"
-      severity="contrast"
-      size="small"
-      @click.prevent="isMenuVisible = !isMenuVisible"
-    />
-  </div>
-  <Drawer v-model:visible="isMenuVisible">
-    <template #container="{ closeCallback }">
-      <BaseSidebarMenu class="relative z-50" @closeMenu="closeCallback" />
-    </template>
+  <PageMenuButton @openMenu="openMenu" />
+  <Drawer v-model:isVisible="isMenuVisible" theme="black">
+    <template #header><SidebarMenuHeader /></template>
+    <SidebarMenuContent class="relative z-50" />
   </Drawer>
   <TelegramSection />
   <CropImageModal
@@ -99,7 +91,11 @@ const saveImage = (finalImageUrl: string) => {
     v-model:imageInfo="backgroundImageInfo"
     @saveImage="saveImage"
   />
-  <main id="pageContainer" class="flex flex-col">
+  <main
+    id="pageContainer"
+    class="flex flex-col"
+    :style="`background-color: ${isDarkMode ? 'black' : 'light'}`"
+  >
     <article style="min-height: 200px" class="backgroundContainer relative">
       <img
         :src="backgroundUrl"
@@ -148,9 +144,5 @@ const saveImage = (finalImageUrl: string) => {
 }
 .telegramContainer:hover > a {
   filter: brightness(0.75);
-}
-input[type=file], /* FF, IE7+, chrome (except button) */
-input[type=file]::-webkit-file-upload-button {
-  cursor: pointer;
 }
 </style>

@@ -7,7 +7,7 @@ const emit = defineEmits(['uploadFile', 'setDefaultBackground']);
 </script>
 
 <template>
-  <section class="changeImageBlock absolute top-2 right-2 transition-all">
+  <section class="changeImageBlock absolute top-2 right-6 transition-all">
     <div
       class="bg-black p-2 mb-1 rounded-md hover:text-gray-300 transition-all select-none cursor-pointer"
     >

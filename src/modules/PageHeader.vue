@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
+import cookies from '@/app/plugins/Cookie';
+import type { TTheme } from '@/app/interfaces/environment';
+import { convertThemeToColorWhiteDefault } from '@/app/helpers';
 
 interface Props {
   title: string;
@@ -8,6 +11,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['update:isEditMode']);
 const isEditMode = useVModel(props, 'isEditMode', emit);
+const themeColor = cookies.get('favorite_color');
 </script>
 
 <template>
@@ -18,7 +22,7 @@ const isEditMode = useVModel(props, 'isEditMode', emit);
       @click.prevent="isEditMode = !isEditMode"
     >
       <span class="font-medium select-none">Edit mode</span>
-      <ToggleSwitch v-model="isEditMode" />
+      <ToggleSwitch :isActive="isEditMode" :theme="themeColor" />
     </button>
   </header>
 </template>

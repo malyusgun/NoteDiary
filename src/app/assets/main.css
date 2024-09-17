@@ -137,6 +137,7 @@
 }
 body {
   min-height: 100vh;
+  overflow-x: hidden;
 }
 #app {
   min-height: 100vh;
@@ -154,12 +155,15 @@ body {
   padding: 0;
   margin: 0;
   border: none;
+  box-sizing: border-box;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  user-select: none;
+  color: white;
 }
 
 /* Links */
@@ -238,6 +242,10 @@ label {
 legend {
   display: block;
 }
+input[type=file], /* FF, IE7+, chrome (except button) */
+input[type=file]::-webkit-file-upload-button {
+  cursor: pointer;
+}
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -257,4 +265,21 @@ legend {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #0033ff;
+}
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

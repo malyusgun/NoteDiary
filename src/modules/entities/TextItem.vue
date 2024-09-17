@@ -2,6 +2,8 @@
 import { useElementSize, useTextareaAutosize } from '@vueuse/core';
 import type { IParagraph } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers';
+import { useDataStore } from '@/app/stores/data';
+import type { IEntity } from '@/app/interfaces/environment';
 
 interface Props {
   entityData: IParagraph;
@@ -9,6 +11,13 @@ interface Props {
 }
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
+
+const dataStore = useDataStore();
+const entities = computed(() => dataStore.entities);
+const entityIndex = computed(() =>
+  entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
+);
+const entitiesLength = computed(() => entities.value.length);
 
 const editTitle = () => {
   editEntity({ ...entityData.value, title: entityData.value.title });
@@ -18,7 +27,6 @@ const editText = () => {
 };
 
 const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
-const { height: textareaHeight } = useElementSize(textarea);
 </script>
 
 <template>
@@ -64,17 +72,22 @@ const { height: textareaHeight } = useElementSize(textarea);
           @input="triggerResize"
         />
       </div>
-      <TextMenu v-if="isEditMode" v-model:entityData="entityData" />
-      <EntityPositionSettings />
+      <TextSettings v-if="isEditMode" v-model:entityData="entityData" />
+      <EntityPositionSettings
+        v-if="isEditMode && entitiesLength > 1"
+        :entityUuid="entityData.entity_uuid"
+        :entityIndex="entityIndex"
+        :entitiesLength="entitiesLength"
+      />
     </div>
   </section>
 </template>
 
 <style>
-.entityContainer .speedDial {
+.entityContainer .settings {
   opacity: 0;
 }
-.entityContainer:hover .speedDial {
+.entityContainer:hover .settings {
   opacity: 100;
 }
 .entityContainer:hover .aggregateHigh {

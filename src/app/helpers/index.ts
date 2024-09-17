@@ -81,8 +81,8 @@ export const changeEntitiesOrder = (entityUuid: string, direction: 'up' | 'down'
   websocketStore.sendData(data);
 };
 
-export const convertThemeToColorWhiteDefault = (theme: string) => {
-  if (!theme) return '#0ea5e9';
+export const convertThemeToColorWhiteDefault = (theme: string | undefined) => {
+  if (!theme) return '#ffffff';
   switch (theme) {
     case 'white':
       return '#ffffff';

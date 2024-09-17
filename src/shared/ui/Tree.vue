@@ -39,7 +39,7 @@ interface Props {
 }
 const props = defineProps<Props>();
 const items = computed(() => props.items);
-const colorTheme = computed(() => {
+const themeColor = computed(() => {
   if (!props?.theme) return '#ffffff';
   switch (props?.theme) {
     case 'white':
@@ -121,11 +121,11 @@ const toggleIsOpen = (item) =>
 
 <template>
   <ul
-    :style="`background-color: ${colorTheme ?? 'white'}; max-width: ${maxWidth ?? 300}px`"
+    :style="`background-color: ${themeColor ?? 'white'}; max-width: ${maxWidth ?? 300}px`"
     class="tree"
   >
     <li
-      v-for="item of items"
+      v-for="(item, index) of items"
       :key="item.text"
       :class="[
         'item flex',
@@ -183,9 +183,13 @@ const toggleIsOpen = (item) =>
           }
         ]"
       >
-        <a :href="item.link" class="text">{{ item.text }}</a>
+        <div class="textContainer">
+          <slot :name="`${index + 1}IconBefore`" />
+          <a :href="item.link" class="text">{{ item.text }}</a>
+          <slot :name="`${index + 1}IconAfter`" />
+        </div>
         <div class="children">
-          <div v-for="child of item.children" :key="child.text" class="flex item">
+          <div v-for="(child, indexChild) of item.children" :key="child.text" class="flex item">
             <svg
               v-if="child.children"
               :class="[
@@ -237,9 +241,17 @@ const toggleIsOpen = (item) =>
                 }
               ]"
             >
-              <a :href="child.link" class="text">{{ child.text }}</a>
+              <div class="textContainer">
+                <slot :name="`${index + 1}-${indexChild + 1}IconBefore`" />
+                <a :href="child.link" class="text">{{ child.text }}</a>
+                <slot :name="`${index + 1}-${indexChild + 1}IconAfter`" />
+              </div>
               <div class="children">
-                <div v-for="grandChild of child.children" :key="grandChild.text" class="flex item">
+                <div
+                  v-for="(grandChild, indexGrandChild) of child.children"
+                  :key="grandChild.text"
+                  class="flex item"
+                >
                   <div
                     :class="[
                       'content',
@@ -250,7 +262,15 @@ const toggleIsOpen = (item) =>
                       }
                     ]"
                   >
-                    <p :href="grandChild.link" class="text">{{ grandChild.text }}</p>
+                    <div class="textContainer">
+                      <slot
+                        :name="`${index + 1}-${indexChild + 1}-${indexGrandChild + 1}IconBefore`"
+                      />
+                      <p :href="grandChild.link" class="text">{{ grandChild.text }}</p>
+                      <slot
+                        :name="`${index + 1}-${indexChild + 1}-${indexGrandChild + 1}IconAfter`"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -275,15 +295,15 @@ const toggleIsOpen = (item) =>
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  background-color: v-bind(colorTheme);
+  background-color: v-bind(themeColor);
 }
 .text {
-  display: block;
+  display: inline-block;
   position: relative;
-  padding: 4px 0 4px 5px;
+  padding: 4px 0;
   z-index: 3;
   color: v-bind(textColor);
-  background-color: v-bind(colorTheme);
+  background-color: v-bind(themeColor);
   word-break: break-word;
 }
 .openButton {
@@ -311,6 +331,11 @@ const toggleIsOpen = (item) =>
   transform: translateY(0);
   opacity: 1;
   max-height: 1000px;
+}
+.textContainer {
+  display: flex;
+  gap: 10px;
+  margin-left: 10px;
 }
 .flex {
   display: flex;

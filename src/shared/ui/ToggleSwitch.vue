@@ -26,7 +26,7 @@ const props = defineProps<Props>();
 const emit = defineEmits(['update:isActive']);
 const isActive = useVModel(props, 'isActive', emit);
 
-const colorTheme = computed(() => {
+const themeColor = computed(() => {
   switch (props.theme) {
     case 'white':
       return '#ffffff';
@@ -102,7 +102,7 @@ const sizes = computed(() => {
     @click.prevent="isActive = !isActive"
   >
     <span
-      :style="`background-color: ${colorTheme ?? '#0ea5e9'}; border-radius: ${sizes.borderRadius}px;`"
+      :style="`background-color: ${themeColor ?? '#0ea5e9'}; border-radius: ${sizes.borderRadius}px;`"
       :class="[
         'activeBackground',
         {

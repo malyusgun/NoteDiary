@@ -51,18 +51,21 @@ onMounted(() => {
         <span v-else><i class="pi pi-home text-gray-400 pr-2"></i>Главное меню</span>
       </div>
       <Tree :expand="true" theme="black" :items="sheets">
-        <!--        <template #url="slotProps">-->
-        <!--          <a-->
-        <!--            :href="slotProps.node.data"-->
-        <!--            :class="[-->
-        <!--              'block',-->
-        <!--              {-->
-        <!--                'bg-sky-900 p-2 ml-0 -m-2 rounded-md': route.path === slotProps.node.data-->
-        <!--              }-->
-        <!--            ]"-->
-        <!--            >{{ slotProps.node.label }}</a-->
-        <!--          >-->
-        <!--        </template>-->
+        <template #1IconBefore>
+          <HamburgerIcon color="white" size="20" />
+        </template>
+        <template #1-2IconAfter>
+          <DottedIcon color="white" size="20" />
+        </template>
+        <template #1-1IconBefore>
+          <ParagraphIcon color="white" size="20" />
+        </template>
+        <template #1-1-2IconBefore>
+          <DottedIcon color="white" size="20" />
+        </template>
+        <template #1-2-1IconBefore>
+          <ImageIcon color="white" size="20" />
+        </template>
       </Tree>
     </nav>
   </div>

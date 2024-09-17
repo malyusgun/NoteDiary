@@ -23,7 +23,7 @@ interface Props {
     | 'black';
 }
 const props = defineProps<Props>();
-const colorTheme = computed(() => {
+const themeColor = computed(() => {
   if (!props?.theme) return '#0ea5e9';
   switch (props?.theme) {
     case 'white':
@@ -82,7 +82,7 @@ const isVisible = useVModel(props, 'isVisible', emit);
       @click.prevent="isVisible = false"
     ></section>
     <section
-      :style="`color: ${textColor}; background-color: ${colorTheme}`"
+      :style="`color: ${textColor}; background-color: ${themeColor}`"
       :class="[
         'drawer',
         {

@@ -25,7 +25,7 @@ interface Props {
     | 'black';
 }
 const props = defineProps<Props>();
-const colorTheme = computed(() => {
+const themeColor = computed(() => {
   if (!props?.theme) return '#0ea5e9';
   switch (props?.theme) {
     case 'white':
@@ -64,7 +64,7 @@ const colorTheme = computed(() => {
   return '#ffffff';
 });
 const textColor = computed(() => {
-  if (!props.theme) return '#ffffff';
+  if (!props.theme) return '#000000';
   if (props.theme === 'white') return '#000000';
   return '#ffffff';
 });
@@ -81,7 +81,7 @@ const textColor = computed(() => {
       }
     ]"
   >
-    <span :style="`background-color: ${colorTheme}`" class="background"></span>
+    <span :style="`background-color: ${themeColor}`" class="background"></span>
     <span
       :class="[
         'icon',

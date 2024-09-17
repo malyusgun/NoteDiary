@@ -118,7 +118,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
         v-model:entityData="entityData"
         @openCropImageModal="openCropImageModal"
       />
-      <EntityPositionSettings />
+      <EntityPositionSettings :entityUuid="entityData.entity_uuid" />
     </div>
   </section>
 </template>

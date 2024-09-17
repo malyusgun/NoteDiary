@@ -628,6 +628,10 @@ video {
   left: 0.5rem;
 }
 
+.right-2 {
+  right: 0.5rem;
+}
+
 .right-6 {
   right: 1.5rem;
 }
@@ -652,6 +656,10 @@ video {
   top: 1.5rem;
 }
 
+.left-4 {
+  left: 1rem;
+}
+
 .z-40 {
   z-index: 40;
 }
@@ -672,10 +680,6 @@ video {
   order: 3;
 }
 
-.-m-2 {
-  margin: -0.5rem;
-}
-
 .-my-2 {
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
@@ -684,6 +688,11 @@ video {
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
+}
+
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .-mb-2 {
@@ -710,10 +719,6 @@ video {
   margin-bottom: 2rem;
 }
 
-.ml-0 {
-  margin-left: 0px;
-}
-
 .ml-4 {
   margin-left: 1rem;
 }
@@ -732,10 +737,6 @@ video {
 
 .mr-4 {
   margin-right: 1rem;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
 }
 
 .mt-4 {
@@ -784,10 +785,6 @@ video {
 .size-8 {
   width: 2rem;
   height: 2rem;
-}
-
-.h-0 {
-  height: 0px;
 }
 
 .h-12 {
@@ -925,6 +922,10 @@ video {
 
 .justify-between {
   justify-content: space-between;
+}
+
+.gap-1\.5 {
+  gap: 0.375rem;
 }
 
 .gap-10 {
@@ -1081,11 +1082,6 @@ video {
 .bg-red-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
-}
-
-.bg-sky-900 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(12 74 110 / var(--tw-bg-opacity));
 }
 
 .bg-violet-500 {
@@ -1259,11 +1255,6 @@ video {
   line-height: 1.5;
 }
 
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
@@ -1325,11 +1316,6 @@ video {
   cursor: pointer;
 }
 
-.hover\:bg-slate-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(51 65 85 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-slate-800:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(30 41 59 / var(--tw-bg-opacity));
@@ -1342,10 +1328,5 @@ video {
 
 .hover\:brightness-75:hover {
   --tw-brightness: brightness(.75);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.hover\:brightness-125:hover {
-  --tw-brightness: brightness(1.25);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { convertThemeToColorWhiteDefault, deleteEntity, editEntity } from '@/app/helpers';
-import type { IParagraph } from '@/app/interfaces/entities';
+import { convertThemeToColorWhiteDefault, editEntity } from '@/app/helpers';
 import { useVModel } from '@vueuse/core';
-import type { TTheme } from '@/app/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
+import type { IParagraph } from '@/app/interfaces/entities';
+import type { IEntity } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
 
 interface Props {
@@ -43,13 +44,13 @@ const themeColor = convertThemeToColorWhiteDefault(cookies.get('favorite_color')
 </script>
 
 <template>
-  <div
+  <button
     :style="`background-color: ${themeColor}`"
-    class="speedDial absolute left-2 top-0 transition-all select-none size-12 p-2 flex justify-center items-center rounded-full hover:brightness-75 cursor-pointer"
+    class="settings absolute left-2 top-0 transition-all select-none size-12 flex justify-center items-center rounded-full hover:brightness-75 cursor-pointer"
     @click.prevent="isModal = true"
   >
     <SettingsIcon color="white" size="25" />
-  </div>
+  </button>
   <Modal v-model:isVisible="isModal" theme="black"
     ><template #header>Edit paragraph</template>
     <div>

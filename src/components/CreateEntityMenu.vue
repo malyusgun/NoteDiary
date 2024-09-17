@@ -3,6 +3,7 @@ import { useFileDialog, useWindowSize } from '@vueuse/core';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useDataStore } from '@/app/stores/data';
+import cookies from '@/app/plugins/Cookie';
 
 const emit = defineEmits(['createEntity']);
 
@@ -12,6 +13,9 @@ const { open: uploadFile, onChange } = useFileDialog({
 });
 const authorizationStore = useAuthorizationStore();
 const dataStore = useDataStore();
+
+const themeColor: string = cookies.get('favorite_color');
+const isMenu = ref(false);
 const userNickName = computed(() => authorizationStore.userNickName);
 const entitiesCount = computed(() => dataStore.entities.length);
 
@@ -58,8 +62,9 @@ onChange((files) => {
 const speedDialItems = ref([
   {
     label: 'Divider',
-    icon: 'pi pi-pause',
-    command: () => {
+    textStyle: 'bold',
+    theme: 'blue',
+    onClick: () => {
       emit('createEntity', {
         entity_type: 'divider',
         entity_order: entitiesCount.value + 1,
@@ -70,8 +75,9 @@ const speedDialItems = ref([
   },
   {
     label: 'Paragraph',
-    icon: 'pi pi-pencil',
-    command: () => {
+    textStyle: 'bold',
+    theme: 'green',
+    onClick: () => {
       emit('createEntity', {
         entity_type: 'paragraph',
         entity_order: entitiesCount.value + 1,
@@ -84,13 +90,15 @@ const speedDialItems = ref([
   },
   {
     label: 'Image',
-    icon: 'pi pi-image',
-    command: () => uploadFile()
+    textStyle: 'bold',
+    theme: 'orange',
+    onClick: () => uploadFile()
   },
   {
     label: 'Table',
-    icon: 'pi pi-table',
-    command: () => {
+    textStyle: 'bold',
+    theme: 'red',
+    onClick: () => {
       emit('createEntity', {
         entity_type: 'table',
         entity_order: entitiesCount.value + 1,
@@ -115,36 +123,20 @@ const speedDialItems = ref([
 </script>
 
 <template>
-  <SpeedDial
-    :model="speedDialItems"
-    direction="right"
-    :button-props="{ severity: 'primary', rounded: true }"
-    style="position: absolute; left: 5%; top: 0"
-  >
-    <template #item="{ item, toggleCallback }">
-      <div
-        class="flex flex-col items-center justify-between -translate-8 gap-2 p-2 border rounded border-surface-200 dark:border-surface-700 w-20 cursor-pointer"
-        @click="toggleCallback"
-      >
-        <span v-show="item.label !== 'Divider'" :class="item.icon" />
-        <svg
-          v-show="item.label === 'Divider'"
-          fill="#fff"
-          width="20px"
-          height="20px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M3.293,20.707a1,1,0,0,1,0-1.414l16-16a1,1,0,1,1,1.414,1.414l-16,16A1,1,0,0,1,3.293,20.707Z"
-          />
-        </svg>
-        <span>
-          {{ item.label }}
-        </span>
-      </div>
+  <MenuDial v-model:isActive="isMenu" :items="speedDialItems" size="extraLarge" :theme="themeColor">
+    <template #1IconAfter>
+      <HorizontalLineIcon color="white" size="25" />
     </template>
-  </SpeedDial>
+    <template #2IconAfter>
+      <ParagraphIcon color="white" size="25" />
+    </template>
+    <template #3IconAfter>
+      <ImageIcon color="white" size="25" />
+    </template>
+    <template #4IconAfter>
+      <TableIcon color="white" size="30" />
+    </template>
+  </MenuDial>
 </template>
 
 <style scoped></style>

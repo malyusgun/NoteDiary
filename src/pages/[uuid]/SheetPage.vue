@@ -82,8 +82,8 @@ const openMenu = () => (isMenuVisible.value = true);
   <PageHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
   <PageMenuButton @openMenu="openMenu" />
   <Drawer v-model:isVisible="isMenuVisible" theme="black">
-    <template #header><MenuHeader /></template>
-    <BaseSidebarMenu class="relative z-50" />
+    <template #header><SidebarMenuHeader /></template>
+    <SidebarMenuContent class="relative z-50" />
   </Drawer>
   <TelegramSection />
   <CropImageModal

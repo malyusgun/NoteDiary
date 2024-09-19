@@ -11,7 +11,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'

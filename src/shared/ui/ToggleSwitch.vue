@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
-import { convertThemeToColorBlackDefault } from '@/app/helpers';
+import {
+  convert800ThemeToColorGrayDefault,
+  convertThemeToColorBlackDefault,
+  convertThemeToColorGrayDefault
+} from '@/app/helpers';
 
 interface Props {
   isActive: boolean;
@@ -12,7 +16,22 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
+    | 'green'
+    | 'yellow'
+    | 'orange'
+    | 'pink'
+    | 'fuchsia'
+    | 'purple'
+    | 'indigo'
+    | 'rose'
+    | 'red'
+    | 'black';
+  negativeTheme?:
+    | 'white'
+    | 'slate'
+    | 'blue'
+    | 'sky'
+    | 'teal'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -29,6 +48,7 @@ const emit = defineEmits(['update:isActive']);
 const isActive = useVModel(props, 'isActive', emit);
 
 const themeColor = computed(() => convertThemeToColorBlackDefault(props.theme));
+const inactiveColor = computed(() => convert800ThemeToColorGrayDefault(props.negativeTheme));
 const sizes = computed(() => {
   if (!props?.size) {
     return {
@@ -117,7 +137,7 @@ const sizes = computed(() => {
   transition: background-color 0.2s ease-in-out;
 }
 .inactiveBackground {
-  background-color: rgba(187, 197, 204, 0.66) !important;
+  background-color: v-bind(inactiveColor) !important;
   transition: background-color 0.2s ease-in-out;
 }
 .switcher:hover .inactiveBackground {

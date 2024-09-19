@@ -26,7 +26,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -61,7 +60,6 @@ const setInitialState = () => {
           isOpen: props?.expand ?? false,
           text: child.text
         });
-        console.log('child', child);
         if (child.children) {
           for (let grandChild of child.children) {
             state.value.push({

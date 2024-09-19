@@ -25,7 +25,10 @@ const editTitle = () => {
 const editText = () => {
   editEntity({ ...entityData.value, text: entityData.value.text });
 };
-
+const saveChanges = (newState: IParagraph) => {
+  editEntity(newState);
+  entityData.value = newState;
+};
 const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
 </script>
 
@@ -72,7 +75,7 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
           @input="triggerResize"
         />
       </div>
-      <TextSettings v-if="isEditMode" v-model:entityData="entityData" />
+      <ParagraphSettings v-if="isEditMode" :entityData="entityData" @saveChanges="saveChanges" />
       <EntityPositionSettings
         v-if="isEditMode && entitiesLength > 1"
         :entityUuid="entityData.entity_uuid"

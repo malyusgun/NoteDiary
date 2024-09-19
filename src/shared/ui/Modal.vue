@@ -11,7 +11,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -22,6 +21,7 @@ interface Props {
     | 'rose'
     | 'red'
     | 'black';
+  width?: number | string;
 }
 const props = defineProps<Props>();
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
@@ -45,7 +45,7 @@ const isVisible = useVModel(props, 'isVisible', emit);
       ]"
     ></section>
     <section
-      :style="`color: ${textColor}; background-color: ${themeColor}`"
+      :style="`color: ${textColor}; background-color: ${themeColor}; width: ${width}`"
       :class="[
         'modal',
         {

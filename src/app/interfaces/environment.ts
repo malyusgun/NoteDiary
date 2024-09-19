@@ -38,12 +38,10 @@ export interface IEntity {
 }
 
 export type TTheme =
-  | 'white'
   | 'slate'
   | 'blue'
   | 'sky'
   | 'teal'
-  | 'lime'
   | 'green'
   | 'yellow'
   | 'orange'
@@ -52,5 +50,4 @@ export type TTheme =
   | 'purple'
   | 'indigo'
   | 'rose'
-  | 'red'
-  | 'black';
+  | 'red';

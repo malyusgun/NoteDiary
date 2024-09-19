@@ -5,10 +5,10 @@ import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from
 
 interface Props {
   value: string | number;
-  width?: number;
-  min?: number;
-  max?: number;
-  step?: number;
+  width?: string | number;
+  min?: string | number;
+  max?: string | number;
+  step?: string | number;
   size?: 'small' | 'medium' | 'large' | 'extraLarge';
   theme?: string;
   backgroundColor?: string;
@@ -22,6 +22,19 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['update:value']);
 const value = useVModel(props, 'value', emit);
+const optionValue = ref(
+  typeof value.value === 'string'
+    ? props.options!.findIndex((option) => option.label === value.value)
+    : value.value
+);
+watch([optionValue], () => {
+  if (props.options) {
+    value.value = props.options!.find((option) => option.value == optionValue.value)!.label;
+    console.log('optionValue.value', optionValue.value);
+  } else value.value = optionValue.value;
+});
+console.log('optionValue.value', optionValue.value);
+console.log('value.value', value.value);
 const sliderButtonSize = computed(() => {
   if (!props.size) return '40px';
   switch (props.size) {
@@ -53,7 +66,7 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
     :style="`width: ${width ?? 200}px`"
   >
     <input
-      v-model="value"
+      v-model="optionValue"
       type="range"
       class="slider"
       :min="min ?? 0"
@@ -67,7 +80,7 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
         class="marksList"
         :style="`width: ${width ?? 200}px; margin-bottom: 5px; font-size: 10px`"
       >
-        <li v-for="option of options">|</li>
+        <li v-for="option of options" :key="option">|</li>
       </ul>
       <datalist
         id="values"

@@ -12,7 +12,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -30,7 +29,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -47,7 +45,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -103,16 +100,6 @@ const buttonPadding = computed(() => {
   >
     <span :style="`background-color: ${themeColor}`" class="background"></span>
     <span
-      :class="[
-        'icon',
-        {
-          'order-2': iconPos === 'right' || iconPos === 'bottom'
-        }
-      ]"
-    >
-      <slot name="icon" />
-    </span>
-    <span
       :style="`color: ${textColor}; font-size: ${textSize}`"
       :class="[
         'text',
@@ -123,6 +110,16 @@ const buttonPadding = computed(() => {
       ]"
       >{{ label ?? 'Button' }}</span
     >
+    <span
+      :class="[
+        'icon',
+        {
+          'order-1': iconPos === 'left' || iconPos === 'top'
+        }
+      ]"
+    >
+      <slot name="icon" />
+    </span>
   </button>
 </template>
 
@@ -131,7 +128,7 @@ const buttonPadding = computed(() => {
   position: relative;
   border-radius: 5px;
   display: flex;
-  gap: 5px;
+  gap: 8px;
   align-items: center;
   user-select: none;
 }
@@ -156,8 +153,8 @@ const buttonPadding = computed(() => {
 .flex-column {
   flex-direction: column;
 }
-.order-2 {
-  order: 2;
+.order-1 {
+  order: 1;
 }
 .bold {
   font-weight: bold;

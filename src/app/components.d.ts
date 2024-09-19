@@ -48,6 +48,7 @@ declare module 'vue' {
     ParagraphIcon: typeof import('./../shared/icons/ParagraphIcon.vue')['default']
     ParagraphItem: typeof import('./../modules/entities/ParagraphItem.vue')['default']
     ParagraphSettings: typeof import('./../components/entities/settings/ParagraphSettings.vue')['default']
+    ParagraphSettingsList: typeof import('./../components/entities/settings/lists/ParagraphSettingsList.vue')['default']
     PlusIcon: typeof import('./../shared/icons/PlusIcon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

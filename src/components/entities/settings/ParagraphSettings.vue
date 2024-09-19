@@ -89,82 +89,29 @@ const saveChanges = () => {
   <Modal v-model:isVisible="isModal" theme="black" width="70%"
     ><template #header><h3 class="w-max mx-auto">Edit paragraph</h3></template>
     <div class="p-10 flex gap-16 items-center">
-      <ul class="flex gap-8 h-full" style="min-width: 35%">
-        <li class="flex flex-col items-center gap-4" style="min-width: 150px">
-          <div>
-            <p class="py-2 text-center">Title</p>
-            <div class="flex items-center">
-              Off
-              <ToggleSwitch v-model:isActive="isTitle" class="mx-2" :theme="themeColor" />
-              On
-            </div>
-          </div>
-          <div style="height: 108px" class="flex gap-8 items-center justify-between col-span-2">
-            <Transition name="fading">
-              <div v-show="isTitle" class="flex flex-col items-center">
-                <p class="py-2 text-center">Title position</p>
-                <Slider
-                  v-model:value="newEntityData.entity_title_position"
-                  :theme="themeColor"
-                  width="150"
-                  size="small"
-                  isSmooth="true"
-                  backgroundColor="white"
-                  min="0"
-                  max="2"
-                  step="1"
-                  :options="entityTitlePositionOptions"
-                />
-              </div>
-            </Transition>
-          </div>
-        </li>
-        <li class="flex flex-col items-center gap-4" style="min-width: 150px">
-          <div>
-            <p class="py-2 text-center">Paragraph width</p>
-            <div class="flex items-center">
-              Half
-              <ToggleSwitch
-                v-model:isActive="isEntityWidthFull"
-                class="mx-2"
-                :theme="themeColor"
-                :negativeTheme="themeColor"
-              />
-              Full
-            </div>
-          </div>
-          <div style="height: 108px" class="flex gap-8 items-center justify-between col-span-2">
-            <Transition name="fading">
-              <div v-show="!isEntityWidthFull" class="flex flex-col items-center">
-                <p class="py-2">Paragraph position</p>
-                <Slider
-                  v-model:value="newEntityData.entity_position"
-                  :theme="themeColor"
-                  width="150"
-                  size="small"
-                  isSmooth="true"
-                  backgroundColor="white"
-                  min="0"
-                  max="2"
-                  step="1"
-                  :options="entityPositionOptions"
-                />
-              </div>
-            </Transition>
-          </div>
-        </li>
-      </ul>
+      <ParagraphSettingsList
+        v-model:newEntityData="newEntityData"
+        v-model:isTitle="isTitle"
+        v-model:isEntityWidthFull="isEntityWidthFull"
+        :themeColor="themeColor"
+        :entityPositionOptions="entityPositionOptions"
+        :entityTitlePositionOptions="entityTitlePositionOptions"
+      />
       <section
         :style="`border-color: var(--${themeColor}-200); height: 320px`"
         class="grow flex flex-col gap-4 p-4 min-h-full border-2 border-slate-100 border-dashed rounded-2xl"
       >
-        <h3
-          v-show="isTitle"
-          :style="`border-color: var(--${themeColor}-800); text-align: ${newEntityData.entity_title_position}`"
-          class="text-2xl font-bold text-center px-2 py-4 border-2 border-dashed rounded-2xl"
-        >
-          {{ newEntityData.title ?? 'Title' }}
-        </h3>
+        <div :style="`justify-content: ${newEntityData.entity_position};`" class="flex">
+          <div
+            v-show="isTitle"
+            :style="`border-color: var(--${themeColor}-800); justify-content: ${newEntityData.entity_title_position}; width: ${isEntityWidthFull ? '100%' : '50%'}`"
+            class="flex text-2xl font-bold text-center px-2 py-4 border-2 border-dashed rounded-2xl"
+          >
+            <h3 class="w-2/3 overflow-ellipsis overflow-hidden whitespace-nowrap">
+              {{ newEntityData.title ?? 'Title' }}
+            </h3>
+          </div>
+        </div>
         <div :style="`justify-content: ${newEntityData.entity_position}`" class="grow flex">
           <div
             :style="`border-color: var(--${themeColor}-400); width: ${isEntityWidthFull ? '100%' : '50%'};`"

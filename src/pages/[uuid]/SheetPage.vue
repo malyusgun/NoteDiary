@@ -34,7 +34,7 @@ const backgroundImageInfo = ref<IImageMainInfo>({
 onMounted(() => {
   const onKeydown = (event) => {
     if (event.key === 'Alt') isEditMode.value = !isEditMode.value;
-    if (event.key === 'Control') isMenuVisible.value = !isMenuVisible.value;
+    if (event.key === 'Escape') isMenuVisible.value = !isMenuVisible.value;
   };
   document.addEventListener('keydown', onKeydown);
   const getPageBackgroundData = {

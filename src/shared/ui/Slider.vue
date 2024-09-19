@@ -30,11 +30,8 @@ const optionValue = ref(
 watch([optionValue], () => {
   if (props.options) {
     value.value = props.options!.find((option) => option.value == optionValue.value)!.label;
-    console.log('optionValue.value', optionValue.value);
   } else value.value = optionValue.value;
 });
-console.log('optionValue.value', optionValue.value);
-console.log('value.value', value.value);
 const sliderButtonSize = computed(() => {
   if (!props.size) return '40px';
   switch (props.size) {

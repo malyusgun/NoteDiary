@@ -54,11 +54,12 @@ export const editEntity = (newState: IEntity) => {
 export const deleteEntity = (entityUuid: string) => {
   const dataStore = useDataStore();
   const websocketStore = useWebsocketStore();
+  const page_uuid = cookies.get('current_page_uuid');
   const entities = dataStore.entities;
   const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
   const data = {
     event: 'deleteEntity',
-    body: { ...entityToDelete }
+    body: { ...entityToDelete, page_uuid }
   };
   websocketStore.sendData(data);
 };

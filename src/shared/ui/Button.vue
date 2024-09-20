@@ -59,14 +59,14 @@ interface Props {
 const props = defineProps<Props>();
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
 const textColor = computed(() => convertThemeToColorBlackDefault(props.textColor));
-const borderColor = computed(() => convertThemeToColorBlackDefault(props.border));
+const borderColor = computed(() =>
+  props.border ? convertThemeToColorBlackDefault(props.border) : ''
+);
 const textSize = computed(() => {
-  if (!props?.size) return '16px';
+  if (!props?.size || props.size === 'medium') return '16px';
   switch (props.size) {
     case 'small':
       return '12px';
-    case 'medium':
-      return '16px';
     case 'large':
       return '20px';
     case 'extraLarge':
@@ -74,12 +74,10 @@ const textSize = computed(() => {
   }
 });
 const buttonPadding = computed(() => {
-  if (!props?.size) return '0.75rem 0.5rem';
+  if (!props?.size || props.size === 'medium') return '0.75rem 0.5rem';
   switch (props.size) {
     case 'small':
       return '0.5rem 0.375rem';
-    case 'medium':
-      return '0.75rem 0.5rem';
     case 'large':
       return '1.2rem 0.8rem';
     case 'extraLarge':
@@ -93,10 +91,11 @@ const buttonPadding = computed(() => {
     :class="[
       'button',
       {
-        'flex-column': iconPos === 'top' || iconPos === 'bottom'
+        'flex-column': iconPos === 'top' || iconPos === 'bottom',
+        border: borderColor
       }
     ]"
-    :style="`padding: ${buttonPadding}; border: 1px solid ${borderColor}`"
+    :style="`padding: ${buttonPadding}`"
   >
     <span :style="`background-color: ${themeColor}`" class="background"></span>
     <span
@@ -154,12 +153,15 @@ const buttonPadding = computed(() => {
   flex-direction: column;
 }
 .order-1 {
-  order: 1;
+  order: -1;
 }
 .bold {
   font-weight: bold;
 }
 .italic {
   font-style: italic;
+}
+.border {
+  border: 2px solid v-bind(borderColor);
 }
 </style>

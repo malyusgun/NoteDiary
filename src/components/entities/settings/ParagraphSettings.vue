@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { convertThemeToColorWhiteDefault, editEntity } from '@/app/helpers';
+import { convertThemeToColorWhiteDefault, deleteEntity, editEntity } from '@/app/helpers';
 import type { IParagraph } from '@/app/interfaces/entities';
 import type { TTheme } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
@@ -9,18 +9,19 @@ interface Props {
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['saveChanges']);
-const entityData = props.entityData;
-let newEntityData = ref({ ...entityData });
+const entityData = computed(() => props.entityData);
+const newEntityData = ref({ ...entityData.value });
+watch(entityData, () => (newEntityData.value = entityData.value));
 const isModal = ref<boolean>(false);
-
+const isModalToDeleteParagraph = ref<boolean>(false);
 const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
-  entityData.font_size = newSize;
-  editEntity({ ...entityData, font_size: newSize });
+  entityData.value.font_size = newSize;
+  editEntity({ ...entityData.value, font_size: newSize });
 };
 const themeColor: TTheme = cookies.get('favorite_color');
 const themeColorConverted = convertThemeToColorWhiteDefault(themeColor);
-const isTitle = ref(!!entityData.title);
-const isEntityWidthFull = ref(entityData.paragraph_size === 'full');
+const isTitle = ref(!!entityData.value.title);
+const isEntityWidthFull = ref(entityData.value.paragraph_size === 'full');
 
 const maxLines = computed(() => {
   if (isTitle.value) {
@@ -29,51 +30,81 @@ const maxLines = computed(() => {
     return Math.floor(240 / 24);
   }
 });
-const entityPositionOptions = [
+const entityIsTitleOptions = ref([
+  {
+    label: 'Off',
+    value: false,
+    textStyle: 'bold'
+  },
+  {
+    label: 'On',
+    value: true,
+    textStyle: 'bold'
+  }
+]);
+const isEntityWidthFullOptions = ref([
+  {
+    label: 'Half',
+    value: false,
+    textStyle: 'bold'
+  },
+  {
+    label: 'Full',
+    value: true,
+    textStyle: 'bold'
+  }
+]);
+const entityPositionOptions = ref([
   {
     label: 'left',
-    value: 0
+    isLabelHidden: true
   },
   {
     label: 'center',
-    value: 1
+    isLabelHidden: true
   },
   {
     label: 'right',
-    value: 2
+    isLabelHidden: true
   }
-];
-const entityTitlePositionOptions = [
+]);
+const entityTitlePositionOptions = ref([
   {
     label: 'left',
-    value: 0
+    isLabelHidden: true
   },
   {
     label: 'center',
-    value: 1
+    isLabelHidden: true
   },
   {
     label: 'right',
-    value: 2
+    isLabelHidden: true
   }
-];
+]);
 const saveChanges = () => {
   const entityPosition = isEntityWidthFull.value ? 'full' : 'half';
-  if (entityPosition !== entityData.entity_position) {
+  if (entityPosition !== entityData.value.entity_position) {
     newEntityData.value.paragraph_size = entityPosition;
   }
-  if (isTitle.value !== !!entityData.title) {
+  if (isTitle.value !== !!entityData.value.title) {
     if (isTitle.value) {
       newEntityData.value.title = 'Title';
     } else {
       newEntityData.value.title = null;
     }
   }
-  if (JSON.stringify(entityData) !== JSON.stringify(newEntityData.value)) {
-    console.log('they are different, I will save it. New data:', newEntityData.value);
+  if (JSON.stringify(entityData.value) !== JSON.stringify(newEntityData.value)) {
     emit('saveChanges', newEntityData.value);
   }
-  console.log('newEntityData.value :', newEntityData.value);
+  isModal.value = false;
+};
+const toggleConfirmToDeleteParagraph = () => {
+  isModalToDeleteParagraph.value = !isModalToDeleteParagraph.value;
+};
+const deleteParagraph = () => {
+  deleteEntity(entityData.value.entity_uuid);
+  isModalToDeleteParagraph.value = false;
   isModal.value = false;
 };
 </script>
@@ -86,14 +117,33 @@ const saveChanges = () => {
   >
     <SettingsIcon color="white" size="25" />
   </button>
-  <Modal v-model:isVisible="isModal" theme="black" width="70%"
+  <Modal v-model:isVisible="isModal" theme="black" width="90%"
     ><template #header><h3 class="w-max mx-auto">Edit paragraph</h3></template>
+    <Modal v-model:isVisible="isModalToDeleteParagraph" theme="black" width="30%"
+      ><p class="font-bold pt-4 mb-4 text-center">Are you sure you want to delete this element?</p>
+      <div class="flex justify-between">
+        <Button
+          label="Yes, delete"
+          theme="red"
+          textColor="white"
+          textStyle="bold"
+          @click.prevent="deleteParagraph"
+        />
+        <Button
+          label="Cancel"
+          theme="white"
+          textColor="black"
+          @click.prevent="toggleConfirmToDeleteParagraph"
+        /></div
+    ></Modal>
     <div class="p-10 flex gap-16 items-center">
       <ParagraphSettingsList
         v-model:newEntityData="newEntityData"
         v-model:isTitle="isTitle"
         v-model:isEntityWidthFull="isEntityWidthFull"
         :themeColor="themeColor"
+        :entityIsTitleOptions="entityIsTitleOptions"
+        :isEntityWidthFullOptions="isEntityWidthFullOptions"
         :entityPositionOptions="entityPositionOptions"
         :entityTitlePositionOptions="entityTitlePositionOptions"
       />
@@ -121,7 +171,10 @@ const saveChanges = () => {
           </div>
         </div>
       </section>
-      <div class="absolute top-4 right-16 z-10 hover:brightness-80 transition-all">
+      <div
+        class="absolute top-4 right-16 z-10 hover:brightness-80 transition-all"
+        @click.prevent="toggleConfirmToDeleteParagraph"
+      >
         <Button label="Delete" textColor="white" theme="red" textStyle="bold" size="medium">
           <template #icon>
             <TrashIcon color="white" size="25" />

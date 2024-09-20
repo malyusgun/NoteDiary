@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { useVModel, useWindowSize } from '@vueuse/core';
+import { useWindowSize } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers';
 import { cropImage } from '@/app/helpers/images';
+import type { IEntity } from '@/app/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
 
 interface Props {
   entityData: IImage;
   isEditMode: boolean;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['update:entityData']);
-const entityData = useVModel(props, 'entityData', emit);
+const entityData = ref(props.entityData);
+
+const dataStore = useDataStore();
+const entities = computed(() => dataStore.entities);
+const entityIndex = computed(() =>
+  entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
+);
+const entitiesLength = computed(() => entities.value.length);
 
 const isModalCropImage = ref<boolean>(false);
 const { width: windowWidth } = useWindowSize();
@@ -26,6 +34,10 @@ const editTitle = () => {
 };
 const editText = () => {
   editEntity({ ...entityData.value, text: entityData.value.text });
+};
+const saveChanges = (newState: IImage) => {
+  editEntity(newState);
+  entityData.value = newState;
 };
 const saveImage = async (newUrl: string, newWidth: number, newHeight: number) => {
   entityData.value.imageUrl = newUrl;
@@ -47,7 +59,6 @@ const openCropImageModal = () => (isModalCropImage.value = true);
 
 <template>
   <section
-    ref="container"
     :class="[
       'entityContainer relative flex px-16 transition-all',
       {
@@ -87,9 +98,9 @@ const openCropImageModal = () => (isModalCropImage.value = true);
             style="min-height: 100px; max-height: 700px"
             class="object-contain order-1"
           />
-          <div class="speedDialSize absolute left-0 top-0 transition-all select-none">
-            <ImageSizeMenu v-if="isEditMode" :entityData="entityData" @scaleImage="scaleImage" />
-          </div>
+          <!--          <div class="speedDialSize absolute left-0 top-0 transition-all select-none">-->
+          <!--            <ImageSizeMenu v-if="isEditMode" :entityData="entityData" @scaleImage="scaleImage" />-->
+          <!--          </div>-->
         </div>
         <div
           v-if="entityData.text_position"
@@ -113,12 +124,13 @@ const openCropImageModal = () => (isModalCropImage.value = true);
           />
         </div>
       </div>
-      <ImageMenu
-        v-if="isEditMode"
-        v-model:entityData="entityData"
-        @openCropImageModal="openCropImageModal"
+      <ImageSettings v-if="isEditMode" :entityData="entityData" @saveChanges="saveChanges" />
+      <EntityPositionSettings
+        v-if="isEditMode && entitiesLength > 1"
+        :entityUuid="entityData.entity_uuid"
+        :entityIndex="entityIndex"
+        :entitiesLength="entitiesLength"
       />
-      <EntityPositionSettings :entityUuid="entityData.entity_uuid" />
     </div>
   </section>
 </template>

@@ -2,20 +2,18 @@
 import type { TTheme } from '@/app/interfaces/environment';
 import { useVModels } from '@vueuse/core';
 import type { IParagraph } from '@/app/interfaces/entities';
+import ToggleButton from '@/shared/ui/ToggleButton.vue';
+import type { IToggleButtonItem } from '@/app/interfaces/ui';
 
 interface Props {
   newEntityData: IParagraph;
   isTitle: boolean;
   isEntityWidthFull: boolean;
   themeColor: TTheme;
-  entityPositionOptions: {
-    label: string;
-    value: number;
-  }[];
-  entityTitlePositionOptions: {
-    label: string;
-    value: number;
-  }[];
+  entityIsTitleOptions: IToggleButtonItem[];
+  isEntityWidthFullOptions: IToggleButtonItem[];
+  entityPositionOptions: IToggleButtonItem[];
+  entityTitlePositionOptions: IToggleButtonItem[];
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:newEntityData', 'update:isTitle', 'update:isEntityWidthFull']);
@@ -23,66 +21,72 @@ const { newEntityData, isTitle, isEntityWidthFull } = useVModels(props, emit);
 </script>
 
 <template>
-  <ul class="flex gap-8 h-full" style="min-width: 35%">
-    <li class="flex flex-col items-center gap-4" style="min-width: 150px">
+  <ul class="flex gap-2 h-full" style="min-width: 35%">
+    <li class="flex flex-col items-center gap-4" style="min-width: 150px; min-height: 108px">
       <div>
         <p class="py-2 text-center">Title</p>
         <div class="flex items-center">
-          Off
-          <ToggleSwitch v-model:isActive="isTitle" class="mx-2" :theme="themeColor" />
-          On
+          <ToggleButton
+            v-model:value="isTitle"
+            :theme="themeColor"
+            :options="entityIsTitleOptions"
+            rounded="true"
+            :border="themeColor"
+            :activeBGColor="themeColor"
+          />
         </div>
       </div>
-      <div style="height: 108px" class="flex gap-8 items-center justify-between col-span-2">
+      <div class="flex items-center justify-between">
         <Transition name="fading">
           <div v-show="isTitle" class="flex flex-col items-center">
             <p class="py-2 text-center">Title position</p>
-            <Slider
+            <ToggleButton
               v-model:value="newEntityData.entity_title_position"
               :theme="themeColor"
-              width="150"
-              size="small"
-              isSmooth="true"
-              backgroundColor="white"
-              min="0"
-              max="2"
-              step="1"
               :options="entityTitlePositionOptions"
-            />
+              rounded="true"
+              size="small"
+              :border="themeColor"
+              :activeBGColor="themeColor"
+            >
+              <template #1Icon><AlignLeftIcon /></template>
+              <template #2Icon><AlignCenterIcon /></template>
+              <template #3Icon><AlignRightIcon /></template>
+            </ToggleButton>
           </div>
         </Transition>
       </div>
     </li>
-    <li class="flex flex-col items-center gap-4" style="min-width: 150px">
+    <li class="flex flex-col items-center gap-4" style="min-width: 150px; min-height: 108px">
       <div>
-        <p class="py-2 text-center">Paragraph width</p>
-        <div class="flex items-center">
-          Half
-          <ToggleSwitch
-            v-model:isActive="isEntityWidthFull"
-            class="mx-2"
+        <div class="flex flex-col items-center">
+          <p class="py-2 text-center">Paragraph width</p>
+          <ToggleButton
+            v-model:value="isEntityWidthFull"
             :theme="themeColor"
-            :negativeTheme="themeColor"
+            :options="isEntityWidthFullOptions"
+            rounded="true"
+            :border="themeColor"
+            :activeBGColor="themeColor"
           />
-          Full
         </div>
       </div>
-      <div style="height: 108px" class="flex gap-8 items-center justify-between col-span-2">
+      <div class="flex gap-8 items-center justify-between">
         <Transition name="fading">
           <div v-show="!isEntityWidthFull" class="flex flex-col items-center">
             <p class="py-2">Paragraph position</p>
-            <Slider
+            <ToggleButton
               v-model:value="newEntityData.entity_position"
               :theme="themeColor"
-              width="150"
-              size="small"
-              isSmooth="true"
-              backgroundColor="white"
-              min="0"
-              max="2"
-              step="1"
               :options="entityPositionOptions"
-            />
+              rounded="true"
+              size="small"
+              :border="themeColor"
+              :activeBGColor="themeColor"
+              ><template #1Icon><AlignLeftIcon /></template>
+              <template #2Icon><AlignCenterIcon /></template>
+              <template #3Icon><AlignRightIcon /></template>
+            </ToggleButton>
           </div>
         </Transition>
       </div>

@@ -7,6 +7,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AlignCenterIcon: typeof import('./../shared/icons/AlignCenterIcon.vue')['default']
+    AlignLeftIcon: typeof import('./../shared/icons/AlignLeftIcon.vue')['default']
+    AlignRightIcon: typeof import('./../shared/icons/AlignRightIcon.vue')['default']
     App: typeof import('./App.vue')['default']
     AuthorizationForm: typeof import('./../modules/authorization/AuthorizationForm.vue')['default']
     BaseLoader: typeof import('./../shared/BaseLoader.vue')['default']
@@ -35,6 +38,7 @@ declare module 'vue' {
     ImageMenu: typeof import('./../components/entities/settings/ImageMenu.vue')['default']
     ImagePositionMenu: typeof import('./../components/entities/image/ImagePositionMenu.vue')['default']
     ImageSettings: typeof import('./../components/entities/settings/ImageSettings.vue')['default']
+    ImageSettingsList: typeof import('./../components/entities/settings/lists/ImageSettingsList.vue')['default']
     ImageSizeMenu: typeof import('./../components/entities/image/ImageSizeMenu.vue')['default']
     ImageStateMenu: typeof import('./../components/entities/image/ImageStateMenu.vue')['default']
     LogoAndLabel: typeof import('./../components/LogoAndLabel.vue')['default']
@@ -68,6 +72,7 @@ declare module 'vue' {
     TextPositionMenu: typeof import('./../components/entities/text/TextPositionMenu.vue')['default']
     TextSettings: typeof import('./../components/entities/settings/TextSettings.vue')['default']
     TextStateMenu: typeof import('./../components/entities/text/TextStateMenu.vue')['default']
+    ToggleButton: typeof import('./../shared/ui/ToggleButton.vue')['default']
     ToggleSwitch: typeof import('./../shared/ui/ToggleSwitch.vue')['default']
     TrashIcon: typeof import('./../shared/icons/TrashIcon.vue')['default']
     Tree: typeof import('./../shared/ui/Tree.vue')['default']

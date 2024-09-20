@@ -17,6 +17,7 @@ interface Props {
   options?: {
     label: string;
     value: number;
+    color?: string;
   }[];
 }
 const props = defineProps<Props>();
@@ -75,7 +76,7 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
     <div v-if="options?.length">
       <ul
         class="marksList"
-        :style="`width: ${width ?? 200}px; margin-bottom: 5px; font-size: 10px`"
+        :style="`width: ${width ?? 200}px; margin-bottom: 5px; font-size: 10px; padding: 0 15px`"
       >
         <li v-for="option of options" :key="option">|</li>
       </ul>
@@ -89,7 +90,11 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
         ]"
       >
         <template v-for="option of options" :key="option.value">
-          <option :value="option.value" :label="option.label"></option>
+          <option
+            :value="option.value"
+            :label="option.label"
+            :style="`color: ${option.color ?? 'white'}`"
+          ></option>
         </template>
       </datalist>
     </div>
@@ -98,7 +103,7 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
 
 <style scoped>
 .slideContainer {
-  width: 100%;
+  width: v-bind(width);
 }
 .slider {
   -webkit-appearance: none;

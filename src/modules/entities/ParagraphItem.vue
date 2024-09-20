@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useElementSize, useTextareaAutosize } from '@vueuse/core';
+import { useTextareaAutosize } from '@vueuse/core';
 import type { IParagraph } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers';
 import { useDataStore } from '@/app/stores/data';

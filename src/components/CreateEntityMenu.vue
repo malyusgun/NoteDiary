@@ -47,9 +47,12 @@ const addImage = async (files: FileList) => {
       image_buffer: buffer,
       entity_position: 'left',
       entity_title_position: 'center',
+      font_size: '24',
+      text_position: 'right',
+      paragraph_size: 'full',
       image_width: image.width,
       image_height: image.height,
-      image_scale: '1'
+      image_scale: 'x1'
     });
   };
 };

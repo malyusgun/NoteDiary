@@ -12,7 +12,6 @@ export const useFilesWebsocketStore = defineStore('filesWebsocketStore', () => {
     socket.value = new WebSocket('ws://localhost:5001');
     socket.value.binaryType = 'arraybuffer';
     socket.value.onmessage = (response) => {
-      console.log('response: ', response);
       if (response?.data?.byteLength) {
         filesBuffer.value.push(response);
       }
@@ -33,7 +32,6 @@ export const useFilesWebsocketStore = defineStore('filesWebsocketStore', () => {
     imageUrl.value = '';
   }
   function sendData(data: unknown) {
-    console.log('data: ', data);
     socket.value.send(data);
   }
   return {

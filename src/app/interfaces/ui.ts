@@ -1,7 +1,8 @@
 import type { TTheme } from '@/app/interfaces/environment';
 
-export interface IToggleButtonItem {
+export interface IToggleButtonOption {
   label: string;
+  value?: string | number | boolean;
   textColor?: TTheme;
   backgroundColor?: TTheme;
   isLabelHidden?: boolean;

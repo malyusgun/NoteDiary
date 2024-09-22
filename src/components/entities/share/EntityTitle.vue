@@ -28,6 +28,7 @@ const title = useVModel(props, 'title', emit);
         'pointer-events-none': !isEditMode
       }
     ]"
+    size="1"
     @change="$emit('editTitle')"
   />
 </template>

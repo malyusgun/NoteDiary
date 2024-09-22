@@ -89,14 +89,14 @@ const isVisible = useVModel(props, 'isVisible', emit);
   opacity: 0;
 }
 .openedDrawerBackground {
-  z-index: 60;
+  z-index: 30;
   opacity: 1;
 }
 .drawer {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9999;
+  z-index: 31;
   width: 350px;
   height: 100vh;
   padding: 20px;

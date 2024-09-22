@@ -98,12 +98,9 @@ const openCropImageModal = () => (isModalCropImage.value = true);
             style="min-height: 100px; max-height: 700px"
             class="object-contain order-1"
           />
-          <!--          <div class="speedDialSize absolute left-0 top-0 transition-all select-none">-->
-          <!--            <ImageSizeMenu v-if="isEditMode" :entityData="entityData" @scaleImage="scaleImage" />-->
-          <!--          </div>-->
         </div>
         <div
-          v-if="entityData.text_position"
+          v-show="entityData.text || entityData.text === ''"
           class="textContainer relative leading-none"
           :style="`width: ${textContainerWidth}px; height: ${entityData.image_height}px`"
         >

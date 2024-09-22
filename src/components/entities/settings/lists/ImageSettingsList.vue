@@ -3,21 +3,22 @@ import type { TTheme } from '@/app/interfaces/environment';
 import { useVModels } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
 import ToggleButton from '@/shared/ui/ToggleButton.vue';
-import type { ISliderOption, IToggleButtonItem } from '@/app/interfaces/ui';
-
+import {
+  imageScaleOptions,
+  entityIsTitleOptions,
+  entityIsTextOptions,
+  entityPositionOptions,
+  entityTitlePositionOptions,
+  entityTextPositionOptions,
+  isEntityWidthFullOptions
+} from './options';
+import { getImageScalesToRemove, scaleImage } from '@/app/helpers/images';
 interface Props {
   newEntityData: IImage;
   isTitle: boolean;
   isText: boolean;
   isEntityWidthFull: boolean;
   themeColor: TTheme;
-  entityIsTitleOptions: IToggleButtonItem[];
-  entityIsTextOptions: IToggleButtonItem[];
-  entityPositionOptions: IToggleButtonItem[];
-  entityTitlePositionOptions: IToggleButtonItem[];
-  entityParagraphSizeOptions: IToggleButtonItem[];
-  entityTextPositionOptions: IToggleButtonItem[];
-  imageScaleOptions: ISliderOption[];
 }
 const props = defineProps<Props>();
 const emit = defineEmits([
@@ -27,6 +28,22 @@ const emit = defineEmits([
   'update:isEntityWidthFull'
 ]);
 const { newEntityData, isTitle, isText, isEntityWidthFull } = useVModels(props, emit);
+const scalesToRemove = getImageScalesToRemove(newEntityData.value);
+if (scalesToRemove.length) {
+  imageScaleOptions.value = imageScaleOptions.value.filter(
+    (item) => !~scalesToRemove.indexOf(item.label)
+  );
+  for (let i = 0; i < imageScaleOptions.value.length; i++) {
+    imageScaleOptions.value[i].value = i;
+  }
+}
+console.log('imageScaleOptions: ', imageScaleOptions.value);
+watch(
+  () => newEntityData.value.image_scale,
+  (cur, prev) => {
+    newEntityData.value = scaleImage(newEntityData.value, prev);
+  }
+);
 </script>
 
 <template>
@@ -37,7 +54,7 @@ const { newEntityData, isTitle, isText, isEntityWidthFull } = useVModels(props, 
         v-model:value="newEntityData.image_scale"
         width="300px"
         size="small"
-        max="7"
+        :max="imageScaleOptions.length - 1"
         :options="imageScaleOptions"
         :isSmooth="true"
         backgroundColor="white"
@@ -107,29 +124,31 @@ const { newEntityData, isTitle, isText, isEntityWidthFull } = useVModels(props, 
           </div>
         </div>
         <div style="height: 108px" class="flex gap-8 items-center justify-between">
-          <div class="flex flex-col items-center">
-            <p class="py-2 text-center">Block position</p>
-            <ToggleButton
-              v-model:value="newEntityData.entity_position"
-              :theme="themeColor"
-              :options="entityPositionOptions"
-              rounded="true"
-              :border="themeColor"
-              :activeBGColor="themeColor"
-              ><template #1Icon><AlignLeftIcon /></template>
-              <template #2Icon><AlignCenterIcon /></template>
-              <template #3Icon><AlignRightIcon /></template
-            ></ToggleButton>
-          </div>
+          <Transition name="fading">
+            <div v-show="!(isText && isEntityWidthFull)" class="flex flex-col items-center">
+              <p class="py-2 text-center">Block position</p>
+              <ToggleButton
+                v-model:value="newEntityData.entity_position"
+                :theme="themeColor"
+                :options="entityPositionOptions"
+                rounded="true"
+                :border="themeColor"
+                :activeBGColor="themeColor"
+                ><template #1Icon><AlignLeftIcon /></template>
+                <template #2Icon><AlignCenterIcon /></template>
+                <template #3Icon><AlignRightIcon /></template
+              ></ToggleButton>
+            </div>
+          </Transition>
         </div>
         <div style="height: 108px" class="flex gap-8 items-center justify-between">
           <Transition name="fading">
             <div v-show="isText" class="flex flex-col items-center">
               <p class="py-2">Text width</p>
               <ToggleButton
-                v-model:value="newEntityData.paragraph_size"
+                v-model:value="isEntityWidthFull"
                 :theme="themeColor"
-                :options="entityParagraphSizeOptions"
+                :options="isEntityWidthFullOptions"
                 rounded="true"
                 :border="themeColor"
                 :activeBGColor="themeColor"

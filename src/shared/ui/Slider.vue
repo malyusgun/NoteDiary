@@ -74,16 +74,13 @@ const themeBackground = computed(() => convertThemeToColorBlackDefault(props.bac
     <input type="range" list="values" class="opacity-0 size-0" />
 
     <div v-if="options?.length">
-      <ul
-        class="marksList"
-        :style="`width: ${width ?? 200}px; margin-bottom: 5px; font-size: 10px; padding: 0 15px`"
-      >
-        <li v-for="option of options" :key="option">|</li>
+      <ul class="marksList" :style="`width: ${width ?? 200}px`">
+        <li v-for="option of options" :key="option.label">|</li>
       </ul>
       <datalist
         id="values"
         :class="[
-          '',
+          'values',
           {
             datalistVertical: orientation === 'vertical'
           }
@@ -152,11 +149,17 @@ datalist {
   flex-direction: column;
   writing-mode: vertical-lr;
 }
+.values {
+  padding: 0 -15px;
+}
 option {
   padding: 0;
 }
 .marksList {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 10px;
+  padding: 0 10px;
 }
 </style>

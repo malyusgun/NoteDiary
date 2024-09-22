@@ -29,7 +29,7 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
     socket.value = new WebSocket('ws://localhost:5000');
     socket.value.onopen = async () => {
       const userUuid = cookies.get('user_uuid');
-      console.log('userUuid', userUuid);
+      // console.log('userUuid', userUuid);
       if (userUuid) {
         const getUserData = {
           event: 'getUser',
@@ -111,13 +111,11 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
           authorizationStore.setUserNickName(response.data.nick_name);
           authorizationStore.setUserData(response.data);
           dataStore.setPagesData(response.data.pages_uuid);
-          console.log('getUser response.data: ', response.data);
           break;
         }
         case 'getPage': {
           dataStore.setCurrentPageUuid(response.data.page_uuid);
           dataStore.setCurrentPageData(response.data);
-          console.log('getPage response.data: ', response.data);
           break;
         }
         case 'getPageEntities': {

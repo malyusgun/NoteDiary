@@ -21,8 +21,8 @@ const { newEntityData, isTitle, isEntityWidthFull } = useVModels(props, emit);
 </script>
 
 <template>
-  <ul class="flex gap-2 h-full" style="min-width: 35%">
-    <li class="flex flex-col items-center gap-4" style="min-width: 150px; min-height: 108px">
+  <ul class="flex gap-2 h-full">
+    <li class="flex flex-col items-center gap-4" style="min-width: 150px; min-height: 193px">
       <div>
         <p class="py-2 text-center">Title</p>
         <div class="flex items-center">
@@ -57,7 +57,7 @@ const { newEntityData, isTitle, isEntityWidthFull } = useVModels(props, emit);
         </Transition>
       </div>
     </li>
-    <li class="flex flex-col items-center gap-4" style="min-width: 150px; min-height: 108px">
+    <li class="flex flex-col items-center gap-4" style="min-width: 150px; min-height: 193px">
       <div>
         <div class="flex flex-col items-center">
           <p class="py-2 text-center">Paragraph width</p>

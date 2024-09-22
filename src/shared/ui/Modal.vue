@@ -80,10 +80,10 @@ const isVisible = useVModel(props, 'isVisible', emit);
 <style scoped>
 .modalBackground {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: -100%;
+  left: -100%;
+  width: 250vw;
+  height: 250vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: -50;
   opacity: 0;

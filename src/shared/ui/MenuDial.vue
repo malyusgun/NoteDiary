@@ -53,6 +53,18 @@ const menuListStyles = computed(() => {
       return `transform: translateY(${isActive.value ? 20 : 0}px)`;
   }
 });
+const onClick = () => {
+  isActive.value = false;
+};
+watch(isActive, () => {
+  if (isActive.value) {
+    setTimeout(() => {
+      document.addEventListener('click', onClick);
+    }, 0);
+  } else {
+    document.removeEventListener('click', onClick);
+  }
+});
 </script>
 
 <template>

@@ -62,5 +62,9 @@
       "ecmaVersion": 2020
     },
     "rules": {}
+  },
+  "volta": {
+    "node": "20.17.0",
+    "yarn": "4.5.0"
   }
 }

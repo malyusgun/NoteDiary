@@ -20,11 +20,10 @@ const createEntity = (entity: IEntity) => {
     :entity="entitiesItem"
     :isEditMode="isEditMode"
   />
-  <div class="my-4" style="margin-left: 64px">
+  <div class="my-4" style="margin-left: 64px; min-height: 55px">
     <Transition name="bounce">
       <CreateEntityMenu v-if="isEditMode" @createEntity="createEntity" />
     </Transition>
-    <div v-if="!isEditMode" style="height: 55px"></div>
   </div>
 </template>
 

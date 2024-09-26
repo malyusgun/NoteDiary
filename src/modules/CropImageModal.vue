@@ -90,11 +90,6 @@ const submitForm = () => {
 
 <template>
   <div>
-    <!--    <Dialog-->
-    <!--      v-model:visible="isVisible"-->
-    <!--      :draggable="false"-->
-    <!--      :style="`width: ${modalWidth}%; position: relative`"-->
-    <!--    >-->
     <Modal
       v-model:isVisible="isVisible"
       :style="`width: ${modalWidth}%; position: relative`"
@@ -134,7 +129,6 @@ const submitForm = () => {
         ></Cropper>
       </div>
     </Modal>
-    <!--    </Dialog>-->
   </div>
 </template>
 

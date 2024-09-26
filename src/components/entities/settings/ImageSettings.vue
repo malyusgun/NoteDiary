@@ -4,6 +4,7 @@ import { convertThemeToColorWhiteDefault, deleteEntity, editEntity } from '@/app
 import type { TTheme } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
 import { useWindowSize } from '@vueuse/core';
+import { cropImage } from '@/app/helpers/images';
 
 interface Props {
   entityData: IImage;
@@ -14,6 +15,7 @@ const entityData = computed(() => props.entityData);
 const newEntityData = ref({ ...entityData.value });
 watch(entityData, () => (newEntityData.value = entityData.value));
 const isModal = ref<boolean>(false);
+const isModalCropImage = ref<boolean>(false);
 const { width: windowWidth } = useWindowSize();
 
 const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
@@ -62,7 +64,14 @@ const saveChanges = () => {
   }
   isModal.value = false;
 };
-const toggleConfirmToDeleteImage = () => {
+const saveImage = async (newUrl: string, newWidth: number, newHeight: number) => {
+  entityData.value.imageUrl = newUrl;
+  entityData.value.image_width = newWidth;
+  entityData.value.image_height = newHeight;
+  await cropImage(newUrl, entityData.value);
+  isModalCropImage.value = false;
+};
+const toggleConfirmDeleteImageModal = () => {
   isModalToDeleteImage.value = !isModalToDeleteImage.value;
 };
 const deleteImage = () => {
@@ -70,6 +79,7 @@ const deleteImage = () => {
   isModalToDeleteImage.value = false;
   isModal.value = false;
 };
+const openCropImageModal = () => (isModalCropImage.value = true);
 </script>
 
 <template>
@@ -82,24 +92,17 @@ const deleteImage = () => {
   </button>
   <Modal v-model:isVisible="isModal" theme="black" width="90%"
     ><template #header><h3 class="w-max mx-auto">Edit image block</h3></template>
-    <pre>{{ newEntityData }}</pre>
-    <Modal v-model:isVisible="isModalToDeleteImage" theme="black" width="30%"
-      ><p class="font-bold pt-4 mb-4 text-center">Are you sure you want to delete this element?</p>
-      <div class="flex justify-between">
-        <Button
-          label="Yes, delete"
-          theme="red"
-          textColor="white"
-          textStyle="bold"
-          @click.prevent="deleteImage"
-        />
-        <Button
-          label="Cancel"
-          theme="white"
-          textColor="black"
-          @click.prevent="toggleConfirmToDeleteImage"
-        /></div
-    ></Modal>
+    <!--    <pre>{{ newEntityData }}</pre>-->
+    <CropImageModal
+      v-model:isVisible="isModalCropImage"
+      v-model:imageInfo="newEntityData"
+      @saveImage="saveImage"
+    />
+    <ConfirmDeleteEntityModal
+      v-model:isModalToDeleteEntity="isModalToDeleteImage"
+      @deleteEntity="deleteImage"
+      @toggleConfirmDeleteEntityModal="toggleConfirmDeleteImageModal"
+    />
     <div class="p-10 flex gap-16 items-center">
       <ImageSettingsList
         v-model:newEntityData="newEntityData"
@@ -109,7 +112,7 @@ const deleteImage = () => {
         :themeColor="themeColor"
       />
       <section
-        :style="`border-color: var(--${themeColor}-200); height: 450px; align-items: ${newEntityData.entity_position === 'right' ? 'end' : newEntityData.entity_position}`"
+        :style="`border-color: var(--${themeColor}-200); align-items: ${newEntityData.entity_position === 'right' ? 'end' : newEntityData.entity_position === 'left' ? 'start' : newEntityData.entity_position}`"
         class="flex grow flex-col gap-4 p-4 w-full min-h-full border-2 border-slate-100 border-dashed rounded-2xl"
       >
         <div
@@ -137,19 +140,18 @@ const deleteImage = () => {
               :alt="`Image ${newEntityData?.title}` || 'Image'"
               :width="newEntityData.image_width / 2"
               :height="newEntityData.image_height / 2"
-              style="min-height: 100px; max-height: 700px"
+              style="min-height: 50px; max-height: 350px"
               class="object-contain order-1"
             />
           </div>
-          {{ textContainerWidth }}
           <div
             v-show="isText"
             class="textContainer grow relative leading-none border-2 border-dashed rounded-2xl"
-            :style="`border-color: var(--${themeColor}-400); width: ${textContainerWidth / 2}px; height: ${entityData.image_height / 2}px`"
+            :style="`border-color: var(--${themeColor}-400); width: ${textContainerWidth / 2}px; height: ${newEntityData.image_height / 2}px`"
           >
             <p
               class="w-full indent-5 leading-normal order-2 p-1 overflow-hidden contain-inline-size text"
-              :style="`font-size: ${newEntityData.font_size / 2}px; height: ${entityData.image_height / 2}px;`"
+              :style="`font-size: ${newEntityData.font_size / 2}px; width: ${textContainerWidth / 2}px; height: ${newEntityData.image_height / 2}px;`"
             >
               {{ newEntityData.text ?? 'Text' }}
             </p>
@@ -164,14 +166,14 @@ const deleteImage = () => {
         theme="red"
         textStyle="bold"
         size="medium"
-        @click.prevent="toggleConfirmToDeleteImage"
+        @click.prevent="toggleConfirmDeleteImageModal"
       >
         <template #icon>
           <TrashIcon color="white" size="25" />
         </template>
       </Button>
     </div>
-    <div class="absolute top-4 left-4 z-10 hover:brightness-80 transition-all">
+    <div class="absolute flex gap-4 top-4 left-4 z-10 hover:brightness-80 transition-all">
       <Button
         label="Save"
         textColor="white"
@@ -182,6 +184,18 @@ const deleteImage = () => {
       >
         <template #icon>
           <SaveIcon color="white" size="25" />
+        </template>
+      </Button>
+      <Button
+        label="CropImage"
+        textColor="black"
+        theme="white"
+        textStyle="bold"
+        size="medium"
+        @click.prevent="openCropImageModal"
+      >
+        <template #icon>
+          <CropIcon color="black" size="25" />
         </template>
       </Button>
     </div>

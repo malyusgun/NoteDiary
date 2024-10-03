@@ -116,7 +116,7 @@ const isVisible = useVModel(props, 'isVisible', emit);
 .modalHeader {
   font-weight: bold;
   font-size: 1.5rem;
-  padding-right: 50px;
+  padding: 0 50px;
   margin-bottom: 20px;
   min-height: 1rem;
 }

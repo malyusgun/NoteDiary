@@ -3,7 +3,7 @@ import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import type { IImage } from '@/app/interfaces/entities';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import { useInterfaceStore } from '@/app/stores/interface';
-import { editEntity } from '@/app/helpers/index';
+import { imageScaleOptions } from '@/components/entities/settings/lists/options';
 
 export const setDefaultPageBackground = () => {
   const interfaceStore = useInterfaceStore();
@@ -16,14 +16,14 @@ export const addUrlsToImageEntities = (entities: IEntity[]) => {
   let index = 0;
   const entitiesToReturn = entities.map((entity: IEntity) => {
     if (!entity?.image_width) return entity;
-    if (entity.imageUrl) return entity;
-    if (filesWebsocketStore.imageUrl) {
+    if (entity.image_url) return entity;
+    if (filesWebsocketStore.image_url) {
       // редактирование сущности изображения
-      entity.imageUrl = filesWebsocketStore.imageUrl;
+      entity.image_url = filesWebsocketStore.image_url;
       filesWebsocketStore.cleanImageUrl();
     } else {
       filesBuffer[index] = new Blob([filesBuffer[index].data], { type: 'image/jpeg' });
-      entity.imageUrl = URL.createObjectURL(filesBuffer[index]);
+      entity.image_url = URL.createObjectURL(filesBuffer[index]);
       index += 1;
     }
     return entity;
@@ -38,8 +38,8 @@ export const checkIsImage = (entity: IEntity) => {
   }
   const entityToReturn = { ...entity };
   const filesWebsocketStore = useFilesWebsocketStore();
-  filesWebsocketStore.saveImageUrl(entityToReturn.imageUrl!);
-  delete entityToReturn.imageUrl;
+  filesWebsocketStore.saveImageUrl(entityToReturn.image_url!);
+  delete entityToReturn.image_url;
   return entityToReturn;
 };
 
@@ -58,127 +58,50 @@ export const cropImage = async (newUrl: string, entity: IImage) => {
   websocketStore.sendData(data);
 };
 
-export const getImageScalesToRemove = (entity: IImage) => {
+export const getImageScalesToRemove = (
+  entity: IImage,
+  isText?: boolean,
+  isEntityWidthFull: boolean
+) => {
   const valuesToRemove = [];
   let scale = entity.image_scale;
   if (scale[0] === 'x') scale = scale.slice(1);
   const initialImageWidth = Math.ceil(+entity.image_width / +scale);
-  const initialImageHeight = Math.ceil(+entity.image_height / +scale);
-  console.log(initialImageWidth, initialImageHeight);
-  if (initialImageWidth <= 400 || initialImageHeight <= 400) {
+  console.log(initialImageWidth);
+  if (initialImageWidth <= 20) {
     valuesToRemove.push('x0.25');
-    if (
-      initialImageWidth <= 200 ||
-      initialImageHeight <= 200 ||
-      (initialImageWidth >= 1600 && (entity.text ?? null))
-    ) {
+    if (initialImageWidth <= 10) {
       valuesToRemove.push('x0.5');
-      if (
-        initialImageWidth <= 95 ||
-        initialImageHeight <= 95 ||
-        (initialImageWidth >= 1066 && (entity.text ?? null))
-      ) {
-        valuesToRemove.push('x0.75');
-      }
     }
   }
-  if (
-    (initialImageWidth >= 800 && (entity.text ?? null)) ||
-    entity.image_width > initialImageWidth
-  ) {
+  if (initialImageWidth <= 7 || (!isEntityWidthFull && isText && initialImageWidth > 66)) {
+    valuesToRemove.push('x0.75');
+  }
+  if (initialImageWidth > 75 && isText) {
     valuesToRemove.push('x1');
   }
   if (
-    initialImageWidth >= 960 ||
-    initialImageHeight >= 560 ||
-    (initialImageWidth >= 640 && (entity.text ?? null))
+    initialImageWidth > 80 ||
+    (initialImageWidth > 60 && isText) ||
+    (!isEntityWidthFull && isText && initialImageWidth > 40)
   ) {
     valuesToRemove.push('x1.25');
     if (
-      initialImageWidth >= 800 ||
-      initialImageHeight >= 467 ||
-      (initialImageWidth >= 533 && (entity.text ?? null))
+      initialImageWidth > 66 ||
+      (initialImageWidth > 50 && isText) ||
+      (!isEntityWidthFull && isText && initialImageWidth > 33)
     ) {
       valuesToRemove.push('x1.5');
       if (
-        initialImageWidth >= 685 ||
-        initialImageHeight >= 400 ||
-        (initialImageWidth >= 457 && (entity.text ?? null))
+        initialImageWidth > 57 ||
+        (initialImageWidth > 42 && isText) ||
+        (!isEntityWidthFull && isText && initialImageWidth > 28)
       ) {
         valuesToRemove.push('x1.75');
         if (
-          initialImageWidth >= 600 ||
-          initialImageHeight >= 350 ||
-          (initialImageWidth >= 400 && (entity.text ?? null))
-        ) {
-          valuesToRemove.push('x2');
-        }
-      }
-    }
-  }
-  console.log('valuesToRemove: ', valuesToRemove);
-  return valuesToRemove;
-};
-
-export const getImageSpeedDialSizeSmallerLabelsToRemove = (entity: IImage) => {
-  const valuesToRemove = [];
-  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
-  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
-  if (initialImageWidth <= 400 || initialImageHeight <= 400) {
-    valuesToRemove.push('x0.25');
-    if (
-      initialImageWidth <= 200 ||
-      initialImageHeight <= 200 ||
-      (initialImageWidth >= 1600 && entity.text_position)
-    ) {
-      valuesToRemove.push('x0.5');
-      if (
-        initialImageWidth <= 95 ||
-        initialImageHeight <= 95 ||
-        (initialImageWidth >= 1066 && entity.text_position)
-      ) {
-        valuesToRemove.push('x0.75');
-      }
-    }
-  }
-  if (
-    (initialImageWidth >= 800 && entity.text_position) ||
-    entity.image_width < initialImageWidth
-  ) {
-    valuesToRemove.push('x1');
-  }
-  return valuesToRemove;
-};
-
-export const getImageSpeedDialSizeBiggerLabelsToRemove = (entity: IImage) => {
-  const valuesToRemove = [];
-  const initialImageWidth = Math.ceil(entity.image_width / +entity.image_scale);
-  const initialImageHeight = Math.ceil(entity.image_height / +entity.image_scale);
-  if ((initialImageWidth >= 800 && entity.text) || entity.image_width > initialImageWidth) {
-    valuesToRemove.push('x1');
-  }
-  if (
-    initialImageWidth >= 960 ||
-    initialImageHeight >= 560 ||
-    (initialImageWidth >= 640 && entity.text)
-  ) {
-    valuesToRemove.push('x1.25');
-    if (
-      initialImageWidth >= 800 ||
-      initialImageHeight >= 467 ||
-      (initialImageWidth >= 533 && entity.text)
-    ) {
-      valuesToRemove.push('x1.5');
-      if (
-        initialImageWidth >= 685 ||
-        initialImageHeight >= 400 ||
-        (initialImageWidth >= 457 && entity.text)
-      ) {
-        valuesToRemove.push('x1.75');
-        if (
-          initialImageWidth >= 600 ||
-          initialImageHeight >= 350 ||
-          (initialImageWidth >= 400 && entity.text)
+          initialImageWidth > 50 ||
+          (initialImageWidth > 37 && isText) ||
+          (!isEntityWidthFull && isText && initialImageWidth > 25)
         ) {
           valuesToRemove.push('x2');
         }
@@ -186,6 +109,25 @@ export const getImageSpeedDialSizeBiggerLabelsToRemove = (entity: IImage) => {
     }
   }
   return valuesToRemove;
+};
+
+export const filterImageScaleOptions = (
+  entityData: IImage,
+  isText: boolean,
+  isEntityWidthFull: boolean
+) => {
+  const scalesToRemove = getImageScalesToRemove(entityData, isText, isEntityWidthFull);
+  let initialScales = imageScaleOptions;
+
+  if (!scalesToRemove.length) return imageScaleOptions;
+
+  initialScales = initialScales.filter((item) => !~scalesToRemove.indexOf(item.label));
+
+  for (let i = 0; i < initialScales.length; i++) {
+    initialScales[i].value = i;
+  }
+
+  return initialScales;
 };
 
 export const scaleImage = (entityData: IImage, prevScale: string) => {
@@ -194,7 +136,5 @@ export const scaleImage = (entityData: IImage, prevScale: string) => {
   if (prevScale[0] === 'x') prevScale = prevScale.slice(1);
   const initialWidth = Math.ceil(+entityData.image_width / +prevScale);
   entityData.image_width = Math.ceil(initialWidth * +scale);
-  const initialHeight = Math.ceil(+entityData.image_height / +prevScale);
-  entityData.image_height = Math.ceil(initialHeight * +scale);
   return entityData;
 };

@@ -144,6 +144,9 @@ const buttonPadding = computed(() => {
   border-radius: 5px;
   transition: filter 0.2s ease-in-out;
 }
+.text {
+  line-height: 1;
+}
 .icon {
   display: flex;
   align-items: center;

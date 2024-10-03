@@ -12,7 +12,7 @@ import {
   entityTextPositionOptions,
   isEntityWidthFullOptions
 } from './options';
-import { getImageScalesToRemove, scaleImage } from '@/app/helpers/images';
+import { filterImageScaleOptions, scaleImage } from '@/app/helpers/images';
 interface Props {
   newEntityData: IImage;
   isTitle: boolean;
@@ -28,16 +28,15 @@ const emit = defineEmits([
   'update:isEntityWidthFull'
 ]);
 const { newEntityData, isTitle, isText, isEntityWidthFull } = useVModels(props, emit);
-const scalesToRemove = getImageScalesToRemove(newEntityData.value);
-if (scalesToRemove.length) {
-  imageScaleOptions.value = imageScaleOptions.value.filter(
-    (item) => !~scalesToRemove.indexOf(item.label)
+const scales = ref(imageScaleOptions);
+scales.value = filterImageScaleOptions(newEntityData.value, isText.value, isEntityWidthFull.value);
+watch([isText, isEntityWidthFull], () => {
+  scales.value = filterImageScaleOptions(
+    newEntityData.value,
+    isText.value,
+    isEntityWidthFull.value
   );
-  for (let i = 0; i < imageScaleOptions.value.length; i++) {
-    imageScaleOptions.value[i].value = i;
-  }
-}
-console.log('imageScaleOptions: ', imageScaleOptions.value);
+});
 watch(
   () => newEntityData.value.image_scale,
   (cur, prev) => {
@@ -54,8 +53,8 @@ watch(
         v-model:value="newEntityData.image_scale"
         width="300px"
         size="small"
-        :max="imageScaleOptions.length - 1"
-        :options="imageScaleOptions"
+        :max="scales.length - 1"
+        :options="scales"
         :isSmooth="true"
         backgroundColor="white"
         :theme="themeColor"
@@ -110,18 +109,22 @@ watch(
         </div>
       </li>
       <li class="flex flex-col items-center justify-between gap-4" style="min-width: 150px">
-        <div>
-          <p class="py-2 text-center">Text</p>
-          <div class="flex items-center">
-            <ToggleButton
-              v-model:value="isText"
-              :theme="themeColor"
-              :options="entityIsTextOptions"
-              rounded="true"
-              :border="themeColor"
-              :activeBGColor="themeColor"
-            />
-          </div>
+        <div style="height: 108px">
+          <Transition name="fading">
+            <div v-show="newEntityData.image_width <= 75" class="flex flex-col items-center">
+              <p class="py-2 text-center">Text</p>
+              <div class="flex items-center">
+                <ToggleButton
+                  v-model:value="isText"
+                  :theme="themeColor"
+                  :options="entityIsTextOptions"
+                  rounded="true"
+                  :border="themeColor"
+                  :activeBGColor="themeColor"
+                />
+              </div>
+            </div>
+          </Transition>
         </div>
         <div style="height: 108px" class="flex gap-8 items-center justify-between">
           <Transition name="fading">
@@ -143,7 +146,10 @@ watch(
         </div>
         <div style="height: 108px" class="flex gap-8 items-center justify-between">
           <Transition name="fading">
-            <div v-show="isText" class="flex flex-col items-center">
+            <div
+              v-show="isText && newEntityData.image_width <= 50"
+              class="flex flex-col items-center"
+            >
               <p class="py-2">Text width</p>
               <ToggleButton
                 v-model:value="isEntityWidthFull"

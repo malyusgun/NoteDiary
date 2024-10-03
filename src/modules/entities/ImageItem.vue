@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
-import { editEntity } from '@/app/helpers';
+import { editEntity, returnOriginalImageSize } from '@/app/helpers';
 import { cropImage } from '@/app/helpers/images';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
+import { useVModel } from '@vueuse/core';
 
 interface Props {
   entityData: IImage;
   isEditMode: boolean;
 }
 const props = defineProps<Props>();
-const entityData = ref(props.entityData);
+const emit = defineEmits(['update:entityData']);
+const entityData = useVModel(props, 'entityData', emit);
 
 const dataStore = useDataStore();
 const entities = computed(() => dataStore.entities);
@@ -21,12 +22,10 @@ const entityIndex = computed(() =>
 const entitiesLength = computed(() => entities.value.length);
 
 const isModalCropImage = ref<boolean>(false);
-const { width: windowWidth } = useWindowSize();
 
 const textContainerWidth = computed(() => {
-  if (entityData.value?.paragraph_size === 'half')
-    return (windowWidth.value - 160 - entityData.value.image_width) / 2;
-  return windowWidth.value - 160 - entityData.value.image_width;
+  if (entityData.value?.paragraph_size === 'half') return (100 - entityData.value.image_width) / 2;
+  return 100 - entityData.value.image_width;
 });
 
 const editTitle = () => {
@@ -39,22 +38,20 @@ const saveChanges = (newState: IImage) => {
   editEntity(newState);
   entityData.value = newState;
 };
-const saveImage = async (newUrl: string, newWidth: number, newHeight: number) => {
-  entityData.value.imageUrl = newUrl;
+const returnOriginalSize = () => {
+  const newState = entityData.value;
+  newState.file_width = newState.file_width_initial;
+  newState.file_height = newState.file_height_initial;
+  entityData.value = newState;
+  returnOriginalImageSize(newState);
+  // entityData.value.image_url = newState.image_url_initial;
+};
+const saveImage = async (newUrl: string, newWidth: number) => {
+  entityData.value.image_url = newUrl;
   entityData.value.image_width = newWidth;
-  entityData.value.image_height = newHeight;
   await cropImage(newUrl, entityData.value);
   isModalCropImage.value = false;
 };
-const scaleImage = (scale: string) => {
-  const initialWidth = Math.ceil(entityData.value.image_width / +entityData.value.image_scale);
-  entityData.value.image_width = initialWidth * +scale;
-  const initialHeight = Math.ceil(entityData.value.image_height / +entityData.value.image_scale);
-  entityData.value.image_height = initialHeight * +scale;
-  entityData.value.image_scale = scale;
-  editEntity({ ...entityData.value });
-};
-const openCropImageModal = () => (isModalCropImage.value = true);
 </script>
 
 <template>
@@ -80,7 +77,17 @@ const openCropImageModal = () => (isModalCropImage.value = true);
         :isEditMode="isEditMode"
         @editTitle="editTitle"
       />
-      <div style="gap: 32px" class="flex" :style="`height: ${entityData.image_height}px`">
+      <div
+        style="gap: 32px"
+        :class="[
+          'flex',
+          {
+            'justify-start': entityData.entity_position === 'left',
+            'justify-center': entityData.entity_position === 'center',
+            'justify-end': entityData.entity_position === 'right'
+          }
+        ]"
+      >
         <div
           :class="[
             'imageContainer relative leading-none',
@@ -88,13 +95,11 @@ const openCropImageModal = () => (isModalCropImage.value = true);
               'order-3': entityData.text_position === 'left'
             }
           ]"
-          :style="`width: ${entityData.image_width}px; height: ${entityData.image_height}px; min-width: 100px; min-height: 100px`"
+          :style="`width: ${entityData.image_width}%`"
         >
           <img
-            :src="entityData?.imageUrl"
+            :src="entityData?.image_url"
             :alt="`Image ${entityData?.title}` || 'Image'"
-            :width="entityData.image_width"
-            :height="entityData.image_height"
             style="min-height: 100px; max-height: 700px"
             class="object-contain order-1"
           />
@@ -102,7 +107,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
         <div
           v-show="entityData.text || entityData.text === ''"
           class="textContainer relative leading-none"
-          :style="`width: ${textContainerWidth}px; height: ${entityData.image_height}px`"
+          :style="`width: ${textContainerWidth}%`"
         >
           <textarea
             ref="textarea"
@@ -115,13 +120,18 @@ const openCropImageModal = () => (isModalCropImage.value = true);
             ]"
             placeholder="Enter text..."
             rows="7"
-            :style="`font-size: ${entityData.font_size}px; height: ${entityData.image_height}px;`"
+            :style="`font-size: ${entityData.font_size}px`"
             spellcheck="false"
             @change="editText"
           />
         </div>
       </div>
-      <ImageSettings v-if="isEditMode" :entityData="entityData" @saveChanges="saveChanges" />
+      <ImageSettings
+        v-if="isEditMode"
+        :entityData="entityData"
+        @saveChanges="saveChanges"
+        @returnOriginalSize="returnOriginalSize"
+      />
       <EntityPositionSettings
         v-if="isEditMode && entitiesLength > 1"
         :entityUuid="entityData.entity_uuid"

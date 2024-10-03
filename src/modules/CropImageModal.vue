@@ -23,52 +23,6 @@ const stageSize = ref({
   height: 200
 });
 
-watch(
-  () => isVisible.value,
-  () => {
-    if (imageInfo.value.imageUrl && isVisible.value) {
-      imageInstance.src = imageInfo.value.imageUrl;
-      imageInstance.onload = () => {
-        const imageHeight = imageInfo.value.image_height;
-        const imageWidth = imageInfo.value.image_width;
-        imageInstance.src = imageInfo.value.imageUrl;
-        if (imageWidth < (imageHeight * windowWidth.value) / windowHeight.value) {
-          imageInstance.onload = () => {
-            if (imageHeight < windowHeight.value * 0.75 - 20) {
-              stageSize.value.width = imageWidth;
-              stageSize.value.height = imageHeight;
-              imageInstance.width = stageSize.value.width;
-              imageInstance.height = stageSize.value.height;
-            } else {
-              stageSize.value.height = windowHeight.value * 0.75 - 20;
-              imageInstance.height = stageSize.value.height;
-              imageInstance.width = +(stageSize.value.height / imageHeight).toFixed(2) * imageWidth;
-              stageSize.value.width = imageInstance.width;
-            }
-          };
-        } else {
-          imageInstance.onload = () => {
-            if (imageWidth < windowWidth.value * 0.63 - 60) {
-              stageSize.value.width = imageWidth;
-              stageSize.value.height = imageHeight;
-              imageInstance.width = stageSize.value.width;
-              imageInstance.height = stageSize.value.height;
-            } else {
-              stageSize.value.width = windowWidth.value * 0.63 - 60;
-              imageInstance.width = stageSize.value.width;
-              imageInstance.height = +(stageSize.value.width / imageWidth).toFixed(2) * imageHeight;
-              stageSize.value.height = imageInstance.height;
-            }
-          };
-        }
-      };
-    }
-  },
-  {
-    immediate: true
-  }
-);
-
 const modalWidth = computed(() => {
   if (
     stageSize.value.width < windowWidth.value * 0.63 - 60 ||
@@ -77,13 +31,69 @@ const modalWidth = computed(() => {
     return (100 * (stageSize.value.width + 60)) / windowWidth.value;
   } else return 63;
 });
+
+watch(
+  () => isVisible.value,
+  () => {
+    if (!imageInfo.value.image_url || !isVisible.value) return;
+
+    imageInstance.src = imageInfo.value.image_url;
+    imageInstance.onload = () => {
+      const imageWidth = (imageInfo.value.image_width / 100) * (windowWidth.value - 128);
+      const imageHeight = (imageWidth / imageInfo.value.file_width) * imageInfo.value.file_height;
+      console.log(`file width: ${imageInfo.value.file_width},
+      file height: ${imageInfo.value.file_height}`);
+      console.log(`width: ${imageWidth},
+      height: ${imageHeight}`);
+      imageInstance.src = imageInfo.value.image_url;
+      if (imageWidth < (imageHeight * windowWidth.value) / windowHeight.value) {
+        imageInstance.onload = () => {
+          if (imageHeight < windowHeight.value * 0.75 - 20) {
+            stageSize.value.width = imageWidth;
+            stageSize.value.height = imageHeight;
+            imageInstance.width = stageSize.value.width;
+            imageInstance.height = stageSize.value.height;
+          } else {
+            stageSize.value.height = windowHeight.value * 0.75 - 20;
+            imageInstance.height = stageSize.value.height;
+            imageInstance.width = +(stageSize.value.height / imageHeight).toFixed(2) * imageWidth;
+            stageSize.value.width = imageInstance.width;
+          }
+        };
+      } else {
+        imageInstance.onload = () => {
+          if (imageWidth < windowWidth.value * 0.63 - 60) {
+            stageSize.value.width = imageWidth;
+            stageSize.value.height = imageHeight;
+            imageInstance.width = stageSize.value.width;
+            imageInstance.height = stageSize.value.height;
+          } else {
+            stageSize.value.width = windowWidth.value * 0.63 - 60;
+            imageInstance.width = stageSize.value.width;
+            imageInstance.height = +(stageSize.value.width / imageWidth).toFixed(2) * imageHeight;
+            stageSize.value.height = imageInstance.height;
+          }
+        };
+      }
+    };
+  },
+  {
+    immediate: true
+  }
+);
 const onCropperChange = async ({ canvas }) => {
   imageInstance.width = canvas.width;
   imageInstance.height = canvas.height;
   finalImageUrl.value = canvas.toDataURL();
 };
 const submitForm = () => {
-  emit('saveImage', finalImageUrl.value, imageInstance.width, imageInstance.height);
+  emit(
+    'saveImage',
+    finalImageUrl.value,
+    Math.ceil((imageInstance.width / windowWidth.value) * 100),
+    imageInstance.width,
+    imageInstance.height
+  );
   finalImageUrl.value = '';
 };
 </script>

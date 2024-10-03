@@ -1,6 +1,6 @@
 import type { IToggleButtonOption, ISliderOption } from '@/app/interfaces/ui';
 
-const imageScaleOptions = ref<ISliderOption[]>([
+const imageScaleOptions: ISliderOption[] = [
   {
     label: 'x0.25',
     value: '0',
@@ -41,7 +41,7 @@ const imageScaleOptions = ref<ISliderOption[]>([
     value: '7',
     color: 'var(--red-800)'
   }
-]);
+];
 const entityIsTitleOptions = ref<IToggleButtonOption[]>([
   {
     label: 'Off',

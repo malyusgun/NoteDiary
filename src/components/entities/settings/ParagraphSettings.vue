@@ -10,8 +10,8 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['saveChanges']);
 const entityData = computed(() => props.entityData);
+const prevEntityData = { ...entityData.value };
 const newEntityData = ref({ ...entityData.value });
-watch(entityData, () => (newEntityData.value = entityData.value));
 const isModal = ref<boolean>(false);
 const isModalToDeleteParagraph = ref<boolean>(false);
 const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
@@ -20,8 +20,8 @@ const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
 };
 const themeColor: TTheme = cookies.get('favorite_color');
 const themeColorConverted = convertThemeToColorWhiteDefault(themeColor);
-const isTitle = ref(!!entityData.value.title);
-const isEntityWidthFull = ref(entityData.value.paragraph_size === 'full');
+const isTitle = ref(!!newEntityData.value.title);
+const isEntityWidthFull = ref(newEntityData.value.paragraph_size === 'full');
 
 const maxLines = computed(() => {
   if (isTitle.value) {
@@ -84,17 +84,17 @@ const entityTitlePositionOptions = ref([
 ]);
 const saveChanges = () => {
   const entityPosition = isEntityWidthFull.value ? 'full' : 'half';
-  if (entityPosition !== entityData.value.entity_position) {
+  if (entityPosition !== prevEntityData.entity_position) {
     newEntityData.value.paragraph_size = entityPosition;
   }
-  if (isTitle.value !== !!entityData.value.title) {
+  if (isTitle.value !== !!prevEntityData.title) {
     if (isTitle.value) {
       newEntityData.value.title = 'Title';
     } else {
       newEntityData.value.title = null;
     }
   }
-  if (JSON.stringify(entityData.value) !== JSON.stringify(newEntityData.value)) {
+  if (JSON.stringify(prevEntityData) !== JSON.stringify(newEntityData.value)) {
     emit('saveChanges', newEntityData.value);
   }
   isModal.value = false;

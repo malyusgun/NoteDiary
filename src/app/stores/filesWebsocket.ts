@@ -6,7 +6,7 @@ export const useFilesWebsocketStore = defineStore('filesWebsocketStore', () => {
 
   const socket = ref();
   const filesBuffer = ref([]);
-  const imageUrl = ref();
+  const image_url = ref();
 
   onMounted(() => {
     socket.value = new WebSocket('ws://localhost:5001');
@@ -26,17 +26,17 @@ export const useFilesWebsocketStore = defineStore('filesWebsocketStore', () => {
     filesBuffer.value = [];
   }
   function saveImageUrl(url: string) {
-    imageUrl.value = url;
+    image_url.value = url;
   }
   function cleanImageUrl() {
-    imageUrl.value = '';
+    image_url.value = '';
   }
   function sendData(data: unknown) {
     socket.value.send(data);
   }
   return {
     filesBuffer,
-    imageUrl,
+    image_url,
     cleanFilesBuffer,
     removeFirstFilesBuffer,
     saveImageUrl,

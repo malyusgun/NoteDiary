@@ -26,7 +26,7 @@ const isMenuVisible = ref<boolean>(false);
 const isEditMode = ref<boolean>(false);
 const isModalUploadFile = ref<boolean>(false);
 const backgroundImageInfo = ref<IImageMainInfo>({
-  imageUrl: backgroundUrl.value,
+  image_url: backgroundUrl.value,
   image_width: 0,
   image_height: 0
 });
@@ -64,7 +64,7 @@ const uploadFile = ($event: Event) => {
     const url = URL.createObjectURL(file);
     image.src = url;
     image.onload = function () {
-      backgroundImageInfo.value.imageUrl = url;
+      backgroundImageInfo.value.image_url = url;
       backgroundImageInfo.value.image_width = image.width;
       backgroundImageInfo.value.image_height = image.height;
       isModalUploadFile.value = true;

@@ -25,9 +25,13 @@ export interface IEntity {
   paragraph_size?: string | null;
   text_position?: string | null;
   image_buffer?: string;
-  imageUrl?: string;
+  file_width_initial?: number;
+  file_height_initial?: number;
+  image_url_initial?: string;
+  image_url?: string;
   image_width?: number;
-  image_height?: number;
+  file_width?: number;
+  file_height?: number;
   entity_position?: string;
   entity_title_position?: string;
   image_scale?: string;

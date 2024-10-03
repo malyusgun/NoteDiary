@@ -25,7 +25,7 @@ const entity = useVModel(props, 'entity', emit);
     />
     <ImageItem
       v-if="entity.entity_type === 'image'"
-      :entityData="entity as IImage"
+      v-model:entityData="entity as IImage"
       :isEditMode="isEditMode"
     />
   </div>

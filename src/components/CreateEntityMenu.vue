@@ -31,16 +31,21 @@ const addImage = async (files: FileList) => {
     const blob = await response.blob();
     const buffer = await blob.arrayBuffer();
     const { width: windowWidth } = useWindowSize();
-    const maxWidth = windowWidth.value - 128;
-    const maxHeight = 700;
-    if (image.width > maxWidth) {
-      image.height = Math.floor((maxWidth / image.width) * image.height);
-      image.width = maxWidth;
-    }
+    const maxHeight = 600;
+    const initWidth = image.width;
     if (image.height > maxHeight) {
-      image.width = Math.floor((maxHeight / image.height) * image.width);
-      image.height = maxHeight;
+      const coefficient = maxHeight / image.height;
+      image.width *= coefficient;
     }
+    let imageWidth = Math.ceil((image.width / (windowWidth.value - 128)) * 100);
+    if (imageWidth > 100) {
+      imageWidth = 100;
+    }
+    if (imageWidth < 5) {
+      imageWidth = 5;
+    }
+    console.log(`image.width: ${image.width},
+    image.height: ${image.height}`);
     emit('createEntity', {
       entity_type: 'image',
       entity_order: entitiesCount.value + 1,
@@ -50,8 +55,11 @@ const addImage = async (files: FileList) => {
       font_size: '24',
       text_position: 'right',
       paragraph_size: 'full',
-      image_width: image.width,
-      image_height: image.height,
+      image_width: imageWidth,
+      file_width: initWidth,
+      file_height: image.height,
+      file_width_initial: initWidth,
+      file_height_initial: image.height,
       image_scale: 'x1'
     });
   };

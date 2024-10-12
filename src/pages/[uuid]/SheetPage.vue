@@ -7,7 +7,8 @@ import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
 import { createEntity, fetchForEntities } from '@/app/helpers';
 import cookies from '@/app/plugins/Cookie';
-import { setDefaultPageBackground } from '@/app/helpers/images';
+import { calcImageWidth, setDefaultPageBackground } from '@/app/helpers/images';
+import { useWindowSize } from '@vueuse/core';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
@@ -30,11 +31,12 @@ const backgroundImageInfo = ref<IImageMainInfo>({
   image_width: 0,
   image_height: 0
 });
+const { width: windowWidth } = useWindowSize();
 
 onMounted(() => {
   const onKeydown = (event) => {
-    if (event.key === 'Alt') isEditMode.value = !isEditMode.value;
-    if (event.key === 'Escape') isMenuVisible.value = !isMenuVisible.value;
+    if (event.ctrlKey && event.altKey) isEditMode.value = !isEditMode.value;
+    if (event.ctrlKey && event.shiftKey) isMenuVisible.value = !isMenuVisible.value;
   };
   document.addEventListener('keydown', onKeydown);
   const getPageBackgroundData = {
@@ -64,9 +66,11 @@ const uploadFile = ($event: Event) => {
     const url = URL.createObjectURL(file);
     image.src = url;
     image.onload = function () {
+      const imageWidth = calcImageWidth(image.width, windowWidth.value);
       backgroundImageInfo.value.image_url = url;
-      backgroundImageInfo.value.image_width = image.width;
-      backgroundImageInfo.value.image_height = image.height;
+      backgroundImageInfo.value.image_width = imageWidth;
+      backgroundImageInfo.value.file_width = image.width;
+      backgroundImageInfo.value.file_height = image.height;
       isModalUploadFile.value = true;
     };
   }
@@ -92,7 +96,7 @@ const openMenu = () => (isMenuVisible.value = true);
   <CropImageModal
     v-model:isVisible="isModalUploadFile"
     v-model:imageInfo="backgroundImageInfo"
-    @saveImage="saveImage"
+    @cropImage="saveImage"
   />
   <main
     id="pageContainer"

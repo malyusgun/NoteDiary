@@ -3,7 +3,7 @@ import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import type { IImage } from '@/app/interfaces/entities';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import { useInterfaceStore } from '@/app/stores/interface';
-import { imageScaleOptions } from '@/components/entities/settings/lists/options';
+import { imageScaleOptions } from '@/components/entities/settings/lists/constants/options';
 
 export const setDefaultPageBackground = () => {
   const interfaceStore = useInterfaceStore();
@@ -25,6 +25,9 @@ export const addUrlsToImageEntities = (entities: IEntity[]) => {
       filesBuffer[index] = new Blob([filesBuffer[index].data], { type: 'image/jpeg' });
       entity.image_url = URL.createObjectURL(filesBuffer[index]);
       index += 1;
+      filesBuffer[index] = new Blob([filesBuffer[index].data], { type: 'image/jpeg' });
+      entity.image_url_initial = URL.createObjectURL(filesBuffer[index]);
+      index += 1;
     }
     return entity;
   });
@@ -43,13 +46,28 @@ export const checkIsImage = (entity: IEntity) => {
   return entityToReturn;
 };
 
-export const cropImage = async (newUrl: string, entity: IImage) => {
+export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
+  let imageWidth = Math.ceil((fileWidth / (windowWidth - 128)) * 100);
+  if (imageWidth > 100) {
+    imageWidth = 100;
+  }
+  if (imageWidth < 5) {
+    imageWidth = 5;
+  }
+  return imageWidth;
+};
+
+export const sendCropImage = async (newUrl: string, entity: IImage) => {
   const filesWebsocketStore = useFilesWebsocketStore();
   filesWebsocketStore.saveImageUrl(newUrl);
   const websocketStore = useWebsocketStore();
   const response = await fetch(newUrl);
   const blob = await response.blob();
   const buffer = await blob.arrayBuffer();
+  const dataSetCropNow = {
+    event: 'setCropNow'
+  };
+  websocketStore.sendData(dataSetCropNow);
   filesWebsocketStore.sendData(buffer);
   const data = {
     event: 'cropImage',
@@ -67,7 +85,7 @@ export const getImageScalesToRemove = (
   let scale = entity.image_scale;
   if (scale[0] === 'x') scale = scale.slice(1);
   const initialImageWidth = Math.ceil(+entity.image_width / +scale);
-  console.log(initialImageWidth);
+  const initialImageHeight = +entity.file_height_initial;
   if (initialImageWidth <= 20) {
     valuesToRemove.push('x0.25');
     if (initialImageWidth <= 10) {
@@ -83,30 +101,42 @@ export const getImageScalesToRemove = (
   if (
     initialImageWidth > 80 ||
     (initialImageWidth > 60 && isText) ||
-    (!isEntityWidthFull && isText && initialImageWidth > 40)
+    (!isEntityWidthFull && isText && initialImageWidth > 40) ||
+    initialImageHeight * 1.25 > 1000
   ) {
     valuesToRemove.push('x1.25');
-    if (
-      initialImageWidth > 66 ||
-      (initialImageWidth > 50 && isText) ||
-      (!isEntityWidthFull && isText && initialImageWidth > 33)
-    ) {
-      valuesToRemove.push('x1.5');
-      if (
-        initialImageWidth > 57 ||
-        (initialImageWidth > 42 && isText) ||
-        (!isEntityWidthFull && isText && initialImageWidth > 28)
-      ) {
-        valuesToRemove.push('x1.75');
-        if (
-          initialImageWidth > 50 ||
-          (initialImageWidth > 37 && isText) ||
-          (!isEntityWidthFull && isText && initialImageWidth > 25)
-        ) {
-          valuesToRemove.push('x2');
-        }
-      }
-    }
+  }
+  if (
+    initialImageWidth > 66 ||
+    (initialImageWidth > 50 && isText) ||
+    (!isEntityWidthFull && isText && initialImageWidth > 33) ||
+    initialImageHeight * 1.5 > 1000
+  ) {
+    valuesToRemove.push('x1.5');
+  }
+  if (
+    initialImageWidth > 57 ||
+    (initialImageWidth > 42 && isText) ||
+    (!isEntityWidthFull && isText && initialImageWidth > 28) ||
+    initialImageHeight * 1.75 > 1000
+  ) {
+    valuesToRemove.push('x1.75');
+  }
+  if (
+    initialImageWidth > 57 ||
+    (initialImageWidth > 42 && isText) ||
+    (!isEntityWidthFull && isText && initialImageWidth > 28) ||
+    initialImageHeight * 1.75 > 1000
+  ) {
+    valuesToRemove.push('x1.75');
+  }
+  if (
+    initialImageWidth > 50 ||
+    (initialImageWidth > 37 && isText) ||
+    (!isEntityWidthFull && isText && initialImageWidth > 25) ||
+    initialImageHeight * 2 > 1000
+  ) {
+    valuesToRemove.push('x2');
   }
   return valuesToRemove;
 };

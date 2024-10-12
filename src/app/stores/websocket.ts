@@ -31,7 +31,6 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
     socket.value = new WebSocket('ws://localhost:5000');
     socket.value.onopen = async () => {
       const userUuid = cookies.get('user_uuid');
-      // console.log('userUuid', userUuid);
       if (userUuid) {
         const getUserData = {
           event: 'getUser',
@@ -163,7 +162,6 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
             originalUrl.value = entity.image_url;
             // entity.file_width = entity.file_width_initial;
             // entity.file_height = entity.file_height_initial;
-            console.log('entity.image_url ', entity.image_url);
             editEntity(entity);
             return entity;
           });
@@ -207,7 +205,7 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
   watch([filesBufferLength, entities], () => {
     if (
       (entities.value.length &&
-        filesBufferLength.value === imageEntitiesCount.value &&
+        filesBufferLength.value === imageEntitiesCount.value * 2 &&
         imageEntitiesCount.value) ||
       (isInitialAddUrlsToImageEntitiesFinished.value && filesBufferLength.value)
     ) {

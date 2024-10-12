@@ -19,17 +19,28 @@ const entityIndex = computed(() =>
 );
 const entitiesLength = computed(() => entities.value.length);
 
+let titleTimeout;
+let textTimeout;
 const editTitle = () => {
-  editEntity({ ...entityData.value, title: entityData.value.title });
+  clearTimeout(titleTimeout);
+  titleTimeout = setTimeout(
+    () => editEntity({ ...entityData.value, title: entityData.value.title }),
+    600
+  );
 };
 const editText = () => {
   editEntity({ ...entityData.value, text: entityData.value.text });
+};
+const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
+const editTextAndTriggerResize = () => {
+  triggerResize();
+  clearTimeout(textTimeout);
+  textTimeout = setTimeout(() => editText(), 600);
 };
 const saveChanges = (newState: IParagraph) => {
   editEntity(newState);
   entityData.value = newState;
 };
-const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
 </script>
 
 <template>
@@ -64,15 +75,14 @@ const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight'
           :class="[
             'w-full indent-5 leading-normal resize-none outline-0',
             {
-              'pointer-events-none': !isEditMode
+              'pointer-events-none': !`isEditMode`
             }
           ]"
           :style="`font-size: ${entityData.font_size}px;`"
           placeholder="Enter text..."
           rows="1"
           spellcheck="false"
-          @change="editText"
-          @input="triggerResize"
+          @input="editTextAndTriggerResize"
         />
       </div>
       <ParagraphSettings v-if="isEditMode" :entityData="entityData" @saveChanges="saveChanges" />

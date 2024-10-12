@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IImage } from '@/app/interfaces/entities';
-import { editEntity, returnOriginalImageSize } from '@/app/helpers';
-import { cropImage } from '@/app/helpers/images';
+import { editEntity, sendReturnOriginalSize } from '@/app/helpers';
+import { sendCropImage } from '@/app/helpers/images';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useVModel } from '@vueuse/core';
@@ -21,18 +21,26 @@ const entityIndex = computed(() =>
 );
 const entitiesLength = computed(() => entities.value.length);
 
-const isModalCropImage = ref<boolean>(false);
-
 const textContainerWidth = computed(() => {
   if (entityData.value?.paragraph_size === 'half') return (100 - entityData.value.image_width) / 2;
   return 100 - entityData.value.image_width;
 });
 
+let titleTimeout;
+let textTimeout;
 const editTitle = () => {
-  editEntity({ ...entityData.value, title: entityData.value.title });
+  clearTimeout(titleTimeout);
+  titleTimeout = setTimeout(
+    () => editEntity({ ...entityData.value, title: entityData.value.title }),
+    600
+  );
 };
 const editText = () => {
-  editEntity({ ...entityData.value, text: entityData.value.text });
+  clearTimeout(textTimeout);
+  textTimeout = setTimeout(
+    () => editEntity({ ...entityData.value, text: entityData.value.text }),
+    600
+  );
 };
 const saveChanges = (newState: IImage) => {
   editEntity(newState);
@@ -43,14 +51,8 @@ const returnOriginalSize = () => {
   newState.file_width = newState.file_width_initial;
   newState.file_height = newState.file_height_initial;
   entityData.value = newState;
-  returnOriginalImageSize(newState);
+  sendReturnOriginalSize(newState);
   // entityData.value.image_url = newState.image_url_initial;
-};
-const saveImage = async (newUrl: string, newWidth: number) => {
-  entityData.value.image_url = newUrl;
-  entityData.value.image_width = newWidth;
-  await cropImage(newUrl, entityData.value);
-  isModalCropImage.value = false;
 };
 </script>
 
@@ -65,12 +67,14 @@ const saveImage = async (newUrl: string, newWidth: number) => {
       }
     ]"
   >
-    <CropImageModal
-      v-model:isVisible="isModalCropImage"
-      v-model:imageInfo="entityData"
-      @saveImage="saveImage"
-    />
-    <div class="flex flex-col">
+    <div
+      :class="[
+        {
+          'w-1/2': entityData.paragraph_size === 'half',
+          'w-full': entityData.paragraph_size === 'full'
+        }
+      ]"
+    >
       <EntityTitle
         v-model:title="entityData.title"
         :entityData="entityData"
@@ -80,7 +84,7 @@ const saveImage = async (newUrl: string, newWidth: number) => {
       <div
         style="gap: 32px"
         :class="[
-          'flex',
+          'flex py-2',
           {
             'justify-start': entityData.entity_position === 'left',
             'justify-center': entityData.entity_position === 'center',
@@ -100,7 +104,7 @@ const saveImage = async (newUrl: string, newWidth: number) => {
           <img
             :src="entityData?.image_url"
             :alt="`Image ${entityData?.title}` || 'Image'"
-            style="min-height: 100px; max-height: 700px"
+            style="min-height: 100px; max-height: 1000px"
             class="object-contain order-1"
           />
         </div>
@@ -122,7 +126,7 @@ const saveImage = async (newUrl: string, newWidth: number) => {
             rows="7"
             :style="`font-size: ${entityData.font_size}px`"
             spellcheck="false"
-            @change="editText"
+            @input="editText"
           />
         </div>
       </div>

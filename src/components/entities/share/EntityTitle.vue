@@ -29,7 +29,7 @@ const title = useVModel(props, 'title', emit);
       }
     ]"
     size="1"
-    @change="$emit('editTitle')"
+    @input="$emit('editTitle')"
   />
 </template>
 

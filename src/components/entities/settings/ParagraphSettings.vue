@@ -9,20 +9,25 @@ interface Props {
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['saveChanges']);
-const entityData = computed(() => props.entityData);
-const prevEntityData = { ...entityData.value };
-const newEntityData = ref({ ...entityData.value });
+
+const prevEntityData = computed(() => props.entityData);
+const newEntityData = ref({ ...props.entityData });
 const isModal = ref<boolean>(false);
 const isModalToDeleteParagraph = ref<boolean>(false);
+
 const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
-  entityData.value.font_size = newSize;
-  editEntity({ ...entityData.value, font_size: newSize });
+  prevEntityData.value.font_size = newSize;
+  editEntity({ ...prevEntityData.value, font_size: newSize });
 };
 const themeColor: TTheme = cookies.get('favorite_color');
 const themeColorConverted = convertThemeToColorWhiteDefault(themeColor);
 const isTitle = ref(!!newEntityData.value.title);
 const isEntityWidthFull = ref(newEntityData.value.paragraph_size === 'full');
 
+const openSettings = () => {
+  isModal.value = true;
+  newEntityData.value = { ...prevEntityData.value };
+};
 const maxLines = computed(() => {
   if (isTitle.value) {
     return Math.floor(168 / 24);
@@ -30,71 +35,19 @@ const maxLines = computed(() => {
     return Math.floor(240 / 24);
   }
 });
-const entityIsTitleOptions = ref([
-  {
-    label: 'Off',
-    value: false,
-    textStyle: 'bold'
-  },
-  {
-    label: 'On',
-    value: true,
-    textStyle: 'bold'
-  }
-]);
-const isEntityWidthFullOptions = ref([
-  {
-    label: 'Half',
-    value: false,
-    textStyle: 'bold'
-  },
-  {
-    label: 'Full',
-    value: true,
-    textStyle: 'bold'
-  }
-]);
-const entityPositionOptions = ref([
-  {
-    label: 'left',
-    isLabelHidden: true
-  },
-  {
-    label: 'center',
-    isLabelHidden: true
-  },
-  {
-    label: 'right',
-    isLabelHidden: true
-  }
-]);
-const entityTitlePositionOptions = ref([
-  {
-    label: 'left',
-    isLabelHidden: true
-  },
-  {
-    label: 'center',
-    isLabelHidden: true
-  },
-  {
-    label: 'right',
-    isLabelHidden: true
-  }
-]);
 const saveChanges = () => {
-  const entityPosition = isEntityWidthFull.value ? 'full' : 'half';
-  if (entityPosition !== prevEntityData.entity_position) {
-    newEntityData.value.paragraph_size = entityPosition;
+  const paragraphSize = isEntityWidthFull.value ? 'full' : 'half';
+  if (paragraphSize !== prevEntityData.value.paragraph_size) {
+    newEntityData.value.paragraph_size = paragraphSize;
   }
-  if (isTitle.value !== !!prevEntityData.title) {
+  if (isTitle.value !== !!prevEntityData.value.title) {
     if (isTitle.value) {
       newEntityData.value.title = 'Title';
     } else {
       newEntityData.value.title = null;
     }
   }
-  if (JSON.stringify(prevEntityData) !== JSON.stringify(newEntityData.value)) {
+  if (JSON.stringify(prevEntityData.value) !== JSON.stringify(newEntityData.value)) {
     emit('saveChanges', newEntityData.value);
   }
   isModal.value = false;
@@ -103,7 +56,7 @@ const toggleConfirmToDeleteParagraph = () => {
   isModalToDeleteParagraph.value = !isModalToDeleteParagraph.value;
 };
 const deleteParagraph = () => {
-  deleteEntity(entityData.value.entity_uuid);
+  deleteEntity(prevEntityData.value.entity_uuid);
   isModalToDeleteParagraph.value = false;
   isModal.value = false;
 };
@@ -113,7 +66,7 @@ const deleteParagraph = () => {
   <button
     :style="`background-color: ${themeColorConverted}`"
     class="settings absolute left-2 top-0 transition-all select-none size-10 flex justify-center items-center rounded-full hover:brightness-75 cursor-pointer"
-    @click.prevent="isModal = true"
+    @click.prevent="openSettings"
   >
     <SettingsIcon color="white" size="25" />
   </button>
@@ -142,10 +95,6 @@ const deleteParagraph = () => {
         v-model:isTitle="isTitle"
         v-model:isEntityWidthFull="isEntityWidthFull"
         :themeColor="themeColor"
-        :entityIsTitleOptions="entityIsTitleOptions"
-        :isEntityWidthFullOptions="isEntityWidthFullOptions"
-        :entityPositionOptions="entityPositionOptions"
-        :entityTitlePositionOptions="entityTitlePositionOptions"
       />
       <section
         :style="`border-color: var(--${themeColor}-200); height: 320px`"

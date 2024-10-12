@@ -11,6 +11,6 @@ export interface IToggleButtonOption {
 }
 export interface ISliderOption {
   label: string;
-  value: number;
+  value: string | number;
   color?: string;
 }

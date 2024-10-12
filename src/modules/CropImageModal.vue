@@ -11,7 +11,7 @@ interface Props {
   imageInfo: IImageMainInfo | IImage;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['update:isVisible', 'saveImage']);
+const emit = defineEmits(['update:isVisible', 'cropImage']);
 const { isVisible, imageInfo } = useVModels(props, emit);
 
 const imageInstance = new Image();
@@ -41,10 +41,6 @@ watch(
     imageInstance.onload = () => {
       const imageWidth = (imageInfo.value.image_width / 100) * (windowWidth.value - 128);
       const imageHeight = (imageWidth / imageInfo.value.file_width) * imageInfo.value.file_height;
-      console.log(`file width: ${imageInfo.value.file_width},
-      file height: ${imageInfo.value.file_height}`);
-      console.log(`width: ${imageWidth},
-      height: ${imageHeight}`);
       imageInstance.src = imageInfo.value.image_url;
       if (imageWidth < (imageHeight * windowWidth.value) / windowHeight.value) {
         imageInstance.onload = () => {
@@ -88,7 +84,7 @@ const onCropperChange = async ({ canvas }) => {
 };
 const submitForm = () => {
   emit(
-    'saveImage',
+    'cropImage',
     finalImageUrl.value,
     Math.ceil((imageInstance.width / windowWidth.value) * 100),
     imageInstance.width,

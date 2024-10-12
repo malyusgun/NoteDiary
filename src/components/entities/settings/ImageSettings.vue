@@ -3,30 +3,29 @@ import type { IImage } from '@/app/interfaces/entities';
 import { convertThemeToColorWhiteDefault, deleteEntity, editEntity } from '@/app/helpers';
 import type { TTheme } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
-import { cropImage } from '@/app/helpers/images';
+import { sendCropImage } from '@/app/helpers/images';
 
 interface Props {
   entityData: IImage;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['saveChanges', 'returnOriginalSize']);
-const entityData = computed(() => props.entityData);
-const prevEntityData = { ...entityData.value };
-const newEntityData = ref({ ...entityData.value });
-watch(entityData, () => (newEntityData.value = entityData.value));
+const prevEntityData = computed(() => props.entityData);
+const newEntityData = ref({ ...prevEntityData.value });
 const isModal = ref<boolean>(false);
 const isModalCropImage = ref<boolean>(false);
 
 const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
-  entityData.value.font_size = newSize;
-  editEntity({ ...entityData.value, font_size: newSize });
+  prevEntityData.value.font_size = newSize;
+  editEntity({ ...prevEntityData.value, font_size: newSize });
 };
 const themeColor: TTheme = cookies.get('favorite_color');
 const themeColorConverted = convertThemeToColorWhiteDefault(themeColor);
-const isTitle = ref(!!entityData.value.title);
-const isText = ref(!!entityData.value.text);
-const isEntityWidthFull = ref(entityData.value.paragraph_size === 'full');
+const isTitle = ref(!!prevEntityData.value.title);
+const isText = ref(!!prevEntityData.value.text);
+const isEntityWidthFull = ref(prevEntityData.value.paragraph_size === 'full');
 const isModalToDeleteImage = ref<boolean>(false);
+
 const textContainerWidth = computed(() => {
   if (!isEntityWidthFull.value) return (100 - newEntityData.value.image_width) / 2;
   return 100 - newEntityData.value.image_width;
@@ -38,31 +37,44 @@ const maxLines = computed(() => {
     return 0;
   }
 });
-const saveChanges = () => {
-  const entityPosition = isEntityWidthFull.value ? 'full' : 'half';
-  if (entityPosition !== prevEntityData.paragraph_size) {
-    newEntityData.value.paragraph_size = entityPosition;
+const openSettings = () => {
+  isModal.value = true;
+  newEntityData.value = { ...prevEntityData.value };
+};
+const saveChanges = async () => {
+  const paragraphSize = isEntityWidthFull.value ? 'full' : 'half';
+  if (paragraphSize !== prevEntityData.value.paragraph_size) {
+    newEntityData.value.paragraph_size = paragraphSize;
   }
-  if (isTitle.value !== !!prevEntityData.title) {
+  if (isTitle.value !== !!prevEntityData.value.title) {
     if (isTitle.value) {
       newEntityData.value.title = 'Title';
     } else {
       newEntityData.value.title = null;
     }
   }
-  if (isText.value !== !!prevEntityData.text) {
+  if (isText.value !== !!prevEntityData.value.text) {
     if (isText.value) {
       newEntityData.value.text = 'Text';
     } else {
       newEntityData.value.text = null;
     }
   }
-  if (JSON.stringify(prevEntityData) !== JSON.stringify(newEntityData.value)) {
+  if (newEntityData.value.image_url !== prevEntityData.value.image_url) {
+    await sendCropImage(newEntityData.value.image_url, newEntityData.value);
+  }
+  if (
+    newEntityData.value.image_url === newEntityData.value.image_url_initial &&
+    prevEntityData.value.image_url !== prevEntityData.value.image_url_initial
+  ) {
+    emit('returnOriginalSize');
+  }
+  if (JSON.stringify(prevEntityData.value) !== JSON.stringify(newEntityData.value)) {
     emit('saveChanges', newEntityData.value);
   }
   isModal.value = false;
 };
-const saveImage = async (
+const cropImage = async (
   newUrl: string,
   newWidth: number,
   newFileWidth: number,
@@ -72,22 +84,22 @@ const saveImage = async (
   newEntityData.value.image_width = newWidth;
   newEntityData.value.file_width = newFileWidth;
   newEntityData.value.file_height = newFileHeight;
-  await cropImage(newUrl, newEntityData.value);
   isModalCropImage.value = false;
 };
 const toggleConfirmDeleteImageModal = () => {
   isModalToDeleteImage.value = !isModalToDeleteImage.value;
 };
 const returnOriginalSize = () => {
-  const newState = entityData.value;
+  const newState = { ...newEntityData.value };
   newState.image_url = newState.image_url_initial;
   newState.file_width = newState.file_width_initial;
   newState.file_height = newState.file_height_initial;
-  newEntityData.value = newState;
-  emit('returnOriginalSize');
+  newState.image_width = newState.image_width_initial;
+  newState.image_scale = 'x1';
+  newEntityData.value = { ...newState };
 };
 const deleteImage = () => {
-  deleteEntity(entityData.value.entity_uuid);
+  deleteEntity(prevEntityData.value.entity_uuid);
   isModalToDeleteImage.value = false;
   isModal.value = false;
 };
@@ -98,7 +110,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
   <button
     :style="`background-color: ${themeColorConverted}`"
     class="settings absolute left-2 top-0 select-none size-10 hover:brightness-75 transition-all cursor-pointer"
-    @click.prevent="isModal = true"
+    @click.prevent="openSettings"
   >
     <SettingsIcon color="white" size="25" />
   </button>
@@ -107,7 +119,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
     <CropImageModal
       v-model:isVisible="isModalCropImage"
       v-model:imageInfo="newEntityData"
-      @saveImage="saveImage"
+      @cropImage="cropImage"
     />
     <ConfirmDeleteEntityModal
       v-model:isModalToDeleteEntity="isModalToDeleteImage"
@@ -123,13 +135,20 @@ const openCropImageModal = () => (isModalCropImage.value = true);
         :themeColor="themeColor"
       />
       <section
-        :style="`border-color: var(--${themeColor}-200); align-items: ${newEntityData.entity_position === 'right' ? 'end' : newEntityData.entity_position === 'left' ? 'start' : newEntityData.entity_position}`"
+        :style="`border-color: var(--${themeColor}-200); align-items: ${
+          newEntityData.entity_position === 'right'
+            ? 'end'
+            : newEntityData.entity_position === 'left'
+              ? 'start'
+              : newEntityData.entity_position
+        }`"
         class="flex grow flex-col gap-4 p-4 w-full min-h-full border-2 border-slate-100 border-dashed rounded-2xl"
       >
         <div
           v-show="isTitle"
           :style="`border-color: var(--${themeColor}-800);
-            justify-content: ${newEntityData.entity_title_position}; width: ${isEntityWidthFull ? '100%' : '50%'}; font-size: ${newEntityData.font_size / 2 + 5}px`"
+            justify-content: ${newEntityData.entity_title_position}; width: ${isEntityWidthFull ? '100%' : '50%'};
+            font-size: ${newEntityData.font_size / 2 + 5}px`"
           class="flex text-2xl font-bold text-center px-2 py-4 border-2 border-dashed rounded-2xl"
         >
           <h3 class="w-max overflow-ellipsis overflow-hidden whitespace-nowrap">
@@ -137,7 +156,13 @@ const openCropImageModal = () => (isModalCropImage.value = true);
           </h3>
         </div>
         <div
-          :style="`gap: 32px; justify-content: ${newEntityData.entity_position === 'right' ? 'end' : newEntityData.entity_position === 'left' ? 'start' : 'center'};`"
+          :style="`gap: 32px; justify-content: ${
+            newEntityData.entity_position === 'right'
+              ? 'end'
+              : newEntityData.entity_position === 'left'
+                ? 'start'
+                : 'center'
+          };`"
           class="flex w-full"
         >
           <div
@@ -152,7 +177,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
             <img
               :src="newEntityData?.image_url"
               :alt="`Image ${newEntityData?.title}` || 'Image'"
-              style="max-height: 350px"
+              style="max-height: 600px"
               class="object-contain order-1"
             />
           </div>

@@ -118,6 +118,50 @@ const isEntityWidthFullOptions = ref<IToggleButtonOption[]>([
     textStyle: 'bold'
   }
 ]);
+const entityHeightOptions = ref<IToggleButtonOption[]>([
+  {
+    label: 'Clear',
+    value: 0,
+    textStyle: 'bold'
+  },
+  {
+    label: 'Small',
+    value: 1,
+    textStyle: 'bold'
+  },
+  {
+    label: 'Medium',
+    value: 2,
+    textStyle: 'bold'
+  },
+  {
+    label: 'Large',
+    value: 4,
+    textStyle: 'bold'
+  },
+  {
+    label: 'Extra large',
+    value: 8,
+    textStyle: 'bold'
+  }
+]);
+const entityTypeOptions = ref<IToggleButtonOption[]>([
+  {
+    label: 'Solid',
+    value: 'solid',
+    textStyle: 'bold'
+  },
+  {
+    label: 'Dashed',
+    value: 'dashed',
+    textStyle: 'bold'
+  },
+  {
+    label: 'Dotted',
+    value: 'dotted',
+    textStyle: 'bold'
+  }
+]);
 export {
   imageScaleOptions,
   entityIsTitleOptions,
@@ -125,5 +169,7 @@ export {
   entityPositionOptions,
   entityTitlePositionOptions,
   entityTextPositionOptions,
-  isEntityWidthFullOptions
+  isEntityWidthFullOptions,
+  entityHeightOptions,
+  entityTypeOptions
 };

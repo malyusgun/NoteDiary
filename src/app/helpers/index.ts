@@ -51,7 +51,7 @@ export const editEntity = (newState: IEntity) => {
   websocketStore.sendData(data);
 };
 
-export const returnOriginalImageSize = (newState: IEntity) => {
+export const sendReturnOriginalSize = (newState: IEntity) => {
   const websocketStore = useWebsocketStore();
   const data = {
     event: 'returnOriginalImageSize',

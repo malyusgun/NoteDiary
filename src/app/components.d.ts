@@ -23,6 +23,7 @@ declare module 'vue' {
     Divider: typeof import('./../shared/ui/Divider.vue')['default']
     DividerItem: typeof import('./../modules/entities/DividerItem.vue')['default']
     DividerSettings: typeof import('./../components/entities/settings/DividerSettings.vue')['default']
+    DividerSettingsList: typeof import('./../components/entities/settings/lists/DividerSettingsList.vue')['default']
     DottedIcon: typeof import('./../shared/icons/DottedIcon.vue')['default']
     Drawer: typeof import('./../shared/ui/Drawer.vue')['default']
     EntitiesList: typeof import('./../modules/entities/EntitiesList.vue')['default']

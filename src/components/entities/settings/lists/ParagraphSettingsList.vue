@@ -3,17 +3,18 @@ import type { TTheme } from '@/app/interfaces/environment';
 import { useVModels } from '@vueuse/core';
 import type { IParagraph } from '@/app/interfaces/entities';
 import ToggleButton from '@/shared/ui/ToggleButton.vue';
-import type { IToggleButtonItem } from '@/app/interfaces/ui';
+import {
+  entityIsTitleOptions,
+  entityPositionOptions,
+  entityTitlePositionOptions,
+  isEntityWidthFullOptions
+} from '@/components/entities/settings/lists/constants/options';
 
 interface Props {
   newEntityData: IParagraph;
   isTitle: boolean;
   isEntityWidthFull: boolean;
   themeColor: TTheme;
-  entityIsTitleOptions: IToggleButtonItem[];
-  isEntityWidthFullOptions: IToggleButtonItem[];
-  entityPositionOptions: IToggleButtonItem[];
-  entityTitlePositionOptions: IToggleButtonItem[];
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:newEntityData', 'update:isTitle', 'update:isEntityWidthFull']);

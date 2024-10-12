@@ -4,6 +4,7 @@ import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useDataStore } from '@/app/stores/data';
 import cookies from '@/app/plugins/Cookie';
+import { calcImageWidth } from '@/app/helpers/images';
 
 const emit = defineEmits(['createEntity']);
 
@@ -31,21 +32,13 @@ const addImage = async (files: FileList) => {
     const blob = await response.blob();
     const buffer = await blob.arrayBuffer();
     const { width: windowWidth } = useWindowSize();
-    const maxHeight = 600;
+    const maxHeight = 1000;
     const initWidth = image.width;
     if (image.height > maxHeight) {
       const coefficient = maxHeight / image.height;
       image.width *= coefficient;
     }
-    let imageWidth = Math.ceil((image.width / (windowWidth.value - 128)) * 100);
-    if (imageWidth > 100) {
-      imageWidth = 100;
-    }
-    if (imageWidth < 5) {
-      imageWidth = 5;
-    }
-    console.log(`image.width: ${image.width},
-    image.height: ${image.height}`);
+    const imageWidth = calcImageWidth(image.width, windowWidth.value);
     emit('createEntity', {
       entity_type: 'image',
       entity_order: entitiesCount.value + 1,
@@ -56,6 +49,7 @@ const addImage = async (files: FileList) => {
       text_position: 'right',
       paragraph_size: 'full',
       image_width: imageWidth,
+      image_width_initial: imageWidth,
       file_width: initWidth,
       file_height: image.height,
       file_width_initial: initWidth,

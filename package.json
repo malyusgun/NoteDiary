@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite && npx tailwindcss -i ./src/input.css -o ./src/output.css --watch",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
@@ -62,5 +62,9 @@
       "ecmaVersion": 2020
     },
     "rules": {}
+  },
+  "volta": {
+    "node": "20.17.0",
+    "yarn": "4.5.0"
   }
 }

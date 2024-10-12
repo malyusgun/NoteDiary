@@ -35,6 +35,15 @@
   --orange-700: #c2410c;
   --orange-800: #9a3412;
   --orange-900: #7c2d12;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
   --yellow-100: #fef9c3;
   --yellow-200: #fef08a;
   --yellow-300: #fde047;
@@ -276,10 +285,29 @@ input[type=file]::-webkit-file-upload-button {
   0% {
     transform: scale(0);
   }
-  50% {
-    transform: scale(1.25);
-  }
   100% {
     transform: scale(1);
+  }
+}
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.5s ease;
+}
+.fading-enter-active,
+.fading-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+.fading-enter-active {
+  animation: fading-in 0.5s;
+}
+.fading-leave-active {
+  animation: fading-in 0.5s reverse;
+}
+@keyframes fading-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

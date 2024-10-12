@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
+import { convertThemeToColorWhiteDefault } from '@/app/helpers';
 
 interface Props {
   isVisible: boolean;
@@ -10,7 +11,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -21,46 +21,10 @@ interface Props {
     | 'rose'
     | 'red'
     | 'black';
+  width?: number | string;
 }
 const props = defineProps<Props>();
-const themeColor = computed(() => {
-  if (!props?.theme) return '#ffffff';
-  switch (props?.theme) {
-    case 'white':
-      return '#ffffff';
-    case 'slate':
-      return '#64748b';
-    case 'blue':
-      return '#3b82f6';
-    case 'sky':
-      return '#0ea5e9';
-    case 'teal':
-      return '#14b8a6';
-    case 'lime':
-      return '#84cc16';
-    case 'green':
-      return '#22c55e';
-    case 'yellow':
-      return '#eab308';
-    case 'orange':
-      return '#f97316';
-    case 'pink':
-      return '#ec4899';
-    case 'fuchsia':
-      return '#d946ef';
-    case 'purple':
-      return '#a855f7';
-    case 'indigo':
-      return '#6366f1';
-    case 'rose':
-      return '#f43f5e';
-    case 'red':
-      return '#ef4444';
-    case 'black':
-      return '#000000';
-  }
-  return '#ffffff';
-});
+const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
 const textColor = computed(() => {
   if (!props.theme) return '#000000';
   if (props.theme === 'white') return '#000000';
@@ -81,7 +45,7 @@ const isVisible = useVModel(props, 'isVisible', emit);
       ]"
     ></section>
     <section
-      :style="`color: ${textColor}; background-color: ${themeColor}`"
+      :style="`color: ${textColor}; background-color: ${themeColor}; width: ${width}`"
       :class="[
         'modal',
         {
@@ -116,10 +80,10 @@ const isVisible = useVModel(props, 'isVisible', emit);
 <style scoped>
 .modalBackground {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: -100%;
+  left: -100%;
+  width: 250vw;
+  height: 250vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: -50;
   opacity: 0;
@@ -152,7 +116,7 @@ const isVisible = useVModel(props, 'isVisible', emit);
 .modalHeader {
   font-weight: bold;
   font-size: 1.5rem;
-  padding-right: 50px;
+  padding: 0 50px;
   margin-bottom: 20px;
   min-height: 1rem;
 }

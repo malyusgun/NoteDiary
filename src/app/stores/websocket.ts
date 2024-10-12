@@ -6,6 +6,7 @@ import { addUrlsToImageEntities } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import cookies from '@/app/plugins/Cookie';
+import { editEntity } from '@/app/helpers';
 
 export const useWebsocketStore = defineStore('websocketStore', () => {
   const dataStore = useDataStore();
@@ -24,12 +25,12 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
   const initialDataToSend = ref();
   const isInitialAddUrlsToImageEntitiesFinished = ref<boolean>(false);
   const file = ref();
+  const originalUrl = ref();
 
   onMounted(() => {
     socket.value = new WebSocket('ws://localhost:5000');
     socket.value.onopen = async () => {
       const userUuid = cookies.get('user_uuid');
-      console.log('userUuid', userUuid);
       if (userUuid) {
         const getUserData = {
           event: 'getUser',
@@ -85,7 +86,8 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
         case 'createEntity': {
           const newState = [...entities.value];
           if (response.data?.image_width) {
-            response.data.imageUrl = filesWebsocketStore.imageUrl;
+            response.data.image_url_initial = filesWebsocketStore.image_url;
+            response.data.image_url = filesWebsocketStore.image_url;
             filesWebsocketStore.cleanImageUrl();
           }
           newState.push(response.data);
@@ -111,13 +113,11 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
           authorizationStore.setUserNickName(response.data.nick_name);
           authorizationStore.setUserData(response.data);
           dataStore.setPagesData(response.data.pages_uuid);
-          console.log('getUser response.data: ', response.data);
           break;
         }
         case 'getPage': {
           dataStore.setCurrentPageUuid(response.data.page_uuid);
           dataStore.setCurrentPageData(response.data);
-          console.log('getPage response.data: ', response.data);
           break;
         }
         case 'getPageEntities': {
@@ -144,10 +144,26 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
           newState = newState.map((entity: IEntity) => {
             if (entity.entity_uuid !== response.data.entity_uuid) return entity;
             if (response.data?.image_width) {
-              response.data.imageUrl = filesWebsocketStore.imageUrl;
+              response.data.image_url = filesWebsocketStore.image_url;
               filesWebsocketStore.cleanImageUrl();
             }
             return response.data;
+          });
+          dataStore.editEntities(newState);
+          break;
+        }
+        case 'returnOriginalSizeImage': {
+          let newState = [...entities.value];
+          newState = newState.map((entity: IEntity) => {
+            if (entity.entity_uuid !== response.data.entity_uuid) return entity;
+            const filesBuffer = filesWebsocketStore.filesBuffer;
+            filesBuffer[0] = new Blob([filesBuffer[0].data], { type: 'image/jpeg' });
+            entity.image_url = URL.createObjectURL(filesBuffer[0]);
+            originalUrl.value = entity.image_url;
+            // entity.file_width = entity.file_width_initial;
+            // entity.file_height = entity.file_height_initial;
+            editEntity(entity);
+            return entity;
           });
           dataStore.editEntities(newState);
           break;
@@ -189,7 +205,7 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
   watch([filesBufferLength, entities], () => {
     if (
       (entities.value.length &&
-        filesBufferLength.value === imageEntitiesCount.value &&
+        filesBufferLength.value === imageEntitiesCount.value * 2 &&
         imageEntitiesCount.value) ||
       (isInitialAddUrlsToImageEntitiesFinished.value && filesBufferLength.value)
     ) {

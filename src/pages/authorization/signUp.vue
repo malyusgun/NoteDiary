@@ -31,7 +31,6 @@ const signUp = () => {
 };
 
 const colors = [
-  'white',
   'slate',
   'blue',
   'sky',
@@ -39,6 +38,7 @@ const colors = [
   'lime',
   'green',
   'yellow',
+  'amber',
   'orange',
   'pink',
   'fuchsia',
@@ -132,9 +132,9 @@ const colors = [
           <li
             v-for="item of colors"
             :key="item"
-            :style="`background-color: ${item !== 'white' ? `var(--${item}-500)` : 'white'}`"
+            :style="`background-color: var(--${item}-500)`"
             :class="[
-              `size-10 rounded-md border-2 border-${item === 'white' ? 'gray' : item}-100 border-solid cursor-pointer`,
+              `size-10 rounded-md border-2 border-${item}-100 border-solid cursor-pointer`,
               {
                 'border-blue-800 border-4': formData.favorite_color === item
               }

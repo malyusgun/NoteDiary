@@ -37,12 +37,12 @@ const menuItems = computed(() => {
       v-model:isActive="isMenu"
       :items="menuItems"
       :theme="themeColor"
-      size="extraLarge"
+      size="medium"
       direction="left"
       ><template #buttonIcon>
         <VerticalArrowsIcon
           :color="themeColor === 'white' ? 'black' : 'white'"
-          :size="30"
+          :size="25"
         /> </template
     ></MenuDial>
   </div>

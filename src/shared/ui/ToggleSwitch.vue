@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
+import {
+  convert800ThemeToColorGrayDefault,
+  convertThemeToColorBlackDefault,
+  convertThemeToColorGrayDefault
+} from '@/app/helpers';
 
 interface Props {
   isActive: boolean;
-  size?: 'small' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'extraLarge';
   theme?:
     | 'white'
     | 'slate'
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -20,89 +24,90 @@ interface Props {
     | 'purple'
     | 'indigo'
     | 'rose'
-    | 'red';
+    | 'red'
+    | 'black';
+  negativeTheme?:
+    | 'white'
+    | 'slate'
+    | 'blue'
+    | 'sky'
+    | 'teal'
+    | 'green'
+    | 'yellow'
+    | 'orange'
+    | 'pink'
+    | 'fuchsia'
+    | 'purple'
+    | 'indigo'
+    | 'rose'
+    | 'red'
+    | 'black';
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:isActive']);
 const isActive = useVModel(props, 'isActive', emit);
 
-const themeColor = computed(() => {
-  switch (props.theme) {
-    case 'white':
-      return '#ffffff';
-    case 'slate':
-      return '#64748b';
-    case 'blue':
-      return '#3b82f6';
-    case 'sky':
-      return '#0ea5e9';
-    case 'teal':
-      return '#14b8a6';
-    case 'lime':
-      return '#84cc16';
-    case 'green':
-      return '#22c55e';
-    case 'yellow':
-      return '#eab308';
-    case 'orange':
-      return '#f97316';
-    case 'pink':
-      return '#ec4899';
-    case 'fuchsia':
-      return '#d946ef';
-    case 'purple':
-      return '#a855f7';
-    case 'indigo':
-      return '#6366f1';
-    case 'rose':
-      return '#f43f5e';
-    case 'red':
-      return '#ef4444';
-  }
-  return '#0ea5e9';
-});
+const themeColor = computed(() => convertThemeToColorBlackDefault(props.theme));
+const inactiveColor = computed(() => convert800ThemeToColorGrayDefault(props.negativeTheme));
 const sizes = computed(() => {
-  if (!props?.size)
+  if (!props?.size) {
     return {
-      containerWidth: 35,
-      containerHeight: 21,
-      padding: 3,
-      borderRadius: 11,
-      circleSize: 15,
-      transformXCircle: 14
+      containerWidth: 45,
+      containerHeight: 27,
+      padding: 4,
+      borderRadius: 14,
+      circleSize: 19,
+      transformXCircle: 18
     };
+  }
   switch (props.size) {
     case 'small':
       return {
-        containerWidth: 30,
-        containerHeight: 18,
-        padding: 2,
-        borderRadius: 9,
-        circleSize: 14,
-        transformXCircle: 12
+        containerWidth: 35,
+        containerHeight: 21,
+        padding: 3,
+        borderRadius: 11,
+        circleSize: 15,
+        transformXCircle: 14
       };
     case 'large':
       return {
-        containerWidth: 40,
-        containerHeight: 24,
-        padding: 3,
-        borderRadius: 12,
-        circleSize: 18,
-        transformXCircle: 14
+        containerWidth: 55,
+        containerHeight: 33,
+        padding: 4,
+        borderRadius: 17,
+        circleSize: 25,
+        transformXCircle: 22
+      };
+    case 'extraLarge':
+      return {
+        containerWidth: 70,
+        containerHeight: 42,
+        padding: 6,
+        borderRadius: 21,
+        circleSize: 30,
+        transformXCircle: 28
       };
   }
-  return '';
+  return {
+    containerWidth: 45,
+    containerHeight: 27,
+    padding: 4,
+    borderRadius: 14,
+    circleSize: 19,
+    transformXCircle: 18
+  };
 });
 </script>
 
 <template>
   <button
-    :style="`min-width: ${sizes.containerWidth}px; min-height: ${sizes.containerHeight}px; border-radius: ${sizes.borderRadius}px; padding: ${sizes.padding}px;`"
+    :style="`width: ${sizes.containerWidth}px; min-height: ${sizes.containerHeight}px; border-radius: ${sizes.borderRadius}px; padding: ${sizes.padding}px;`"
     class="switcher"
     @click.prevent="isActive = !isActive"
   >
     <span
-      :style="`background-color: ${themeColor ?? '#0ea5e9'}; border-radius: ${sizes.borderRadius}px;`"
+      :style="`background-color: ${themeColor}; border-radius: ${sizes.borderRadius}px;`"
       :class="[
         'activeBackground',
         {
@@ -132,7 +137,7 @@ const sizes = computed(() => {
   transition: background-color 0.2s ease-in-out;
 }
 .inactiveBackground {
-  background-color: rgba(187, 197, 204, 0.66) !important;
+  background-color: v-bind(inactiveColor) !important;
   transition: background-color 0.2s ease-in-out;
 }
 .switcher:hover .inactiveBackground {

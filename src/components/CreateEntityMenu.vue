@@ -4,6 +4,7 @@ import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useDataStore } from '@/app/stores/data';
 import cookies from '@/app/plugins/Cookie';
+import { calcImageWidth } from '@/app/helpers/images';
 
 const emit = defineEmits(['createEntity']);
 
@@ -31,25 +32,29 @@ const addImage = async (files: FileList) => {
     const blob = await response.blob();
     const buffer = await blob.arrayBuffer();
     const { width: windowWidth } = useWindowSize();
-    const maxWidth = windowWidth.value - 128;
-    const maxHeight = 700;
-    if (image.width > maxWidth) {
-      image.height = Math.floor((maxWidth / image.width) * image.height);
-      image.width = maxWidth;
-    }
+    const maxHeight = 1000;
+    const initWidth = image.width;
     if (image.height > maxHeight) {
-      image.width = Math.floor((maxHeight / image.height) * image.width);
-      image.height = maxHeight;
+      const coefficient = maxHeight / image.height;
+      image.width *= coefficient;
     }
+    const imageWidth = calcImageWidth(image.width, windowWidth.value);
     emit('createEntity', {
       entity_type: 'image',
       entity_order: entitiesCount.value + 1,
       image_buffer: buffer,
       entity_position: 'left',
       entity_title_position: 'center',
-      image_width: image.width,
-      image_height: image.height,
-      image_scale: '1'
+      font_size: '24',
+      text_position: 'right',
+      paragraph_size: 'full',
+      image_width: imageWidth,
+      image_width_initial: imageWidth,
+      file_width: initWidth,
+      file_height: image.height,
+      file_width_initial: initWidth,
+      file_height_initial: image.height,
+      image_scale: 'x1'
     });
   };
 };
@@ -123,7 +128,7 @@ const speedDialItems = ref([
 </script>
 
 <template>
-  <MenuDial v-model:isActive="isMenu" :items="speedDialItems" size="extraLarge" :theme="themeColor">
+  <MenuDial v-model:isActive="isMenu" :items="speedDialItems" size="large" :theme="themeColor">
     <template #1IconAfter>
       <HorizontalLineIcon color="white" size="25" />
     </template>

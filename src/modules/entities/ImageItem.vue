@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { useVModel, useWindowSize } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
-import { editEntity } from '@/app/helpers';
-import { cropImage } from '@/app/helpers/images';
+import { editEntity, sendReturnOriginalSize } from '@/app/helpers';
+import { sendCropImage } from '@/app/helpers/images';
+import type { IEntity } from '@/app/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
+import { useVModel } from '@vueuse/core';
 
 interface Props {
   entityData: IImage;
@@ -12,42 +14,50 @@ const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
 
-const isModalCropImage = ref<boolean>(false);
-const { width: windowWidth } = useWindowSize();
+const dataStore = useDataStore();
+const entities = computed(() => dataStore.entities);
+const entityIndex = computed(() =>
+  entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
+);
+const entitiesLength = computed(() => entities.value.length);
 
 const textContainerWidth = computed(() => {
-  if (entityData.value?.paragraph_size === 'half')
-    return (windowWidth.value - 160 - entityData.value.image_width) / 2;
-  return windowWidth.value - 160 - entityData.value.image_width;
+  if (entityData.value?.paragraph_size === 'half') return (100 - entityData.value.image_width) / 2;
+  return 100 - entityData.value.image_width;
 });
 
+let titleTimeout;
+let textTimeout;
 const editTitle = () => {
-  editEntity({ ...entityData.value, title: entityData.value.title });
+  clearTimeout(titleTimeout);
+  titleTimeout = setTimeout(
+    () => editEntity({ ...entityData.value, title: entityData.value.title }),
+    600
+  );
 };
 const editText = () => {
-  editEntity({ ...entityData.value, text: entityData.value.text });
+  clearTimeout(textTimeout);
+  textTimeout = setTimeout(
+    () => editEntity({ ...entityData.value, text: entityData.value.text }),
+    600
+  );
 };
-const saveImage = async (newUrl: string, newWidth: number, newHeight: number) => {
-  entityData.value.imageUrl = newUrl;
-  entityData.value.image_width = newWidth;
-  entityData.value.image_height = newHeight;
-  await cropImage(newUrl, entityData.value);
-  isModalCropImage.value = false;
+const saveChanges = (newState: IImage) => {
+  editEntity(newState);
+  entityData.value = newState;
 };
-const scaleImage = (scale: string) => {
-  const initialWidth = Math.ceil(entityData.value.image_width / +entityData.value.image_scale);
-  entityData.value.image_width = initialWidth * +scale;
-  const initialHeight = Math.ceil(entityData.value.image_height / +entityData.value.image_scale);
-  entityData.value.image_height = initialHeight * +scale;
-  entityData.value.image_scale = scale;
-  editEntity({ ...entityData.value });
+const returnOriginalSize = () => {
+  const newState = entityData.value;
+  newState.file_width = newState.file_width_initial;
+  newState.file_height = newState.file_height_initial;
+  entityData.value = newState;
+  sendReturnOriginalSize(newState);
+  // entityData.value.image_url = newState.image_url_initial;
 };
-const openCropImageModal = () => (isModalCropImage.value = true);
 </script>
 
 <template>
   <section
-    ref="container"
     :class="[
       'entityContainer relative flex px-16 transition-all',
       {
@@ -57,19 +67,31 @@ const openCropImageModal = () => (isModalCropImage.value = true);
       }
     ]"
   >
-    <CropImageModal
-      v-model:isVisible="isModalCropImage"
-      v-model:imageInfo="entityData"
-      @saveImage="saveImage"
-    />
-    <div class="flex flex-col">
+    <div
+      :class="[
+        {
+          'w-1/2': entityData.paragraph_size === 'half',
+          'w-full': entityData.paragraph_size === 'full'
+        }
+      ]"
+    >
       <EntityTitle
         v-model:title="entityData.title"
         :entityData="entityData"
         :isEditMode="isEditMode"
         @editTitle="editTitle"
       />
-      <div style="gap: 32px" class="flex" :style="`height: ${entityData.image_height}px`">
+      <div
+        style="gap: 32px"
+        :class="[
+          'flex py-2',
+          {
+            'justify-start': entityData.entity_position === 'left',
+            'justify-center': entityData.entity_position === 'center',
+            'justify-end': entityData.entity_position === 'right'
+          }
+        ]"
+      >
         <div
           :class="[
             'imageContainer relative leading-none',
@@ -77,24 +99,19 @@ const openCropImageModal = () => (isModalCropImage.value = true);
               'order-3': entityData.text_position === 'left'
             }
           ]"
-          :style="`width: ${entityData.image_width}px; height: ${entityData.image_height}px; min-width: 100px; min-height: 100px`"
+          :style="`width: ${entityData.image_width}%`"
         >
           <img
-            :src="entityData?.imageUrl"
+            :src="entityData?.image_url"
             :alt="`Image ${entityData?.title}` || 'Image'"
-            :width="entityData.image_width"
-            :height="entityData.image_height"
-            style="min-height: 100px; max-height: 700px"
+            style="min-height: 100px; max-height: 1000px"
             class="object-contain order-1"
           />
-          <div class="speedDialSize absolute left-0 top-0 transition-all select-none">
-            <ImageSizeMenu v-if="isEditMode" :entityData="entityData" @scaleImage="scaleImage" />
-          </div>
         </div>
         <div
-          v-if="entityData.text_position"
+          v-show="entityData.text || entityData.text === ''"
           class="textContainer relative leading-none"
-          :style="`width: ${textContainerWidth}px; height: ${entityData.image_height}px`"
+          :style="`width: ${textContainerWidth}%`"
         >
           <textarea
             ref="textarea"
@@ -107,18 +124,24 @@ const openCropImageModal = () => (isModalCropImage.value = true);
             ]"
             placeholder="Enter text..."
             rows="7"
-            :style="`font-size: ${entityData.font_size}px; height: ${entityData.image_height}px;`"
+            :style="`font-size: ${entityData.font_size}px`"
             spellcheck="false"
-            @change="editText"
+            @input="editText"
           />
         </div>
       </div>
-      <ImageMenu
+      <ImageSettings
         v-if="isEditMode"
-        v-model:entityData="entityData"
-        @openCropImageModal="openCropImageModal"
+        :entityData="entityData"
+        @saveChanges="saveChanges"
+        @returnOriginalSize="returnOriginalSize"
       />
-      <EntityPositionSettings :entityUuid="entityData.entity_uuid" />
+      <EntityPositionSettings
+        v-if="isEditMode && entitiesLength > 1"
+        :entityUuid="entityData.entity_uuid"
+        :entityIndex="entityIndex"
+        :entitiesLength="entitiesLength"
+      />
     </div>
   </section>
 </template>

@@ -2,6 +2,7 @@
 logs
 *.log
 npm-debug.log*
+.yarn
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
@@ -29,3 +30,4 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+/.yarnrc.yml

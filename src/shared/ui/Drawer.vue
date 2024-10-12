@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
+import { convertThemeToColorWhiteDefault } from '@/app/helpers';
 
 interface Props {
   isVisible: boolean;
@@ -10,7 +11,6 @@ interface Props {
     | 'blue'
     | 'sky'
     | 'teal'
-    | 'lime'
     | 'green'
     | 'yellow'
     | 'orange'
@@ -23,44 +23,7 @@ interface Props {
     | 'black';
 }
 const props = defineProps<Props>();
-const themeColor = computed(() => {
-  if (!props?.theme) return '#0ea5e9';
-  switch (props?.theme) {
-    case 'white':
-      return '#ffffff';
-    case 'slate':
-      return '#64748b';
-    case 'blue':
-      return '#3b82f6';
-    case 'sky':
-      return '#0ea5e9';
-    case 'teal':
-      return '#14b8a6';
-    case 'lime':
-      return '#84cc16';
-    case 'green':
-      return '#22c55e';
-    case 'yellow':
-      return '#eab308';
-    case 'orange':
-      return '#f97316';
-    case 'pink':
-      return '#ec4899';
-    case 'fuchsia':
-      return '#d946ef';
-    case 'purple':
-      return '#a855f7';
-    case 'indigo':
-      return '#6366f1';
-    case 'rose':
-      return '#f43f5e';
-    case 'red':
-      return '#ef4444';
-    case 'black':
-      return '#000000';
-  }
-  return '#ffffff';
-});
+const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
 const textColor = computed(() => {
   if (!props.theme) return '#000000';
   if (props.theme === 'white') return '#000000';
@@ -126,14 +89,14 @@ const isVisible = useVModel(props, 'isVisible', emit);
   opacity: 0;
 }
 .openedDrawerBackground {
-  z-index: 60;
+  z-index: 30;
   opacity: 1;
 }
 .drawer {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9999;
+  z-index: 31;
   width: 350px;
   height: 100vh;
   padding: 20px;

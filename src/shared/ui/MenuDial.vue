@@ -12,7 +12,7 @@ interface Props {
     textStyle?: 'bold' | 'italic';
     onClick?: () => void;
   }[];
-  size?: 'large' | 'extraLarge';
+  size?: 'small' | 'medium' | 'large' | 'extraLarge';
   theme?: string;
   direction?: 'left' | 'right' | 'up' | 'down';
 }
@@ -27,12 +27,16 @@ const textColor = computed(() => {
   return '#ffffff';
 });
 const elementsSize = computed(() => {
-  if (!props?.size) return 30;
+  if (!props?.size) return 40;
   switch (props.size) {
-    case 'large':
+    case 'small':
+      return 30;
+    case 'medium':
       return 40;
+    case 'large':
+      return 55;
     case 'extraLarge':
-      return 50;
+      return 70;
   }
 });
 const menuListStyles = computed(() => {
@@ -47,6 +51,18 @@ const menuListStyles = computed(() => {
       return `transform: translateY(-${isActive.value ? (0.5 + props.items.length) * elementsSize.value + 10 : elementsSize.value / 2}px)`;
     case 'down':
       return `transform: translateY(${isActive.value ? 20 : 0}px)`;
+  }
+});
+const onClick = () => {
+  isActive.value = false;
+};
+watch(isActive, () => {
+  if (isActive.value) {
+    setTimeout(() => {
+      document.addEventListener('click', onClick);
+    }, 0);
+  } else {
+    document.removeEventListener('click', onClick);
   }
 });
 </script>

@@ -6,13 +6,12 @@ export const useFilesWebsocketStore = defineStore('filesWebsocketStore', () => {
 
   const socket = ref();
   const filesBuffer = ref([]);
-  const imageUrl = ref();
+  const image_url = ref();
 
   onMounted(() => {
     socket.value = new WebSocket('ws://localhost:5001');
     socket.value.binaryType = 'arraybuffer';
     socket.value.onmessage = (response) => {
-      console.log('response: ', response);
       if (response?.data?.byteLength) {
         filesBuffer.value.push(response);
       }
@@ -27,18 +26,17 @@ export const useFilesWebsocketStore = defineStore('filesWebsocketStore', () => {
     filesBuffer.value = [];
   }
   function saveImageUrl(url: string) {
-    imageUrl.value = url;
+    image_url.value = url;
   }
   function cleanImageUrl() {
-    imageUrl.value = '';
+    image_url.value = '';
   }
   function sendData(data: unknown) {
-    console.log('data: ', data);
     socket.value.send(data);
   }
   return {
     filesBuffer,
-    imageUrl,
+    image_url,
     cleanFilesBuffer,
     removeFirstFilesBuffer,
     saveImageUrl,

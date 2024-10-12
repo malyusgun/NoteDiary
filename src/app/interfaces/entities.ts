@@ -52,9 +52,14 @@ export interface IImage extends IEntity {
   font_size?: '16' | '20' | '24' | '40' | '64' | null;
   paragraph_size?: 'full' | 'half' | null;
   text_position?: 'left' | 'right' | null;
-  imageUrl: string;
+  image_url_initial: string;
+  image_width_initial: number;
+  file_width_initial: number;
+  file_height_initial: number;
+  image_url: string;
   image_width: number;
-  image_height: number;
+  file_width: number;
+  file_height: number;
   image_scale: string;
   entity_title_position: 'left' | 'center' | 'right';
   entity_position: 'left' | 'center' | 'right';

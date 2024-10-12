@@ -18,14 +18,14 @@ const entity = useVModel(props, 'entity', emit);
       :entityData="entity as IDivider"
       :isEditMode="isEditMode"
     />
-    <TextItem
+    <ParagraphItem
       v-if="entity.entity_type === 'paragraph'"
       :entityData="entity as IParagraph"
       :isEditMode="isEditMode"
     />
     <ImageItem
       v-if="entity.entity_type === 'image'"
-      :entityData="entity as IImage"
+      v-model:entityData="entity as IImage"
       :isEditMode="isEditMode"
     />
   </div>

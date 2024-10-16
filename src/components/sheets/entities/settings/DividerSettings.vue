@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { convertThemeToColorWhiteDefault, deleteEntity } from '@/app/helpers';
+import { convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { deleteEntity } from '@/app/helpers/entities';
 import type { IDivider } from '@/app/interfaces/entities';
 import type { TTheme } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';

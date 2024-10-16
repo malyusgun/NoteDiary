@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IImage } from '@/app/interfaces/entities';
-import { editEntity, sendReturnOriginalSize } from '@/app/helpers';
-import { sendCropImage } from '@/app/helpers/images';
+import { editEntity } from '@/app/helpers/entities';
+import { sendReturnOriginalSize } from '@/app/helpers/images';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useVModel } from '@vueuse/core';
@@ -52,7 +52,6 @@ const returnOriginalSize = () => {
   newState.file_height = newState.file_height_initial;
   entityData.value = newState;
   sendReturnOriginalSize(newState);
-  // entityData.value.image_url = newState.image_url_initial;
 };
 </script>
 

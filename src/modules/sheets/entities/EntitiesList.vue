@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import type { IEntity } from '@/app/interfaces/environment';
+import { useDataStore } from '@/app/stores/data';
 
 interface Props {
-  entities: IEntity[];
   isEditMode: boolean;
 }
 defineProps<Props>();
-const emit = defineEmits(['createEntity']);
 
-const createEntity = (entity: IEntity) => {
-  emit('createEntity', entity);
-};
+const dataStore = useDataStore();
+const entities = computed(() => dataStore.entities);
 </script>
 
 <template>
@@ -22,7 +19,7 @@ const createEntity = (entity: IEntity) => {
   />
   <div class="my-4" style="margin-left: 64px; min-height: 55px">
     <Transition name="bounce">
-      <CreateEntityMenu v-if="isEditMode" @createEntity="createEntity" />
+      <CreateEntityMenu v-if="isEditMode" />
     </Transition>
   </div>
 </template>

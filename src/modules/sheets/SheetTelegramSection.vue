@@ -22,4 +22,18 @@
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+.telegramContainer > .telegramText {
+  opacity: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.telegramContainer:hover > .telegramText {
+  opacity: 100;
+  right: 104%;
+}
+.telegramContainer:hover > a {
+  filter: brightness(0.75);
+}
+</style>

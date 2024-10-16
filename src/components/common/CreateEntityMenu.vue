@@ -5,8 +5,7 @@ import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useDataStore } from '@/app/stores/data';
 import cookies from '@/app/plugins/Cookie';
 import { calcImageWidth } from '@/app/helpers/images';
-
-const emit = defineEmits(['createEntity']);
+import { createEntity } from '@/app/helpers/entities';
 
 const { open: uploadFile, onChange } = useFileDialog({
   accept: 'image/*',
@@ -39,7 +38,7 @@ const addImage = async (files: FileList) => {
       image.width *= coefficient;
     }
     const imageWidth = calcImageWidth(image.width, windowWidth.value);
-    emit('createEntity', {
+    createEntity({
       entity_type: 'image',
       entity_order: entitiesCount.value + 1,
       image_buffer: buffer,
@@ -70,7 +69,7 @@ const speedDialItems = ref([
     textStyle: 'bold',
     theme: 'blue',
     onClick: () => {
-      emit('createEntity', {
+      createEntity({
         entity_type: 'divider',
         entity_order: entitiesCount.value + 1,
         divider_height: 1,
@@ -83,7 +82,7 @@ const speedDialItems = ref([
     textStyle: 'bold',
     theme: 'green',
     onClick: () => {
-      emit('createEntity', {
+      createEntity({
         entity_type: 'paragraph',
         entity_order: entitiesCount.value + 1,
         text: '',
@@ -104,7 +103,7 @@ const speedDialItems = ref([
     textStyle: 'bold',
     theme: 'red',
     onClick: () => {
-      emit('createEntity', {
+      createEntity({
         entity_type: 'table',
         entity_order: entitiesCount.value + 1,
         table_columns: [

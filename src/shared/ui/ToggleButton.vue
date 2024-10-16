@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from './helpers/index';
 import { useVModel } from '@vueuse/core';
 type TTheme =
   | 'white'

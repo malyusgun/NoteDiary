@@ -3,45 +3,15 @@ import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
 import {
   convert800ThemeToColorGrayDefault,
-  convertThemeToColorBlackDefault,
-  convertThemeToColorGrayDefault
-} from '@/app/helpers';
+  convertThemeToColorBlackDefault
+} from './helpers/index';
+import type { TThemeColor } from './interfaces/index';
 
 interface Props {
   isActive: boolean;
   size?: 'small' | 'medium' | 'large' | 'extraLarge';
-  theme?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
-  negativeTheme?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
+  theme?: TThemeColor;
+  negativeTheme?: TThemeColor;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:isActive']);

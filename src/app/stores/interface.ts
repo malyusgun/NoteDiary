@@ -5,31 +5,31 @@ export const useInterfaceStore = defineStore('interfaceStore', () => {
   const websocketStore = useWebsocketStore();
 
   const isDarkMode = ref<boolean>(true);
-  const defaultPageBackground = ref<string>(
+  const defaultSheetBackground = ref<string>(
     'https://t3.ftcdn.net/jpg/05/01/28/98/360_F_501289843_4ITbthNCydFQGgJmoZe4IQKchItBubqZ.jpg'
   );
-  const pageBackground = ref<string>(defaultPageBackground.value);
+  const sheetBackground = ref<string>(defaultSheetBackground.value);
   const isFetchedForBackground = ref<boolean>(false);
 
   function setIsFetchedForBackground() {
     isFetchedForBackground.value = true;
   }
-  function resetPageBackground() {
-    pageBackground.value = defaultPageBackground.value;
+  function resetSheetBackground() {
+    sheetBackground.value = defaultSheetBackground.value;
     const data = {
-      event: 'deletePageBackground'
+      event: 'deleteSheetBackground'
     };
     websocketStore.sendData(data);
   }
-  function editPageBackground(newUrl: string) {
-    pageBackground.value = newUrl;
+  function editSheetBackground(newUrl: string) {
+    sheetBackground.value = newUrl;
     const image = new Image();
     image.src = newUrl;
     image.onload = async () => {
       const response = await fetch(newUrl);
       const blob = await response.blob();
       const data = {
-        event: 'editPageBackground',
+        event: 'editSheetBackground',
         body: {
           background_url: newUrl,
           extension: blob.type
@@ -38,20 +38,20 @@ export const useInterfaceStore = defineStore('interfaceStore', () => {
       websocketStore.sendData(data);
     };
   }
-  function setPageBackgroundFromDB(url: string | null) {
+  function setSheetBackgroundFromDB(url: string | null) {
     if (!url) {
       return;
     }
-    pageBackground.value = url;
+    sheetBackground.value = url;
   }
   return {
     isDarkMode,
-    pageBackground,
-    defaultPageBackground,
+    sheetBackground,
+    defaultSheetBackground,
     isFetchedForBackground,
     setIsFetchedForBackground,
-    resetPageBackground,
-    editPageBackground,
-    setPageBackgroundFromDB
+    resetSheetBackground,
+    editSheetBackground,
+    setSheetBackgroundFromDB
   };
 });

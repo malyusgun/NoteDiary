@@ -11,7 +11,7 @@ import {
   entityTitlePositionOptions,
   entityTextPositionOptions,
   isEntityWidthFullOptions
-} from '@/components/entities/settings/lists/constants/options';
+} from '@/components/sheets/entities/settings/lists/constants/options';
 import { filterImageScaleOptions, scaleImage } from '@/app/helpers/images';
 interface Props {
   newEntityData: IImage;

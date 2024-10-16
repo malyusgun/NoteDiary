@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IDivider } from '@/app/interfaces/entities';
-import { editEntity } from '@/app/helpers';
+import { editEntity } from '@/app/helpers/entities';
 import { useDataStore } from '@/app/stores/data';
 import type { IEntity } from '@/app/interfaces/environment';
 

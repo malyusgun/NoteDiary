@@ -13,17 +13,17 @@ const entity = useVModel(props, 'entity', emit);
 
 <template>
   <div>
-    <DividerItem
+    <DividerEntity
       v-if="entity.entity_type === 'divider'"
       :entityData="entity as IDivider"
       :isEditMode="isEditMode"
     />
-    <ParagraphItem
+    <ParagraphEntity
       v-if="entity.entity_type === 'paragraph'"
       :entityData="entity as IParagraph"
       :isEditMode="isEditMode"
     />
-    <ImageItem
+    <ImageEntity
       v-if="entity.entity_type === 'image'"
       v-model:entityData="entity as IImage"
       :isEditMode="isEditMode"

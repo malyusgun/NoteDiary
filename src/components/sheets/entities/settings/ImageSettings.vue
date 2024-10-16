@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { IImage } from '@/app/interfaces/entities';
-import { convertThemeToColorWhiteDefault, deleteEntity, editEntity } from '@/app/helpers';
+import { convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { deleteEntity, editEntity } from '@/app/helpers/entities';
+
 import type { TTheme } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
 import { sendCropImage } from '@/app/helpers/images';
@@ -121,7 +123,7 @@ const openCropImageModal = () => (isModalCropImage.value = true);
       v-model:imageInfo="newEntityData"
       @cropImage="cropImage"
     />
-    <ConfirmDeleteEntityModal
+    <DeleteEntityConfirmModal
       v-model:isModalToDeleteEntity="isModalToDeleteImage"
       @deleteEntity="deleteImage"
       @toggleConfirmDeleteEntityModal="toggleConfirmDeleteImageModal"

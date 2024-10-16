@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
-import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from './helpers/index';
 
 interface Props {
   value: string | number;

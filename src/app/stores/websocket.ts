@@ -6,7 +6,7 @@ import { addUrlsToImageEntities } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import cookies from '@/app/plugins/Cookie';
-import { editEntity } from '@/app/helpers';
+import { editEntity } from '@/app/helpers/entities';
 
 export const useWebsocketStore = defineStore('websocketStore', () => {
   const dataStore = useDataStore();
@@ -39,14 +39,14 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
           }
         };
         sendData(getUserData);
-        const pageUuid = cookies.get('current_page_uuid');
-        const getPageData = {
-          event: 'getPage',
+        const sheetUuid = cookies.get('current_sheet_uuid');
+        const getSheetData = {
+          event: 'getSheet',
           body: {
-            page_uuid: pageUuid
+            sheet_uuid: sheetUuid
           }
         };
-        sendData(getPageData);
+        sendData(getSheetData);
       }
       if (initialDataToSend.value) socket.value.send(JSON.stringify(initialDataToSend.value));
     };
@@ -57,11 +57,11 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
         // create
         case 'createUser': {
           cookies.set('user_uuid', response.data.user_uuid);
-          const pagesUuid = response.data.pages_uuid;
-          const homePageUuid = pagesUuid[0];
+          const sheetsUuid = response.data.sheets_uuid;
+          const homeSheetUuid = sheetsUuid[0];
           const userSettings = response.data.settings;
           cookies.set('favorite_color', userSettings.favorite_color);
-          cookies.set('home_uuid', homePageUuid);
+          cookies.set('home_uuid', homeSheetUuid);
           const getUserData = {
             event: 'getUser',
             body: {
@@ -69,18 +69,18 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
             }
           };
           sendData(getUserData);
-          const getPageData = {
-            event: 'getPage',
+          const getSheetData = {
+            event: 'getSheet',
             body: {
-              page_uuid: homePageUuid
+              sheet_uuid: homeSheetUuid
             }
           };
-          sendData(getPageData);
-          await router.push(`/${homePageUuid}`);
+          sendData(getSheetData);
+          await router.push(`/${homeSheetUuid}`);
           break;
         }
-        case 'createPage': {
-          dataStore.addPageData(response.data);
+        case 'createSheet': {
+          dataStore.addSheetData(response.data);
           break;
         }
         case 'createEntity': {
@@ -96,12 +96,12 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
         }
         case 'createImageEntity': {
           if (!file.value) break;
-          const page_uuid = cookies.get('current_page_uuid');
+          const sheet_uuid = cookies.get('current_sheet_uuid');
           const data = {
             event: 'createEntity',
             body: {
               ...file.value,
-              page_uuid
+              sheet_uuid
             }
           };
           file.value = null;
@@ -112,15 +112,15 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
         case 'getUser': {
           authorizationStore.setUserNickName(response.data.nick_name);
           authorizationStore.setUserData(response.data);
-          dataStore.setPagesData(response.data.pages_uuid);
+          dataStore.setSheetsData(response.data.sheets_uuid);
           break;
         }
-        case 'getPage': {
-          dataStore.setCurrentPageUuid(response.data.page_uuid);
-          dataStore.setCurrentPageData(response.data);
+        case 'getSheet': {
+          dataStore.setCurrentSheetUuid(response.data.sheet_uuid);
+          // dataStore.setCurrentSheetData(response.data);
           break;
         }
-        case 'getPageEntities': {
+        case 'getSheetEntities': {
           const newState = response.data;
           if (imageEntitiesCount.value && filesBufferLength.value === imageEntitiesCount.value) {
             const entitiesAddedUrls = addUrlsToImageEntities(newState);
@@ -130,12 +130,12 @@ export const useWebsocketStore = defineStore('websocketStore', () => {
           }
           break;
         }
-        case 'getPageBackground': {
+        case 'getSheetBackground': {
           const blob = new Blob([response.data.setting_value.data], {
             type: `image/jpeg`
           });
           const url = URL.createObjectURL(blob);
-          interfaceStore.setPageBackgroundFromDB(url);
+          interfaceStore.setSheetBackgroundFromDB(url);
           break;
         }
         // update

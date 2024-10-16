@@ -1,42 +1,55 @@
 <script setup lang="ts">
 import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
-import HomeIcon from '@/shared/icons/HomeIcon.vue';
+import { useVModel } from '@vueuse/core';
+
+interface Props {
+  isMenuVisible: boolean;
+}
+const props = defineProps<Props>();
+const emit = defineEmits(['update:isMenuVisible']);
+const isMenuVisible = useVModel(props, 'isMenuVisible', emit);
 
 const authorizationStore = useAuthorizationStore();
-
-const route = useRoute();
 const dataStore = useDataStore();
-const userNickName = computed(() => authorizationStore.userNickName);
-
-const logout = () => {
-  authorizationStore.logout();
-};
 const sheets = ref();
+const userNickName = computed(() => authorizationStore.userNickName);
 
 onMounted(() => {
   sheets.value = dataStore.sheets;
 });
+
+const logout = () => {
+  authorizationStore.logout();
+};
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <Drawer v-model:isVisible="isMenuVisible" width="400" theme="black">
+    <template #header
+      ><section class="flex justify-between items-center mb-4">
+        <div class="inline-flex items-center gap-6">
+          <img
+            src="../../app/assets/ShelfNoteLogoCircle.png"
+            alt="ShelfNote logo"
+            class="bg-white size-20 rounded-full"
+          />
+          <span class="font-semibold text-4xl">ShelfNote</span>
+        </div>
+      </section>
+    </template>
     <section class="flex items-center justify-between">
       <div>
         <p class="text-xl w-48 overflow-ellipsis overflow-hidden text-nowrap">
           @{{ userNickName }}
         </p>
       </div>
-      <a
-        href="/settings"
-        class="pi pi-cog ml-auto mr-1 p-2 hover:cursor-pointer"
-        style="font-size: 2rem"
-      ></a>
-      <SettingsIcon
-        class="p-2 cursor-pointer hover:brightness-75 transition-all"
-        color="white"
-        size="50"
-      />
+      <a href="/settings" class="ml-auto mr-1 p-2 hover:cursor-pointer"
+        ><SettingsIcon
+          class="p-2 cursor-pointer hover:brightness-75 transition-all"
+          color="white"
+          size="50"
+      /></a>
       <button @click.prevent="logout">
         <ExitIcon color="#f00" class="hover:brightness-75 transition-all" />
       </button>
@@ -44,12 +57,6 @@ onMounted(() => {
     <Divider class="mt-4" />
     <nav class="mt-4">
       <h3 class="text-xl">Menu</h3>
-      <div class="mt-4 -mb-2 ml-4 select-none font-bold">
-        <a v-if="route.path !== '/'" href="/" class="text-lg flex gap-4"
-          ><HomeIcon color="white" size="20" />Главное меню</a
-        >
-        <span v-else><i class="pi pi-home text-gray-400 pr-2"></i>Главное меню</span>
-      </div>
       <Tree :expand="true" theme="black" :items="sheets">
         <template #1IconBefore>
           <HamburgerIcon color="white" size="20" />
@@ -68,7 +75,7 @@ onMounted(() => {
         </template>
       </Tree>
     </nav>
-  </div>
+  </Drawer>
 </template>
 
 <style scoped></style>

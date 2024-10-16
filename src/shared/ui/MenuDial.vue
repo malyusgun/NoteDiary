@@ -2,7 +2,7 @@
 import { useVModel } from '@vueuse/core';
 import PlusIcon from '@/shared/icons/PlusIcon.vue';
 import { computed } from 'vue';
-import { convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { convertThemeToColorWhiteDefault } from './helpers/index';
 
 interface Props {
   isActive: boolean;

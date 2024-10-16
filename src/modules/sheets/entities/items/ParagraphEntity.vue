@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTextareaAutosize } from '@vueuse/core';
 import type { IParagraph } from '@/app/interfaces/entities';
-import { editEntity } from '@/app/helpers';
+import { editEntity } from '@/app/helpers/entities';
 import { useDataStore } from '@/app/stores/data';
 import type { IEntity } from '@/app/interfaces/environment';
 

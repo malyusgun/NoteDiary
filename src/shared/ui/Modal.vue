@@ -2,25 +2,11 @@
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
 import { convertThemeToColorWhiteDefault } from '@/app/helpers';
+import type { TThemeColor } from './interfaces/index';
 
 interface Props {
   isVisible: boolean;
-  theme?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
+  theme?: TThemeColor;
   width?: number | string;
 }
 const props = defineProps<Props>();

@@ -2,7 +2,6 @@
 import { useVModel } from '@vueuse/core';
 import cookies from '@/app/plugins/Cookie';
 import type { TTheme } from '@/app/interfaces/environment';
-import { convertThemeToColorWhiteDefault } from '@/app/helpers';
 
 interface Props {
   title: string;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { changeEntitiesOrder } from '@/app/helpers';
+import { changeEntitiesOrder } from '@/app/helpers/entities';
 import cookies from '@/app/plugins/Cookie';
 
 interface Props {

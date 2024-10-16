@@ -6,7 +6,7 @@ import ToggleButton from '@/shared/ui/ToggleButton.vue';
 import {
   entityHeightOptions,
   entityTypeOptions
-} from '@/components/entities/settings/lists/constants/options';
+} from '@/components/sheets/entities/settings/lists/constants/options';
 
 interface Props {
   newEntityData: IDivider;

@@ -3,7 +3,7 @@ interface Props {
   isBackgroundDefault: boolean;
 }
 defineProps<Props>();
-const emit = defineEmits(['uploadFile', 'setDefaultBackground']);
+defineEmits(['uploadFile', 'setDefaultBackground']);
 </script>
 
 <template>
@@ -11,7 +11,7 @@ const emit = defineEmits(['uploadFile', 'setDefaultBackground']);
     <div
       class="bg-black p-2 mb-1 rounded-md hover:text-gray-300 transition-all select-none cursor-pointer"
     >
-      <span><i class="pi pi-image mr-2"></i>Change image</span>
+      <p class="flex"><ImageEditIcon color="white" size="25" class="mr-2" />Change image</p>
     </div>
     <div class="bg-black p-2 mb-1 rounded-md hover:text-gray-300 transition-all select-none">
       <input
@@ -23,7 +23,7 @@ const emit = defineEmits(['uploadFile', 'setDefaultBackground']);
         class="w-2 py-1 -my-2 pl-2 -ml-2 opacity-0"
         @change="$emit('uploadFile', $event)"
       />
-      <span><i class="pi pi-file-arrow-up mr-2"></i>Upload image</span>
+      <p class="flex"><UploadIcon color="white" size="25" class="mr-2" />Upload image</p>
     </div>
     <button
       v-if="isBackgroundDefault"

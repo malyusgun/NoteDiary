@@ -5,6 +5,7 @@ import 'vue-advanced-cropper/dist/theme.compact.css';
 import { useWindowSize, useVModels } from '@vueuse/core';
 import type { IImageMainInfo } from '@/app/interfaces';
 import type { IImage } from '@/app/interfaces/entities';
+import UploadIcon from '@/shared/icons/UploadIcon.vue';
 
 interface Props {
   isVisible: boolean;
@@ -12,7 +13,7 @@ interface Props {
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:isVisible', 'cropImage']);
-const { isVisible, imageInfo } = useVModels(props, emit);
+const { isVisible } = useVModels(props, emit);
 
 const imageInstance = new Image();
 const finalImageUrl = ref<string>('');
@@ -35,13 +36,13 @@ const modalWidth = computed(() => {
 watch(
   () => isVisible.value,
   () => {
-    if (!imageInfo.value.image_url || !isVisible.value) return;
+    if (!props.imageInfo.image_url || !isVisible.value) return;
 
-    imageInstance.src = imageInfo.value.image_url;
+    imageInstance.src = props.imageInfo.image_url;
     imageInstance.onload = () => {
-      const imageWidth = (imageInfo.value.image_width / 100) * (windowWidth.value - 128);
-      const imageHeight = (imageWidth / imageInfo.value.file_width) * imageInfo.value.file_height;
-      imageInstance.src = imageInfo.value.image_url;
+      const imageWidth = (props.imageInfo.image_width / 100) * (windowWidth.value - 128);
+      const imageHeight = (imageWidth / props.imageInfo.file_width) * props.imageInfo.file_height;
+      imageInstance.src = props.imageInfo.image_url;
       if (imageWidth < (imageHeight * windowWidth.value) / windowHeight.value) {
         imageInstance.onload = () => {
           if (imageHeight < windowHeight.value * 0.75 - 20) {
@@ -82,7 +83,7 @@ const onCropperChange = async ({ canvas }) => {
   imageInstance.height = canvas.height;
   finalImageUrl.value = canvas.toDataURL();
 };
-const submitForm = () => {
+const cropImage = () => {
   emit(
     'cropImage',
     finalImageUrl.value,
@@ -102,11 +103,8 @@ const submitForm = () => {
       theme="black"
     >
       <template #header>
-        <div class="mx-auto select-none">
-          <i
-            class="pi pi-upload mr-4"
-            :style="stageSize.width < 400 ? 'font-size: 1rem' : 'font-size: 1.5rem'"
-          ></i>
+        <div class="flex gap-4 justify-center mx-auto select-none">
+          <UploadIcon :size="stageSize.width < 400 ? 25 : 30" color="white" />
           <span
             :class="[
               'font-bold text-2xl',
@@ -119,8 +117,8 @@ const submitForm = () => {
         </div>
       </template>
       <button
-        class="absolute top-0 left-2 -translate-y-full bg-blue-600 p-2 px-4 text-lg font-bold transition-all border-0 border-t-2 border-t-solid border-t-black rounded-t-lg select-none"
-        @click.prevent="submitForm"
+        class="absolute top-0 left-2 -translate-y-full bg-blue-600 py-2 px-4 text-lg font-bold transition-all border-t-2 border-t-solid border-t-black rounded-t-lg select-none"
+        @click.prevent="cropImage"
       >
         Save image
       </button>

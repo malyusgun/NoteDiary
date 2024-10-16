@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { IEntity, IPageInfo } from '@/app/interfaces/environment';
+import type { IEntity, ISheetInfo } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
 
 export const useDataStore = defineStore('dataStore', () => {
@@ -36,22 +36,22 @@ export const useDataStore = defineStore('dataStore', () => {
     }
   ]);
 
-  const pagesData = ref<IPageInfo[]>([]);
-  const currentPage = computed<IPageInfo>(() =>
-    pagesData.value.find((page) => page.page_uuid === cookies.get('current_page_uuid'))
+  const sheetsData = ref<ISheetInfo[]>([]);
+  const currentSheet = computed<ISheetInfo>(() =>
+    sheetsData.value.find((sheet) => sheet.sheet_uuid === cookies.get('current_sheet_uuid'))
   );
   const entities = ref<IEntity[]>([]);
-  function setCurrentPageUuid(uuid: string) {
-    cookies.set('current_page_uuid', uuid);
+  function setCurrentSheetUuid(uuid: string) {
+    cookies.set('current_sheet_uuid', uuid);
   }
-  function setCurrentPageData(data: IPageInfo) {
-    currentPage.value = data;
+  function setCurrentSheetData(data: ISheetInfo) {
+    // currentSheet.value = data;
   }
-  function setPagesData(data: IPageInfo[]) {
-    pagesData.value = data;
+  function setSheetsData(data: ISheetInfo[]) {
+    sheetsData.value = data;
   }
-  function addPageData(data: IPageInfo) {
-    pagesData.value.push(data);
+  function addSheetData(data: ISheetInfo) {
+    sheetsData.value.push(data);
   }
   function editEntities(newState: IEntity[]) {
     entities.value = newState.sort(
@@ -61,12 +61,12 @@ export const useDataStore = defineStore('dataStore', () => {
   return {
     sheets,
     entities,
-    pagesData,
-    currentPage,
-    setCurrentPageUuid,
-    setCurrentPageData,
-    setPagesData,
-    addPageData,
+    sheetsData,
+    currentSheet,
+    setCurrentSheetUuid,
+    setCurrentSheetData,
+    setSheetsData,
+    addSheetData,
     editEntities
   };
 });

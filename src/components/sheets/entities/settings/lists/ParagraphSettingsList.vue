@@ -8,7 +8,7 @@ import {
   entityPositionOptions,
   entityTitlePositionOptions,
   isEntityWidthFullOptions
-} from '@/components/entities/settings/lists/constants/options';
+} from '@/components/sheets/entities/settings/lists/constants/options';
 
 interface Props {
   newEntityData: IParagraph;

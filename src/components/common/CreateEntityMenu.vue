@@ -5,7 +5,7 @@ import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useDataStore } from '@/app/stores/data';
 import cookies from '@/app/plugins/Cookie';
 import { calcImageWidth } from '@/app/helpers/images';
-import { createEntity } from '@/app/helpers/entities';
+import { addImageOnLoad, createEntity } from '@/app/helpers/entities';
 
 const { open: uploadFile, onChange } = useFileDialog({
   accept: 'image/*',
@@ -25,36 +25,8 @@ const addImage = async (files: FileList) => {
   const url = URL.createObjectURL(files[0]);
   image.src = url;
   image.onload = async () => {
-    const filesWebsocketStore = useFilesWebsocketStore();
-    filesWebsocketStore.saveImageUrl(url);
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const buffer = await blob.arrayBuffer();
-    const { width: windowWidth } = useWindowSize();
-    const maxHeight = 1000;
-    const initWidth = image.width;
-    if (image.height > maxHeight) {
-      const coefficient = maxHeight / image.height;
-      image.width *= coefficient;
-    }
-    const imageWidth = calcImageWidth(image.width, windowWidth.value);
-    createEntity({
-      entity_type: 'image',
-      entity_order: entitiesCount.value + 1,
-      image_buffer: buffer,
-      entity_position: 'left',
-      entity_title_position: 'center',
-      font_size: '24',
-      text_position: 'right',
-      paragraph_size: 'full',
-      image_width: imageWidth,
-      image_width_initial: imageWidth,
-      file_width: initWidth,
-      file_height: image.height,
-      file_width_initial: initWidth,
-      file_height_initial: image.height,
-      image_scale: 'x1'
-    });
+    // TODO посмотреть, работает ли корректно вынос функции
+    await addImageOnLoad(image, url);
   };
 };
 onChange((files) => {

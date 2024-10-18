@@ -2,9 +2,10 @@ import { useInterfaceStore } from '@/app/stores/interface';
 import { useDataStore } from '@/app/stores/data';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IEntity } from '@/app/interfaces/environment';
-import { checkIsImage } from '@/app/helpers/images';
+import { calcImageWidth, checkIsImage } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import cookies from '@/app/plugins/Cookie';
+import { useWindowSize } from '@vueuse/core';
 
 export const fetchForEntities = (sheet_uuid: string) => {
   const dataStore = useDataStore();
@@ -39,6 +40,39 @@ export const createEntity = (newEntity: IEntity) => {
     body: { ...newEntity, sheet_uuid }
   };
   websocketStore.sendData(data);
+};
+
+export const addImageOnLoad = async (image, url: string) => {
+  const filesWebsocketStore = useFilesWebsocketStore();
+  filesWebsocketStore.saveImageUrl(url);
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const buffer = await blob.arrayBuffer();
+  const { width: windowWidth } = useWindowSize();
+  const maxHeight = 1000;
+  const initWidth = image.width;
+  if (image.height > maxHeight) {
+    const coefficient = maxHeight / image.height;
+    image.width *= coefficient;
+  }
+  const imageWidth = calcImageWidth(image.width, windowWidth.value);
+  createEntity({
+    entity_type: 'image',
+    entity_order: entitiesCount.value + 1,
+    image_buffer: buffer,
+    entity_position: 'left',
+    entity_title_position: 'center',
+    font_size: '24',
+    text_position: 'right',
+    paragraph_size: 'full',
+    image_width: imageWidth,
+    image_width_initial: imageWidth,
+    file_width: initWidth,
+    file_height: image.height,
+    file_width_initial: initWidth,
+    file_height_initial: image.height,
+    image_scale: 'x1'
+  });
 };
 
 export const editEntity = (newState: IEntity) => {

@@ -6,8 +6,9 @@ import type { IImageMainInfo } from '@/app/interfaces';
 import { fetchForEntities } from '@/app/helpers/entities';
 import { backgroundImageOnLoad, uploadImage } from '@/app/helpers/images';
 import cookies from '@/app/plugins/Cookie';
-import { useWindowSize } from '@vueuse/core';
+import { useDataStore } from '@/app/stores/data';
 
+const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
 const authorizationStore = useAuthorizationStore();
 const websocketStore = useWebsocketStore();
@@ -25,7 +26,7 @@ const backgroundImageInfo = ref<IImageMainInfo>({
   image_width: 0,
   image_height: 0
 });
-const { width: windowWidth } = useWindowSize();
+const windowWidth = computed(() => dataStore.windowWidth);
 
 onMounted(() => {
   const onKeydown = (event) => {

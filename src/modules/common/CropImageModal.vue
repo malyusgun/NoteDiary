@@ -2,10 +2,11 @@
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
-import { useWindowSize, useVModels } from '@vueuse/core';
+import { useVModels } from '@vueuse/core';
 import type { IImageMainInfo } from '@/app/interfaces';
 import type { IImage } from '@/app/interfaces/entities';
 import UploadIcon from '@/shared/icons/UploadIcon.vue';
+import { useDataStore } from '@/app/stores/data';
 
 interface Props {
   isVisible: boolean;
@@ -17,7 +18,9 @@ const { isVisible } = useVModels(props, emit);
 
 const imageInstance = new Image();
 const finalImageUrl = ref<string>('');
-const { width: windowWidth, height: windowHeight } = useWindowSize();
+const dataStore = useDataStore();
+const windowWidth = computed(() => dataStore.windowWidth);
+const windowHeight = computed(() => dataStore.windowHeight);
 
 const stageSize = ref({
   width: 200,

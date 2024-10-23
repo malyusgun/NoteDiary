@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import type { IEntity, ISheetInfo } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
+import { useWindowSize } from '@vueuse/core';
 
 export const useDataStore = defineStore('dataStore', () => {
   const sheets = ref([
@@ -41,6 +42,7 @@ export const useDataStore = defineStore('dataStore', () => {
     sheetsData.value.find((sheet) => sheet.sheet_uuid === cookies.get('current_sheet_uuid'))
   );
   const entities = ref<IEntity[]>([]);
+  const { width: windowWidth, height: windowHeight } = useWindowSize();
   function setCurrentSheetUuid(uuid: string) {
     cookies.set('current_sheet_uuid', uuid);
   }
@@ -59,6 +61,8 @@ export const useDataStore = defineStore('dataStore', () => {
     );
   }
   return {
+    windowWidth,
+    windowHeight,
     sheets,
     entities,
     sheetsData,

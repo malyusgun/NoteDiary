@@ -29,8 +29,7 @@ const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultSheetB
         @setDefaultBackground="setDefaultSheetBackground"
       />
     </article>
-    //TODO попробовать удалить эти классы и посмотреть, как всё будет выглядеть
-    <article class="flex items-start justify-center">
+    <article>
       <Suspense>
         <div ref="entitiesContainer" class="w-full pt-4">
           <EntitiesList :isEditMode="isEditMode" />

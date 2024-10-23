@@ -16,32 +16,15 @@ const entityData = useVModel(props, 'entityData', emit);
 
 const dataStore = useDataStore();
 const entities = computed(() => dataStore.entities);
+const entitiesLength = computed(() => entities.value.length);
 const entityIndex = computed(() =>
   entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
 );
-const entitiesLength = computed(() => entities.value.length);
 
 const textContainerWidth = computed(() => {
   if (entityData.value?.paragraph_size === 'half') return (100 - entityData.value.image_width) / 2;
   return 100 - entityData.value.image_width;
 });
-
-let titleTimeout;
-let textTimeout;
-const editTitle = () => {
-  clearTimeout(titleTimeout);
-  titleTimeout = setTimeout(
-    () => editEntity({ ...entityData.value, title: entityData.value.title }),
-    600
-  );
-};
-const editText = () => {
-  clearTimeout(textTimeout);
-  textTimeout = setTimeout(
-    () => editEntity({ ...entityData.value, text: entityData.value.text }),
-    600
-  );
-};
 const saveChanges = (newState: IImage) => {
   editEntity(newState);
   entityData.value = newState;
@@ -56,7 +39,7 @@ const returnOriginalSize = () => {
 </script>
 
 <template>
-  <section
+  <article
     :class="[
       'entityContainer relative flex px-16 transition-all',
       {
@@ -66,7 +49,7 @@ const returnOriginalSize = () => {
       }
     ]"
   >
-    <div
+    <section
       :class="[
         {
           'w-1/2': entityData.paragraph_size === 'half',
@@ -78,57 +61,12 @@ const returnOriginalSize = () => {
         v-model:title="entityData.title"
         :entityData="entityData"
         :isEditMode="isEditMode"
-        @editTitle="editTitle"
       />
-      <div
-        style="gap: 32px"
-        :class="[
-          'flex py-2',
-          {
-            'justify-start': entityData.entity_position === 'left',
-            'justify-center': entityData.entity_position === 'center',
-            'justify-end': entityData.entity_position === 'right'
-          }
-        ]"
-      >
-        <div
-          :class="[
-            'imageContainer relative leading-none',
-            {
-              'order-3': entityData.text_position === 'left'
-            }
-          ]"
-          :style="`width: ${entityData.image_width}%`"
-        >
-          <img
-            :src="entityData?.image_url"
-            :alt="`Image ${entityData?.title}` || 'Image'"
-            style="min-height: 100px; max-height: 1000px"
-            class="object-contain order-1"
-          />
-        </div>
-        <div
-          v-show="entityData.text || entityData.text === ''"
-          class="textContainer relative leading-none"
-          :style="`width: ${textContainerWidth}%`"
-        >
-          <textarea
-            ref="textarea"
-            v-model="entityData.text"
-            :class="[
-              'w-full indent-5 leading-normal overflow-auto resize-none outline-0 order-2',
-              {
-                'pointer-events-none': !isEditMode
-              }
-            ]"
-            placeholder="Enter text..."
-            rows="7"
-            :style="`font-size: ${entityData.font_size}px`"
-            spellcheck="false"
-            @input="editText"
-          />
-        </div>
-      </div>
+      <ImageEntityImageWithText
+        :entityData="entityData"
+        :textContainerWidth="textContainerWidth"
+        :isEditMode="isEditMode"
+      />
       <ImageSettings
         v-if="isEditMode"
         :entityData="entityData"
@@ -141,8 +79,8 @@ const returnOriginalSize = () => {
         :entityIndex="entityIndex"
         :entitiesLength="entitiesLength"
       />
-    </div>
-  </section>
+    </section>
+  </article>
 </template>
 
 <style scoped>

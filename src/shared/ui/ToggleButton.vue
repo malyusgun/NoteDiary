@@ -34,13 +34,12 @@ interface Props {
   size?: 'small' | 'medium' | 'large' | 'extraLarge';
   theme?: TTheme;
   rounded?: any;
-  activeBGColor?: TTheme;
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:value']);
 const value = useVModel(props, 'value', emit);
 const activeBGColor = computed(() =>
-  props.activeBGColor ? convertThemeToColorBlackDefault(props.activeBGColor) : ''
+  props.theme ? convertThemeToColorBlackDefault(props.theme) : ''
 );
 const borderColor = computed(() =>
   props.border ? convertThemeToColorBlackDefault(props.border) : ''

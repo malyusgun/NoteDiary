@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useFileDialog, useWindowSize } from '@vueuse/core';
+import { useFileDialog } from '@vueuse/core';
 import { useAuthorizationStore } from '@/app/stores/authorization';
-import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import { useDataStore } from '@/app/stores/data';
 import cookies from '@/app/plugins/Cookie';
-import { calcImageWidth } from '@/app/helpers/images';
 import { addImageOnLoad, createEntity } from '@/app/helpers/entities';
 
 const { open: uploadFile, onChange } = useFileDialog({
@@ -25,8 +23,7 @@ const addImage = async (files: FileList) => {
   const url = URL.createObjectURL(files[0]);
   image.src = url;
   image.onload = async () => {
-    // TODO посмотреть, работает ли корректно вынос функции
-    await addImageOnLoad(image, url);
+    await addImageOnLoad(image, url, entitiesCount.value);
   };
 };
 onChange((files) => {

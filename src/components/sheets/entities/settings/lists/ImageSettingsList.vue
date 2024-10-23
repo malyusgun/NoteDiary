@@ -2,7 +2,6 @@
 import type { TTheme } from '@/app/interfaces/environment';
 import { useVModels } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
-import ToggleButton from '@/shared/ui/ToggleButton.vue';
 import {
   imageScaleOptions,
   entityIsTitleOptions,
@@ -13,6 +12,7 @@ import {
   isEntityWidthFullOptions
 } from '@/components/sheets/entities/settings/lists/constants/options';
 import { filterImageScaleOptions, scaleImage } from '@/app/helpers/images';
+
 interface Props {
   newEntityData: IImage;
   isTitle: boolean;
@@ -70,7 +70,6 @@ watch(
             :options="entityIsTitleOptions"
             rounded="true"
             :border="themeColor"
-            :activeBGColor="themeColor"
           />
         </div>
         <div style="height: 108px" class="flex gap-8 items-center justify-between col-span-2">
@@ -83,7 +82,6 @@ watch(
                 :options="entityTitlePositionOptions"
                 rounded="true"
                 :border="themeColor"
-                :activeBGColor="themeColor"
               >
                 <template #1Icon><AlignLeftIcon /></template>
                 <template #2Icon><AlignCenterIcon /></template>
@@ -102,7 +100,6 @@ watch(
                 :options="entityTextPositionOptions"
                 rounded="true"
                 :border="themeColor"
-                :activeBGColor="themeColor"
               />
             </div>
           </Transition>
@@ -120,7 +117,6 @@ watch(
                   :options="entityIsTextOptions"
                   rounded="true"
                   :border="themeColor"
-                  :activeBGColor="themeColor"
                 />
               </div>
             </div>
@@ -136,7 +132,6 @@ watch(
                 :options="entityPositionOptions"
                 rounded="true"
                 :border="themeColor"
-                :activeBGColor="themeColor"
                 ><template #1Icon><AlignLeftIcon /></template>
                 <template #2Icon><AlignCenterIcon /></template>
                 <template #3Icon><AlignRightIcon /></template
@@ -157,7 +152,6 @@ watch(
                 :options="isEntityWidthFullOptions"
                 rounded="true"
                 :border="themeColor"
-                :activeBGColor="themeColor"
               />
             </div>
           </Transition>

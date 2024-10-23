@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { IEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
+import { editEntity } from '@/app/helpers/entities';
 
 interface Props {
   title?: string | null;
@@ -8,8 +9,17 @@ interface Props {
   isEditMode: boolean;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['update:title', 'editTitle']);
+const emit = defineEmits(['update:title']);
 const title = useVModel(props, 'title', emit);
+
+let titleTimeout: ReturnType<typeof setTimeout>;
+const editTitle = () => {
+  clearTimeout(titleTimeout);
+  titleTimeout = setTimeout(
+    () => editEntity({ ...props.entityData, title: props.entityData.title }),
+    600
+  );
+};
 </script>
 
 <template>
@@ -29,7 +39,7 @@ const title = useVModel(props, 'title', emit);
       }
     ]"
     size="1"
-    @input="$emit('editTitle')"
+    @input="editTitle"
   />
 </template>
 

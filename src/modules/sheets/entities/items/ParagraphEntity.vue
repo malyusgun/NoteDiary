@@ -14,23 +14,16 @@ const entityData = ref(props.entityData);
 
 const dataStore = useDataStore();
 const entities = computed(() => dataStore.entities);
+const entitiesLength = computed(() => entities.value.length);
 const entityIndex = computed(() =>
   entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
 );
-const entitiesLength = computed(() => entities.value.length);
 
-let titleTimeout;
-let textTimeout;
-const editTitle = () => {
-  clearTimeout(titleTimeout);
-  titleTimeout = setTimeout(
-    () => editEntity({ ...entityData.value, title: entityData.value.title }),
-    600
-  );
-};
+let textTimeout: ReturnType<typeof setTimeout>;
 const editText = () => {
   editEntity({ ...entityData.value, text: entityData.value.text });
 };
+
 const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
 const editTextAndTriggerResize = () => {
   triggerResize();
@@ -66,7 +59,6 @@ const saveChanges = (newState: IParagraph) => {
         v-model:title="entityData.title"
         :entityData="entityData"
         :isEditMode="isEditMode"
-        @editTitle="editTitle"
       />
       <div class="relative leading-none">
         <textarea
@@ -75,7 +67,7 @@ const saveChanges = (newState: IParagraph) => {
           :class="[
             'w-full indent-5 leading-normal resize-none outline-0',
             {
-              'pointer-events-none': !`isEditMode`
+              'pointer-events-none': !isEditMode
             }
           ]"
           :style="`font-size: ${entityData.font_size}px;`"

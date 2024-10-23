@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { convertThemeToColorWhiteDefault } from '@/app/helpers';
-import { deleteEntity, editEntity } from '@/app/helpers/entities';
 import type { IParagraph } from '@/app/interfaces/entities';
 import type { TTheme } from '@/app/interfaces/environment';
+import { convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { deleteEntity } from '@/app/helpers/entities';
 import cookies from '@/app/plugins/Cookie';
 
 interface Props {
@@ -16,10 +16,10 @@ const newEntityData = ref({ ...props.entityData });
 const isModal = ref<boolean>(false);
 const isModalToDeleteParagraph = ref<boolean>(false);
 
-const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
-  prevEntityData.value.font_size = newSize;
-  editEntity({ ...prevEntityData.value, font_size: newSize });
-};
+// const changeFontSize = (newSize: '16' | '20' | '24' | '40' | '64') => {
+//   prevEntityData.value.font_size = newSize;
+//   editEntity({ ...prevEntityData.value, font_size: newSize });
+// };
 const themeColor: TTheme = cookies.get('favorite_color');
 const themeColorConverted = convertThemeToColorWhiteDefault(themeColor);
 const isTitle = ref(!!newEntityData.value.title);
@@ -53,13 +53,20 @@ const saveChanges = () => {
   }
   isModal.value = false;
 };
-const toggleConfirmToDeleteParagraph = () => {
+const toggleConfirmDeleteParagraph = () => {
   isModalToDeleteParagraph.value = !isModalToDeleteParagraph.value;
 };
 const deleteParagraph = () => {
   deleteEntity(prevEntityData.value.entity_uuid);
   isModalToDeleteParagraph.value = false;
   isModal.value = false;
+};
+const onCloseModal = () => {
+  setTimeout(() => {
+    newEntityData.value = { ...prevEntityData.value };
+    isTitle.value = !!prevEntityData.value.title;
+    isEntityWidthFull.value = prevEntityData.value.paragraph_size === 'full';
+  }, 300);
 };
 </script>
 
@@ -71,25 +78,13 @@ const deleteParagraph = () => {
   >
     <SettingsIcon color="white" size="25" />
   </button>
-  <Modal v-model:isVisible="isModal" theme="black" width="90%"
+  <Modal v-model:isVisible="isModal" theme="black" width="90%" :onClose="onCloseModal"
     ><template #header><h3 class="w-max mx-auto">Edit paragraph</h3></template>
-    <Modal v-model:isVisible="isModalToDeleteParagraph" theme="black" width="30%"
-      ><p class="font-bold pt-4 mb-4 text-center">Are you sure you want to delete this element?</p>
-      <div class="flex justify-between">
-        <Button
-          label="Yes, delete"
-          theme="red"
-          textColor="white"
-          textStyle="bold"
-          @click.prevent="deleteParagraph"
-        />
-        <Button
-          label="Cancel"
-          theme="white"
-          textColor="black"
-          @click.prevent="toggleConfirmToDeleteParagraph"
-        /></div
-    ></Modal>
+    <DeleteEntityConfirmModal
+      v-model:isModalToDeleteEntity="isModalToDeleteParagraph"
+      @deleteEntity="deleteParagraph"
+      @toggleConfirmDeleteEntityModal="toggleConfirmDeleteParagraph"
+    />
     <div class="p-10 flex gap-16 items-center">
       <ParagraphSettingsList
         v-model:newEntityData="newEntityData"
@@ -121,26 +116,12 @@ const deleteParagraph = () => {
           </div>
         </div>
       </section>
-      <div
-        class="absolute top-4 right-16 z-10 hover:brightness-80 transition-all"
-        @click.prevent="toggleConfirmToDeleteParagraph"
-      >
-        <Button label="Delete" textColor="white" theme="red" textStyle="bold" size="medium">
-          <template #icon>
-            <TrashIcon color="white" size="25" />
-          </template>
-        </Button>
-      </div>
-      <div
-        class="absolute top-4 left-4 z-10 hover:brightness-80 transition-all"
-        @click.prevent="saveChanges"
-      >
-        <Button label="Save" textColor="white" :theme="themeColor" textStyle="bold" size="medium">
-          <template #icon>
-            <SaveIcon color="white" size="25" />
-          </template>
-        </Button>
-      </div>
+      <EntitySettingsModalHeader
+        :newEntityData="newEntityData"
+        :themeColor="themeColor"
+        @saveChanges="saveChanges"
+        @toggleConfirmDeleteImageModal="toggleConfirmDeleteParagraph"
+      />
     </div>
   </Modal>
 </template>

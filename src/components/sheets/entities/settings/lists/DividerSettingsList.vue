@@ -2,7 +2,6 @@
 import type { TTheme } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
 import type { IDivider } from '@/app/interfaces/entities';
-import ToggleButton from '@/shared/ui/ToggleButton.vue';
 import {
   entityHeightOptions,
   entityTypeOptions
@@ -28,7 +27,6 @@ const newEntityData = useVModel(props, 'newEntityData', emit);
           :options="entityTypeOptions"
           rounded="true"
           :border="themeColor"
-          :activeBGColor="themeColor"
         />
       </div>
     </li>
@@ -41,7 +39,6 @@ const newEntityData = useVModel(props, 'newEntityData', emit);
           :options="entityHeightOptions"
           rounded="true"
           :border="themeColor"
-          :activeBGColor="themeColor"
         />
       </div>
     </li>

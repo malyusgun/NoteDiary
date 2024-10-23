@@ -8,6 +8,7 @@ interface Props {
   isVisible: boolean;
   theme?: TThemeColor;
   width?: number | string;
+  onClose?: () => any;
 }
 const props = defineProps<Props>();
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
@@ -18,6 +19,18 @@ const textColor = computed(() => {
 });
 const emit = defineEmits(['update:isVisible']);
 const isVisible = useVModel(props, 'isVisible', emit);
+const onKeydown = (event) => {
+  if (event.key === 'Escape' && isVisible.value) isVisible.value = false;
+};
+document.addEventListener('keydown', onKeydown);
+const unwatch = watch(isVisible, () => {
+  if (!isVisible.value) {
+    props.onClose();
+  }
+});
+if (!props.onClose) {
+  unwatch();
+}
 </script>
 
 <template>

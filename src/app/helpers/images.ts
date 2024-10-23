@@ -4,7 +4,6 @@ import type { IImage } from '@/app/interfaces/entities';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { imageScaleOptions } from '@/components/sheets/entities/settings/lists/constants/options';
-import type { IImageMainInfo } from '@/app/interfaces';
 
 export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
   let imageWidth = Math.ceil((fileWidth / (windowWidth - 128)) * 100);
@@ -200,4 +199,32 @@ export const scaleImage = (entityData: IImage, prevScale: string) => {
   const initialWidth = Math.ceil(+entityData.image_width / +prevScale);
   entityData.image_width = Math.ceil(initialWidth * +scale);
   return entityData;
+};
+
+export const updateEntityDataTextOnSave = <T>(
+  newEntityData: T,
+  prevEntityData: IEntity,
+  isEntityWidthFull: boolean,
+  isTitle: boolean,
+  isText?: boolean
+) => {
+  const paragraphSize = isEntityWidthFull ? 'full' : 'half';
+  if (paragraphSize !== prevEntityData.paragraph_size) {
+    newEntityData.paragraph_size = paragraphSize;
+  }
+  if (isTitle !== !!prevEntityData.title) {
+    if (isTitle) {
+      newEntityData.title = 'Title';
+    } else {
+      newEntityData.title = null;
+    }
+  }
+  if (isText !== !!prevEntityData.text) {
+    if (isText) {
+      newEntityData.text = 'Text';
+    } else {
+      newEntityData.text = null;
+    }
+  }
+  return newEntityData;
 };

@@ -5,7 +5,6 @@ import type { IEntity } from '@/app/interfaces/environment';
 import { calcImageWidth, checkIsImage } from '@/app/helpers/images';
 import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import cookies from '@/app/plugins/Cookie';
-import { useWindowSize } from '@vueuse/core';
 
 export const fetchForEntities = (sheet_uuid: string) => {
   const dataStore = useDataStore();
@@ -42,13 +41,14 @@ export const createEntity = (newEntity: IEntity) => {
   websocketStore.sendData(data);
 };
 
-export const addImageOnLoad = async (image, url: string) => {
+export const addImageOnLoad = async (image, url: string, entitiesCount: number) => {
   const filesWebsocketStore = useFilesWebsocketStore();
+  const dataStore = useDataStore();
   filesWebsocketStore.saveImageUrl(url);
   const response = await fetch(url);
   const blob = await response.blob();
   const buffer = await blob.arrayBuffer();
-  const { width: windowWidth } = useWindowSize();
+  const windowWidth = computed(() => dataStore.windowWidth);
   const maxHeight = 1000;
   const initWidth = image.width;
   if (image.height > maxHeight) {
@@ -58,7 +58,7 @@ export const addImageOnLoad = async (image, url: string) => {
   const imageWidth = calcImageWidth(image.width, windowWidth.value);
   createEntity({
     entity_type: 'image',
-    entity_order: entitiesCount.value + 1,
+    entity_order: entitiesCount + 1,
     image_buffer: buffer,
     entity_position: 'left',
     entity_title_position: 'center',

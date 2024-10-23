@@ -2,7 +2,6 @@
 import type { TTheme } from '@/app/interfaces/environment';
 import { useVModels } from '@vueuse/core';
 import type { IParagraph } from '@/app/interfaces/entities';
-import ToggleButton from '@/shared/ui/ToggleButton.vue';
 import {
   entityIsTitleOptions,
   entityPositionOptions,
@@ -33,7 +32,6 @@ const { newEntityData, isTitle, isEntityWidthFull } = useVModels(props, emit);
             :options="entityIsTitleOptions"
             rounded="true"
             :border="themeColor"
-            :activeBGColor="themeColor"
           />
         </div>
       </div>
@@ -48,7 +46,6 @@ const { newEntityData, isTitle, isEntityWidthFull } = useVModels(props, emit);
               rounded="true"
               size="small"
               :border="themeColor"
-              :activeBGColor="themeColor"
             >
               <template #1Icon><AlignLeftIcon /></template>
               <template #2Icon><AlignCenterIcon /></template>
@@ -68,7 +65,6 @@ const { newEntityData, isTitle, isEntityWidthFull } = useVModels(props, emit);
             :options="isEntityWidthFullOptions"
             rounded="true"
             :border="themeColor"
-            :activeBGColor="themeColor"
           />
         </div>
       </div>
@@ -83,7 +79,6 @@ const { newEntityData, isTitle, isEntityWidthFull } = useVModels(props, emit);
               rounded="true"
               size="small"
               :border="themeColor"
-              :activeBGColor="themeColor"
               ><template #1Icon><AlignLeftIcon /></template>
               <template #2Icon><AlignCenterIcon /></template>
               <template #3Icon><AlignRightIcon /></template>

@@ -7,7 +7,7 @@ interface Props {
   isEditMode: boolean;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['update:entityData']);
+const emit = defineEmits(['update:entity']);
 const entity = useVModel(props, 'entity', emit);
 </script>
 

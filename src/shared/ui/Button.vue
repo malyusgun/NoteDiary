@@ -1,60 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from './helpers/index';
+import type { TThemeColor } from './interfaces/index';
 
 interface Props {
   label?: string;
   iconPos?: 'left' | 'top' | 'right' | 'bottom';
   textStyle?: 'bold' | 'italic';
-  border?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
+  border?: TThemeColor;
   size?: 'small' | 'medium' | 'large' | 'extraLarge';
-  textColor?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
-  theme?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
+  textColor?: TThemeColor;
+  theme?: TThemeColor;
 }
 const props = defineProps<Props>();
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));

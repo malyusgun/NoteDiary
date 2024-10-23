@@ -1,10 +1,10 @@
 import type { ITableColumn } from '@/app/interfaces/entities';
 
-export interface IPageInfo {
-  page_uuid: string;
-  page_title: string;
-  page_icon: string;
-  page_navigation_order: string;
+export interface ISheetInfo {
+  sheet_uuid: string;
+  sheet_title: string;
+  sheet_icon: string;
+  sheet_navigation_order: string;
   entities?: {
     entity_uuid: string;
     entity_type: 'divider' | 'paragraph' | 'image' | 'table';
@@ -12,7 +12,7 @@ export interface IPageInfo {
 }
 
 export interface IEntity {
-  entity_uuid: string;
+  entity_uuid?: string;
   entity_user?: string;
   user_nick_name?: string;
   entity_order?: number;
@@ -24,7 +24,7 @@ export interface IEntity {
   font_size?: string | null;
   paragraph_size?: string | null;
   text_position?: string | null;
-  image_buffer?: string;
+  image_buffer?: string | ArrayBuffer;
   image_url_initial?: string;
   image_width_initial?: number;
   file_width_initial?: number;

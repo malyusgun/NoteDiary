@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
-import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { convertThemeToColorBlackDefault, convertThemeToColorWhiteDefault } from './helpers/index';
 
 interface Props {
   value: string | number;
@@ -32,6 +32,14 @@ watch([optionValue], () => {
   if (props.options) {
     value.value = props.options!.find((option) => option.value == optionValue.value)!.label;
   } else value.value = optionValue.value;
+});
+watch([value], () => {
+  if (value.value !== optionValue.value) {
+    optionValue.value =
+      typeof value.value === 'string'
+        ? props.options!.findIndex((option) => option.label === value.value)
+        : value.value;
+  }
 });
 const sliderButtonSize = computed(() => {
   if (!props.size) return '40px';

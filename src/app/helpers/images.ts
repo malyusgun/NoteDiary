@@ -3,11 +3,54 @@ import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import type { IImage } from '@/app/interfaces/entities';
 import { useWebsocketStore } from '@/app/stores/websocket';
 import { useInterfaceStore } from '@/app/stores/interface';
-import { imageScaleOptions } from '@/components/entities/settings/lists/constants/options';
+import { imageScaleOptions } from '@/components/sheets/entities/settings/lists/constants/options';
 
-export const setDefaultPageBackground = () => {
+export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
+  let imageWidth = Math.ceil((fileWidth / (windowWidth - 128)) * 100);
+  if (imageWidth > 100) {
+    imageWidth = 100;
+  }
+  if (imageWidth < 5) {
+    imageWidth = 5;
+  }
+  return imageWidth;
+};
+
+export const sendReturnOriginalSize = (newState: IEntity) => {
+  const websocketStore = useWebsocketStore();
+  const data = {
+    event: 'returnOriginalImageSize',
+    body: { ...newState }
+  };
+  websocketStore.sendData(data);
+};
+
+export const uploadImage = ($event) => {
+  const target = $event.target as HTMLInputElement;
+  const image = new Image();
+  const file = target.files![0];
+  image.src = URL.createObjectURL(file);
+  return image;
+};
+
+export const backgroundImageOnLoad = (image, windowWidth: number) => {
+  const backgroundImageInfo = {
+    image_url: '',
+    image_width: 0,
+    file_width: 0,
+    file_height: 0
+  };
+  const imageWidth = calcImageWidth(image.width, windowWidth);
+  backgroundImageInfo.image_url = image.src;
+  backgroundImageInfo.image_width = imageWidth;
+  backgroundImageInfo.file_width = image.width;
+  backgroundImageInfo.file_height = image.height;
+  return backgroundImageInfo;
+};
+
+export const setDefaultSheetBackground = () => {
   const interfaceStore = useInterfaceStore();
-  interfaceStore.resetPageBackground();
+  interfaceStore.resetSheetBackground();
 };
 
 export const addUrlsToImageEntities = (entities: IEntity[]) => {
@@ -44,17 +87,6 @@ export const checkIsImage = (entity: IEntity) => {
   filesWebsocketStore.saveImageUrl(entityToReturn.image_url!);
   delete entityToReturn.image_url;
   return entityToReturn;
-};
-
-export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
-  let imageWidth = Math.ceil((fileWidth / (windowWidth - 128)) * 100);
-  if (imageWidth > 100) {
-    imageWidth = 100;
-  }
-  if (imageWidth < 5) {
-    imageWidth = 5;
-  }
-  return imageWidth;
 };
 
 export const sendCropImage = async (newUrl: string, entity: IImage) => {
@@ -167,4 +199,32 @@ export const scaleImage = (entityData: IImage, prevScale: string) => {
   const initialWidth = Math.ceil(+entityData.image_width / +prevScale);
   entityData.image_width = Math.ceil(initialWidth * +scale);
   return entityData;
+};
+
+export const updateEntityDataTextOnSave = <T>(
+  newEntityData: T,
+  prevEntityData: IEntity,
+  isEntityWidthFull: boolean,
+  isTitle: boolean,
+  isText?: boolean
+) => {
+  const paragraphSize = isEntityWidthFull ? 'full' : 'half';
+  if (paragraphSize !== prevEntityData.paragraph_size) {
+    newEntityData.paragraph_size = paragraphSize;
+  }
+  if (isTitle !== !!prevEntityData.title) {
+    if (isTitle) {
+      newEntityData.title = 'Title';
+    } else {
+      newEntityData.title = null;
+    }
+  }
+  if (isText !== !!prevEntityData.text) {
+    if (isText) {
+      newEntityData.text = 'Text';
+    } else {
+      newEntityData.text = null;
+    }
+  }
+  return newEntityData;
 };

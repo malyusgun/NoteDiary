@@ -2,26 +2,13 @@
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
 import { convertThemeToColorWhiteDefault } from '@/app/helpers';
+import type { TThemeColor } from './interfaces/index';
 
 interface Props {
   isVisible: boolean;
-  theme?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
+  theme?: TThemeColor;
   width?: number | string;
+  onClose?: () => any;
 }
 const props = defineProps<Props>();
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
@@ -32,6 +19,18 @@ const textColor = computed(() => {
 });
 const emit = defineEmits(['update:isVisible']);
 const isVisible = useVModel(props, 'isVisible', emit);
+const onKeydown = (event) => {
+  if (event.key === 'Escape' && isVisible.value) isVisible.value = false;
+};
+document.addEventListener('keydown', onKeydown);
+const unwatch = watch(isVisible, () => {
+  if (!isVisible.value) {
+    props.onClose();
+  }
+});
+if (!props.onClose) {
+  unwatch();
+}
 </script>
 
 <template>

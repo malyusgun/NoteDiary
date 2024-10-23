@@ -1,26 +1,13 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { computed } from 'vue';
-import { convertThemeToColorWhiteDefault } from '@/app/helpers';
+import { convertThemeToColorWhiteDefault } from './helpers/index';
+import type { TThemeColor } from './interfaces/index';
 
 interface Props {
   isVisible: boolean;
-  theme?:
-    | 'white'
-    | 'slate'
-    | 'blue'
-    | 'sky'
-    | 'teal'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'pink'
-    | 'fuchsia'
-    | 'purple'
-    | 'indigo'
-    | 'rose'
-    | 'red'
-    | 'black';
+  width?: string | number;
+  theme?: TThemeColor;
 }
 const props = defineProps<Props>();
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
@@ -31,6 +18,8 @@ const textColor = computed(() => {
 });
 const emit = defineEmits(['update:isVisible']);
 const isVisible = useVModel(props, 'isVisible', emit);
+
+const drawerWidth = computed(() => `${props.width ?? 400}px`);
 </script>
 
 <template>
@@ -97,7 +86,7 @@ const isVisible = useVModel(props, 'isVisible', emit);
   top: 0;
   left: 0;
   z-index: 31;
-  width: 350px;
+  width: v-bind(drawerWidth);
   height: 100vh;
   padding: 20px;
   transform: translateX(-100%);

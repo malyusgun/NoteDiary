@@ -1,27 +1,22 @@
 <script setup lang="ts">
 import { useInterfaceStore } from '@/app/stores/interface';
-import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useWebsocketStore } from '@/app/stores/websocket';
-import type { IEntity } from '@/app/interfaces/environment';
 import type { IImageMainInfo } from '@/app/interfaces';
-import { createEntity, fetchForEntities } from '@/app/helpers';
+import { fetchForEntities } from '@/app/helpers/entities';
+import { backgroundImageOnLoad, uploadImage } from '@/app/helpers/images';
 import cookies from '@/app/plugins/Cookie';
-import { calcImageWidth, setDefaultPageBackground } from '@/app/helpers/images';
-import { useWindowSize } from '@vueuse/core';
+import { useDataStore } from '@/app/stores/data';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
 const authorizationStore = useAuthorizationStore();
 const websocketStore = useWebsocketStore();
 
-const currentPageUuid = computed(() => cookies.get('current_page_uuid'));
-const entities = computed(() => dataStore.entities);
-const backgroundUrl = computed<string>(() => interfaceStore.pageBackground);
-const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultPageBackground);
+const currentSheetUuid = computed(() => cookies.get('current_sheet_uuid'));
+const backgroundUrl = computed<string>(() => interfaceStore.sheetBackground);
 const isFetchedForBackground = computed(() => interfaceStore.isFetchedForBackground);
-const isDarkMode = computed(() => interfaceStore.isDarkMode);
-// const pageTitle = computed(() => dataStore.currentPage.page_title);
+// const sheetTitle = computed(() => dataStore.currentSheet.sheet_title);
 
 const isMenuVisible = ref<boolean>(false);
 const isEditMode = ref<boolean>(false);
@@ -31,7 +26,7 @@ const backgroundImageInfo = ref<IImageMainInfo>({
   image_width: 0,
   image_height: 0
 });
-const { width: windowWidth } = useWindowSize();
+const windowWidth = computed(() => dataStore.windowWidth);
 
 onMounted(() => {
   const onKeydown = (event) => {
@@ -39,95 +34,51 @@ onMounted(() => {
     if (event.ctrlKey && event.shiftKey) isMenuVisible.value = !isMenuVisible.value;
   };
   document.addEventListener('keydown', onKeydown);
-  const getPageBackgroundData = {
-    event: 'getPageBackground',
+  const getSheetBackgroundData = {
+    event: 'getSheetBackground',
     body: {
-      page_uuid: ''
+      sheet_uuid: ''
     }
   };
-  websocketStore.setInitialDataToSend(getPageBackgroundData);
+  websocketStore.setInitialDataToSend(getSheetBackgroundData);
 });
 
 const unwatchBackground = watch([isFetchedForBackground], () => {
   if (isFetchedForBackground.value) {
-    fetchForEntities(currentPageUuid.value);
+    fetchForEntities(currentSheetUuid.value);
     unwatchBackground();
   }
 });
 
-const createNewEntity = (newEntity: IEntity) => {
-  createEntity(newEntity);
-};
 const uploadFile = ($event: Event) => {
-  const target = $event.target as HTMLInputElement;
-  if (target && target.files && target.files?.[0]) {
-    const image = new Image();
-    const file = target.files![0];
-    const url = URL.createObjectURL(file);
-    image.src = url;
-    image.onload = function () {
-      const imageWidth = calcImageWidth(image.width, windowWidth.value);
-      backgroundImageInfo.value.image_url = url;
-      backgroundImageInfo.value.image_width = imageWidth;
-      backgroundImageInfo.value.file_width = image.width;
-      backgroundImageInfo.value.file_height = image.height;
-      isModalUploadFile.value = true;
-    };
-  }
+  const image = uploadImage($event);
+  image.onload = function () {
+    backgroundImageInfo.value = backgroundImageOnLoad(image, windowWidth.value);
+    isModalUploadFile.value = true;
+  };
 };
 const saveImage = (finalImageUrl: string) => {
-  interfaceStore.editPageBackground(finalImageUrl);
+  interfaceStore.editSheetBackground(finalImageUrl);
   isModalUploadFile.value = false;
 };
 const openMenu = () => (isMenuVisible.value = true);
 </script>
 
 <template>
-  <PageHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
-  <PageMenuButton @openMenu="openMenu" />
-  <Drawer v-model:isVisible="isMenuVisible" theme="black">
-    <template #header
-      ><section class="flex justify-between items-center mb-4">
-        <LogoAndLabel /></section
-    ></template>
-    <SidebarMenuContent class="relative z-50" />
-  </Drawer>
-  <TelegramSection />
+  <SheetHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
+  <SidebarMenuButton @openMenu="openMenu" />
+  <SidebarMenu v-model:isMenuVisible="isMenuVisible" />
+  <SheetTelegramSection />
   <CropImageModal
     v-model:isVisible="isModalUploadFile"
     v-model:imageInfo="backgroundImageInfo"
     @cropImage="saveImage"
   />
-  <main
-    id="pageContainer"
-    class="flex flex-col"
-    :style="`background-color: ${isDarkMode ? 'black' : 'light'}`"
-  >
-    <article style="min-height: 200px" class="backgroundContainer relative">
-      <img
-        :src="backgroundUrl"
-        alt="Background image"
-        class="w-full pointer-events-none select-none"
-      />
-      <PageBackgroundMenu
-        :isBackgroundDefault="backgroundUrl !== defaultBackgroundUrl"
-        @uploadFile="uploadFile"
-        @setDefaultBackground="setDefaultPageBackground"
-      />
-    </article>
-    <article class="flex items-start justify-center">
-      <Suspense>
-        <div ref="entitiesContainer" class="w-full pt-4">
-          <EntitiesList
-            :entities="entities"
-            :isEditMode="isEditMode"
-            @createEntity="createNewEntity"
-          />
-        </div>
-        <template #fallback><BaseLoader /></template
-      ></Suspense>
-    </article>
-  </main>
+  <SheetPageContent
+    :isEditMode="isEditMode"
+    :backgroundUrl="backgroundUrl"
+    @uploadFile="uploadFile"
+  />
 </template>
 
 <style lang="scss">
@@ -138,18 +89,5 @@ const openMenu = () => (isMenuVisible.value = true);
 .backgroundContainer:hover > .changeImageBlock,
 .backgroundContainer:hover > .returnDefaultImageBlock {
   opacity: 100;
-}
-.telegramContainer > .telegramText {
-  opacity: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.telegramContainer:hover > .telegramText {
-  opacity: 100;
-  right: 104%;
-}
-.telegramContainer:hover > a {
-  filter: brightness(0.75);
 }
 </style>

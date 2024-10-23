@@ -11,10 +11,10 @@ export interface ITable extends IEntity {
   }[];
 }
 export interface ITableColumn {
-  column_uuid: string;
+  column_uuid?: string;
   name: string;
   type: ITableColumnTypes;
-  data: never;
+  data?: never;
 }
 type ITableColumnTypes =
   | 'text'

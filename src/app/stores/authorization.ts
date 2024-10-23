@@ -23,7 +23,7 @@ export const useAuthorizationStore = defineStore('authorizationStore', () => {
     userNickName.value = '';
     userData.value = null;
     cookies.remove('user_uuid');
-    cookies.remove('current_page_uuid');
+    cookies.remove('current_sheet_uuid');
     cookies.remove('home_uuid');
     cookies.remove('favorite_color');
     router.push('/signUp');

@@ -16,7 +16,7 @@ let textTimeout: ReturnType<typeof setTimeout>;
 const editText = () => {
   clearTimeout(textTimeout);
   textTimeout = setTimeout(
-    () => editEntity({ ...entityData.value, text: entityData.value.text }),
+    async () => await editEntity({ ...entityData.value, text: entityData.value.text }),
     600
   );
 };

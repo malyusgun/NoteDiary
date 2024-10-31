@@ -18,8 +18,8 @@ const entityIndex = computed(() =>
 );
 const entitiesLength = computed(() => entities.value.length);
 
-const saveChanges = (newState: IDivider) => {
-  editEntity(newState);
+const saveChanges = async (newState: IDivider) => {
+  await editEntity(newState);
   entityData.value = newState;
 };
 </script>

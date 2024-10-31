@@ -1,3 +1,97 @@
+import { useInterfaceStore } from '@/app/stores/interface';
+import { useDataStore } from '@/app/stores/data';
+import type { IEntity } from '@/app/interfaces/environment';
+import { checkIsImage } from '@/app/helpers/images';
+import cookies from '@/app/plugins/Cookie';
+import customFetch from '@/app/helpers/customFetch';
+import { createEntityHandler } from '@/app/helpers/requestHandlers';
+
+const interfaceStore = useInterfaceStore();
+const dataStore = useDataStore();
+
+export const getSheetBackground = (backgroundPath: string) => {
+  const background = await customFetch(`/sheets/${backgroundPath}/background`, 'GET');
+  const blob = new Blob([background], {
+    type: `image/jpeg`
+  });
+  const url = URL.createObjectURL(blob);
+  interfaceStore.setSheetBackgroundFromDB(url);
+};
+
+export const createEntity = (newEntity: IEntity) => {
+  // const websocketStore = useWebsocketStore();
+  const sheet_uuid = cookies.get('current_sheet_uuid');
+  // if (newEntity.image_buffer) {
+  //   websocketStore.setFileData(newEntity);
+  //   const filesWebsocketStore = useFilesWebsocketStore();
+  //   return filesWebsocketStore.sendData(newEntity.image_buffer);
+  // }
+  const newEntityDB = customFetch(`/sheets/${sheet_uuid}/entities`, 'POST', {
+    ...newEntity,
+    sheet_uuid
+  });
+  createEntityHandler(newEntityDB);
+};
+
+export const editEntity = (newState: IEntity) => {
+  newState = checkIsImage(newState);
+  const sheetUuid = dataStore.currentSheet.sheet_uuid;
+  const newStateDB = await customFetch(
+    `/sheets/${sheetUuid}/entities/${newState.entity_uuid}`,
+    'PATCH',
+    newState
+  );
+  let entitiesStore = [...entities.value];
+  entitiesStore = entitiesStore.map((entity: IEntity) => {
+    if (entity.entity_uuid !== newStateDB.entity_uuid) return entity;
+    if (newStateDB?.image_width) {
+      newStateDB.imageUrl = filesWebsocketStore.imageUrl;
+      filesWebsocketStore.cleanImageUrl();
+    }
+    return newStateDB;
+  });
+  dataStore.editEntities(entitiesStore);
+};
+
+export const deleteEntity = (entityUuid: string) => {
+  const entities = dataStore.entities;
+  const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
+  const deletedEntity = await customFetch(`/sheets/${sheetUuid}/entities/${entityUuid}`, 'DELETE', {
+    ...entityToDelete
+  });
+
+  let newStateEntities = [...entities.value];
+  newStateEntities = newStateEntities.filter(
+    (entity: IEntity) => entity.entity_uuid !== deletedEntity.entity_uuid
+  );
+  dataStore.editEntities(newStateEntities);
+};
+
+export const changeEntitiesOrder = async (entityUuid: string, direction: 'up' | 'down') => {
+  const entities = dataStore.entities;
+  const sheetUuid = dataStore.currentSheet.sheet_uuid;
+
+  const mainEntity = entities.find((entity: IEntity) => entity.entity_uuid === entityUuid)!;
+  const mainEntityIndex = entities.indexOf(mainEntity);
+  const targetEntityIndex = direction === 'up' ? mainEntityIndex - 1 : mainEntityIndex + 1;
+  const targetEntity = entities[targetEntityIndex];
+
+  await customFetch(`/sheets/${sheetUuid}/entities`, 'PATCH', {
+    main: mainEntity,
+    target: targetEntity
+  });
+
+  const newStateEntities = [...entities];
+  if (mainEntity.entity_order > newStateEntities[mainEntityIndex].entity_order!) {
+    newStateEntities[mainEntityIndex + 1].entity_order =
+      newStateEntities[mainEntityIndex].entity_order;
+  } else {
+    newState[mainEntityIndex - 1].entity_order = newStateEntities[mainEntityIndex].entity_order;
+  }
+  newStateEntities[mainEntityIndex] = { ...mainEntity };
+  dataStore.editEntities(newStateEntities);
+};
+
 export const convertThemeToColorWhiteDefault = (theme: string | undefined) => {
   if (!theme) return '#ffffff';
   switch (theme) {

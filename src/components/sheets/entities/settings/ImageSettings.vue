@@ -71,8 +71,8 @@ const cropImage = async (
 const toggleConfirmDeleteImageModal = () => {
   isModalToDeleteImage.value = !isModalToDeleteImage.value;
 };
-const deleteImage = () => {
-  deleteEntity(prevEntityData.value.entity_uuid);
+const deleteImage = async () => {
+  await deleteEntity(prevEntityData.value.entity_uuid);
   isModalToDeleteImage.value = false;
   isModal.value = false;
 };

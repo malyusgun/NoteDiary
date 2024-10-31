@@ -1,14 +1,12 @@
 import type { ITableColumn } from '@/app/interfaces/entities';
 
-export interface ISheetInfo {
+export interface ISheet {
   sheet_uuid: string;
   sheet_title: string;
   sheet_icon: string;
   sheet_navigation_order: string;
-  entities?: {
-    entity_uuid: string;
-    entity_type: 'divider' | 'paragraph' | 'image' | 'table';
-  }[];
+  background_path?: string;
+  sheet_entities?: string;
 }
 
 export interface IEntity {

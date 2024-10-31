@@ -14,9 +14,9 @@ const router = createRouter({
       component: () => import('@/pages/authorization/signUp.vue')
     },
     {
-      path: '/',
-      name: 'emptyPage',
-      component: () => import('@/pages/[uuid]/SheetPage.vue')
+      path: '/signIn',
+      name: 'signIn',
+      component: () => import('@/pages/authorization/signIn.vue')
     }
   ]
 });

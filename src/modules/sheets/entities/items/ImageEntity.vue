@@ -25,8 +25,8 @@ const textContainerWidth = computed(() => {
   if (entityData.value?.paragraph_size === 'half') return (100 - entityData.value.image_width) / 2;
   return 100 - entityData.value.image_width;
 });
-const saveChanges = (newState: IImage) => {
-  editEntity(newState);
+const saveChanges = async (newState: IImage) => {
+  await editEntity(newState);
   entityData.value = newState;
 };
 const returnOriginalSize = () => {

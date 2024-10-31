@@ -20,8 +20,8 @@ const entityIndex = computed(() =>
 );
 
 let textTimeout: ReturnType<typeof setTimeout>;
-const editText = () => {
-  editEntity({ ...entityData.value, text: entityData.value.text });
+const editText = async () => {
+  await editEntity({ ...entityData.value, text: entityData.value.text });
 };
 
 const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
@@ -30,8 +30,8 @@ const editTextAndTriggerResize = () => {
   clearTimeout(textTimeout);
   textTimeout = setTimeout(() => editText(), 600);
 };
-const saveChanges = (newState: IParagraph) => {
-  editEntity(newState);
+const saveChanges = async (newState: IParagraph) => {
+  await editEntity(newState);
   entityData.value = newState;
 };
 </script>

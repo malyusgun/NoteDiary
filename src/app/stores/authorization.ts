@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
-import type { IUserData } from '@/app/interfaces/authorization';
+import type { IUser } from '@/app/interfaces/authorization';
 import cookies from '@/app/plugins/Cookie';
 
 export const useAuthorizationStore = defineStore('authorizationStore', () => {
   const router = useRouter();
 
   const userUuid = ref<string>('');
-  const userNickName = ref<string>('malyusgunDmitriyMalyugin');
-  const userData = ref<IUserData | null>();
+  const userNickName = ref<string>('malyusgun');
+  const userData = ref<IUser | null>();
 
   function setUserUuid(uuid: string) {
     userUuid.value = uuid;
@@ -15,7 +15,7 @@ export const useAuthorizationStore = defineStore('authorizationStore', () => {
   function setUserNickName(nickName: string) {
     userNickName.value = nickName;
   }
-  function setUserData(data: IUserData) {
+  function setUserData(data: IUser) {
     userData.value = data;
   }
   function logout() {

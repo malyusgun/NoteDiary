@@ -16,7 +16,7 @@ let titleTimeout: ReturnType<typeof setTimeout>;
 const editTitle = () => {
   clearTimeout(titleTimeout);
   titleTimeout = setTimeout(
-    () => editEntity({ ...props.entityData, title: props.entityData.title }),
+    async () => await editEntity({ ...props.entityData, title: props.entityData.title }),
     600
   );
 };

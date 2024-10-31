@@ -37,8 +37,8 @@ const speedDialItems = ref([
     label: 'Divider',
     textStyle: 'bold',
     theme: 'blue',
-    onClick: () => {
-      createEntity({
+    onClick: async () => {
+      await createEntity({
         entity_type: 'divider',
         entity_order: entitiesCount.value + 1,
         divider_height: 1,
@@ -50,8 +50,8 @@ const speedDialItems = ref([
     label: 'Paragraph',
     textStyle: 'bold',
     theme: 'green',
-    onClick: () => {
-      createEntity({
+    onClick: async () => {
+      await createEntity({
         entity_type: 'paragraph',
         entity_order: entitiesCount.value + 1,
         text: '',
@@ -71,8 +71,8 @@ const speedDialItems = ref([
     label: 'Table',
     textStyle: 'bold',
     theme: 'red',
-    onClick: () => {
-      createEntity({
+    onClick: async () => {
+      await createEntity({
         entity_type: 'table',
         entity_order: entitiesCount.value + 1,
         table_columns: [

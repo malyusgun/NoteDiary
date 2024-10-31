@@ -1,33 +1,48 @@
 <script setup lang="ts">
-import AuthorizationForm from '@/modules/authorization/AuthorizationForm.vue';
-import { useWebsocketStore } from '@/app/stores/websocket';
+import cookies from '@/app/plugins/Cookie';
+import customFetch from '@/app/helpers/customFetch';
+import { useDataStore } from '@/app/stores/data';
+import { useAuthorizationStore } from '@/app/stores/authorization';
+import {
+  createEntityHandler,
+  getSheetHandler,
+  getUserHandler,
+  signUpUserHandler
+} from '@/app/helpers/requestHandlers';
 
-const websocketStore = useWebsocketStore();
+const router = useRouter();
+const dataStore = useDataStore();
+const authorizationStore = useAuthorizationStore();
 
 const formData = ref({
   nick_name: '',
   email: '',
   password: '',
-  first_name: '',
-  middle_name: '',
-  last_name: '',
   favorite_color: ''
 });
-const signUp = () => {
+
+const signUp = async () => {
   if (!formData.value.favorite_color) {
     console.log('Выберите любимый цвет');
     return;
   }
-  console.log('signUp!');
-  // создание юзера в бд
   const favoriteColor = formData.value.favorite_color;
   delete formData.value.favorite_color;
   const userData = { ...formData.value, settings: { favorite_color: favoriteColor } };
-  const dataCreateUser = {
-    event: 'createUser',
-    body: userData
-  };
-  websocketStore.sendData(dataCreateUser);
+
+  const data = await customFetch(`/users`, 'POST', userData);
+  const userDataDB = data.createdUser;
+
+  cookies.set('home_uuid', userDataDB.sheets[0]);
+  cookies.set('user_uuid', userDataDB.user_uuid);
+  cookies.set('favorite_color', userDataDB.settings.favorite_color);
+
+  getUserHandler(userDataDB);
+  getSheetHandler(data.homeSheet);
+  dataStore.addSheetData(data.homeSheet);
+  createEntityHandler(data.startEntity);
+
+  await router.push(`/${data.homeSheet.sheet_uuid}`);
 };
 
 const colors = [
@@ -53,79 +68,7 @@ const colors = [
   <AuthorizationForm>
     <h2 class="text-center text-3xl font-bold mb-8 select-none">Register</h2>
     <form class="flex gap-24">
-      <section>
-        <label class="block redStar mb-1 pl-1 pointer-events-none select-none" for="nickName"
-          >Nick name</label
-        >
-        <input
-          id="nickName"
-          v-model="formData.nick_name"
-          style="border-width: 1px"
-          class="input block p-1 px-2 mb-4 border-solid border-blue-300 rounded-md transition-all"
-          type="text"
-          placeholder="Enter your nick name"
-          required
-        />
-        <label class="block redStar mb-1 pl-1 pointer-events-none select-none" for="email"
-          >Email</label
-        >
-        <input
-          id="email"
-          v-model="formData.email"
-          style="border-width: 1px"
-          class="input block p-1 px-2 mb-4 border-solid border-blue-300 rounded-md transition-all"
-          type="text"
-          placeholder="Enter your email"
-          required
-        />
-        <label class="block redStar mb-1 pl-1 pointer-events-none select-none" for="password"
-          >Password</label
-        >
-        <input
-          id="password"
-          v-model="formData.password"
-          style="border-width: 1px"
-          class="input block p-1 px-2 mb-4 border-solid border-blue-300 rounded-md transition-all"
-          type="password"
-          placeholder="Enter your password"
-          required
-        />
-      </section>
-      <section>
-        <label class="block mb-1 pl-1 pointer-events-none select-none" for="firstName"
-          >First name</label
-        >
-        <input
-          id="firstName"
-          v-model="formData.first_name"
-          style="border-width: 1px"
-          class="input block p-1 px-2 mb-4 border-solid border-blue-300 rounded-md transition-all"
-          type="text"
-          placeholder="Enter your first name"
-        />
-        <label class="block mb-1 pl-1 pointer-events-none select-none" for="middleName"
-          >Middle name</label
-        >
-        <input
-          id="middleName"
-          v-model="formData.middle_name"
-          style="border-width: 1px"
-          class="input block p-1 px-2 mb-4 border-solid border-blue-300 rounded-md transition-all"
-          type="text"
-          placeholder="Enter your middle name"
-        />
-        <label class="block mb-1 pl-1 pointer-events-none select-none" for="lastName"
-          >Last name</label
-        >
-        <input
-          id="lastName"
-          v-model="formData.last_name"
-          style="border-width: 1px"
-          class="input block p-1 px-2 mb-4 border-solid border-blue-300 rounded-md transition-all"
-          type="text"
-          placeholder="Enter your last name"
-        />
-      </section>
+      <SignUpCredentials v-model:formData="formData" />
       <section class="w-64 relative">
         <h3 class="font-bold w-full text-xl mb-4 select-none">Choose your favorite color:</h3>
         <ul class="grid grid-cols-5 gap-4 mb-6">

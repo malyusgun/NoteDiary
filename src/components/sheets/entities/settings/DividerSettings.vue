@@ -32,8 +32,8 @@ const saveChanges = () => {
 const toggleConfirmToDeleteDivider = () => {
   isModalToDeleteDivider.value = !isModalToDeleteDivider.value;
 };
-const deleteDivider = () => {
-  deleteEntity(prevEntityData.value.entity_uuid);
+const deleteDivider = async () => {
+  await deleteEntity(prevEntityData.value.entity_uuid);
   isModalToDeleteDivider.value = false;
   isModal.value = false;
 };

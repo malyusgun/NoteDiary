@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { IEntity, ISheetInfo } from '@/app/interfaces/environment';
+import type { IEntity, ISheet } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
 import { useWindowSize } from '@vueuse/core';
 
@@ -37,22 +37,23 @@ export const useDataStore = defineStore('dataStore', () => {
     }
   ]);
 
-  const sheetsData = ref<ISheetInfo[]>([]);
-  const currentSheet = computed<ISheetInfo>(() =>
+  const sheetsData = ref<ISheet[]>([]);
+  const currentSheet = computed<ISheet>(() =>
     sheetsData.value.find((sheet) => sheet.sheet_uuid === cookies.get('current_sheet_uuid'))
   );
   const entities = ref<IEntity[]>([]);
-  const { width: windowWidth, height: windowHeight } = useWindowSize();
   function setCurrentSheetUuid(uuid: string) {
     cookies.set('current_sheet_uuid', uuid);
   }
-  function setCurrentSheetData(data: ISheetInfo) {
+
+  const { width: windowWidth, height: windowHeight } = useWindowSize();
+  function setCurrentSheetData(data: ISheet) {
     // currentSheet.value = data;
   }
-  function setSheetsData(data: ISheetInfo[]) {
+  function setSheetsData(data: ISheet[]) {
     sheetsData.value = data;
   }
-  function addSheetData(data: ISheetInfo) {
+  function addSheetData(data: ISheet) {
     sheetsData.value.push(data);
   }
   function editEntities(newState: IEntity[]) {

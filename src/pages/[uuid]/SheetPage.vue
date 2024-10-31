@@ -1,22 +1,18 @@
 <script setup lang="ts">
 import { useInterfaceStore } from '@/app/stores/interface';
-import { useAuthorizationStore } from '@/app/stores/authorization';
-import { useWebsocketStore } from '@/app/stores/websocket';
 import type { IImageMainInfo } from '@/app/interfaces';
-import { fetchForEntities } from '@/app/helpers/entities';
 import { backgroundImageOnLoad, uploadImage } from '@/app/helpers/images';
 import cookies from '@/app/plugins/Cookie';
 import { useDataStore } from '@/app/stores/data';
+import { fetchForEntities, getSheetBackground } from '@/app/helpers';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
-const authorizationStore = useAuthorizationStore();
-const websocketStore = useWebsocketStore();
 
-const currentSheetUuid = computed(() => cookies.get('current_sheet_uuid'));
+const currentSheet = computed(() => dataStore.currentSheet);
 const backgroundUrl = computed<string>(() => interfaceStore.sheetBackground);
-const isFetchedForBackground = computed(() => interfaceStore.isFetchedForBackground);
-// const sheetTitle = computed(() => dataStore.currentSheet.sheet_title);
+const currentSheetUuid = computed(() => cookies.get('current_sheet_uuid'));
+// const pageTitle = computed(() => dataStore.currentPage.page_title);
 
 const isMenuVisible = ref<boolean>(false);
 const isEditMode = ref<boolean>(false);
@@ -28,25 +24,17 @@ const backgroundImageInfo = ref<IImageMainInfo>({
 });
 const windowWidth = computed(() => dataStore.windowWidth);
 
-onMounted(() => {
+onMounted(async () => {
   const onKeydown = (event) => {
     if (event.ctrlKey && event.altKey) isEditMode.value = !isEditMode.value;
     if (event.ctrlKey && event.shiftKey) isMenuVisible.value = !isMenuVisible.value;
   };
   document.addEventListener('keydown', onKeydown);
-  const getSheetBackgroundData = {
-    event: 'getSheetBackground',
-    body: {
-      sheet_uuid: ''
-    }
-  };
-  websocketStore.setInitialDataToSend(getSheetBackgroundData);
-});
-
-const unwatchBackground = watch([isFetchedForBackground], () => {
-  if (isFetchedForBackground.value) {
-    fetchForEntities(currentSheetUuid.value);
-    unwatchBackground();
+  if (currentSheet.value.background_path) {
+    getSheetBackground(currentSheet.value.background_path);
+  }
+  if (!dataStore.entities.length) {
+    await fetchForEntities(currentSheet.value.sheet_uuid);
   }
 });
 

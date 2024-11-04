@@ -56,6 +56,7 @@ export interface IImage extends IEntity {
   image_width_initial: number;
   file_width_initial: number;
   file_height_initial: number;
+  image_buffer?: string[] | ArrayBuffer[];
   image_url: string;
   image_width: number;
   file_width: number;

@@ -1,30 +1,30 @@
-const server = process.env['SERVER'] || 'http://localhost:5000/api/v1';
+const server = process.env['SERVER_BUFFER'] || 'http://localhost:5001/api/v1';
 let isRefresh: boolean = false;
-let previousResponseData: [string, 'GET' | 'POST' | 'PATCH' | 'DELETE', unknown];
+let previousResponseData: [string, 'GET' | 'POST' | 'PATCH' | 'DELETE', Buffer];
 
-const customFetch = async (
+const customFetchBuffer = async (
   url: string,
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
-  body?: unknown
+  body?: Buffer
 ) => {
   const router = useRouter();
 
   try {
     const response = await fetch(server + url, {
       method,
-      body: JSON.stringify(body),
+      body,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'image/jpeg'
       }
     });
     // обычный запрос, прошёл успешно
     if (response.ok && !isRefresh) {
-      return await response.json();
+      return;
     }
     // это был запрос на обновление access-token (удачный), повтор предыдущего запроса
     if (response.ok && isRefresh) {
       isRefresh = false;
-      return await customFetch(...previousResponseData);
+      return await customFetchBuffer(...previousResponseData);
     }
     // неверные креды или истёк refresh-token
     if (response.status === 401) {
@@ -34,14 +34,8 @@ const customFetch = async (
     // истёк access-token
     if (response.status === 403) {
       isRefresh = true;
-      previousresponseData = [
-        url,
-        {
-          method,
-          body
-        }
-      ];
-      return await customFetch('/refreshAccessToken', 'GET');
+      previousresponseData = [url, method, body];
+      return await customFetchBuffer('/refreshAccessToken', 'GET');
     }
     if (response.status === 500) {
       // TODO обработка ошибки, редирект на страницу ещё не реализованной pages/Error500.vue
@@ -53,4 +47,4 @@ const customFetch = async (
   }
 };
 
-export default customFetch;
+export default customFetchBuffer;

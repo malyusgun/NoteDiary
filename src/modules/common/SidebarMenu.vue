@@ -16,7 +16,7 @@ const sheets = ref();
 const userNickName = computed(() => authorizationStore.userNickName);
 
 onMounted(() => {
-  sheets.value = dataStore.sheets;
+  sheets.value = dataStore.user_sheets;
 });
 
 const logout = () => {

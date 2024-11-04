@@ -1,12 +1,14 @@
 import type { IEntity } from '@/app/interfaces/environment';
-import { useFilesWebsocketStore } from '@/app/stores/filesWebsocket';
 import type { IImage } from '@/app/interfaces/entities';
-import { useWebsocketStore } from '@/app/stores/websocket';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { imageScaleOptions } from '@/components/sheets/entities/settings/lists/constants/options';
+import customFetch from '@/app/helpers/customFetch';
+import cookies from '@/app/plugins/Cookie';
+import customFetchBuffer from '@/app/helpers/customFetchBuffer';
+import { Buffer } from 'buffer';
 
 export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
-  let imageWidth = Math.ceil((fileWidth / (windowWidth - 128)) * 100);
+  let imageWidth = Math.ceil((fileWidth / (windowWidth - 138)) * 100);
   if (imageWidth > 100) {
     imageWidth = 100;
   }
@@ -16,13 +18,13 @@ export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
   return imageWidth;
 };
 
-export const sendReturnOriginalSize = (newState: IEntity) => {
-  const websocketStore = useWebsocketStore();
-  const data = {
-    event: 'returnOriginalImageSize',
-    body: { ...newState }
-  };
-  websocketStore.sendData(data);
+export const sendReturnOriginalSize = async (newState: IEntity) => {
+  const sheetUuid = cookies.get('current_sheet_uuid');
+  return await customFetch(
+    `/sheets/${sheetUuid}/entities/defaultImageSize/${newState.entity_uuid}`,
+    'PATCH',
+    newState
+  );
 };
 
 export const uploadImage = ($event) => {
@@ -48,34 +50,32 @@ export const backgroundImageOnLoad = (image, windowWidth: number) => {
   return backgroundImageInfo;
 };
 
-export const setDefaultSheetBackground = () => {
+export const setDefaultSheetBackground = async () => {
   const interfaceStore = useInterfaceStore();
-  interfaceStore.resetSheetBackground();
+  await interfaceStore.resetSheetBackground();
 };
 
-export const addUrlsToImageEntities = (entities: IEntity[]) => {
-  const filesWebsocketStore = useFilesWebsocketStore();
-  const filesBuffer = filesWebsocketStore.filesBuffer;
+export const getUrlFromArrayBuffer = (ArrayBuffer: Buffer) => {
+  const buffer = Buffer.from(ArrayBuffer);
+  const blob = new Blob([buffer], {
+    type: 'image/jpeg'
+  });
+  return URL.createObjectURL(blob);
+};
+
+export const addUrlsToImageEntities = (entities: IEntity[], imageEntities: IImage[]) => {
   let index = 0;
-  const entitiesToReturn = entities.map((entity: IEntity) => {
+  return entities.map((entity: IEntity) => {
     if (!entity?.image_width) return entity;
     if (entity.image_url) return entity;
-    if (filesWebsocketStore.image_url) {
-      // редактирование сущности изображения
-      entity.image_url = filesWebsocketStore.image_url;
-      filesWebsocketStore.cleanImageUrl();
-    } else {
-      filesBuffer[index] = new Blob([filesBuffer[index].data], { type: 'image/jpeg' });
-      entity.image_url = URL.createObjectURL(filesBuffer[index]);
-      index += 1;
-      filesBuffer[index] = new Blob([filesBuffer[index].data], { type: 'image/jpeg' });
-      entity.image_url_initial = URL.createObjectURL(filesBuffer[index]);
-      index += 1;
-    }
+
+    entity.image_url = getUrlFromArrayBuffer(imageEntities[index][0]);
+    index += 1;
+    entity.image_url_initial = getUrlFromArrayBuffer(imageEntities[index][0]);
+    index += 1;
+
     return entity;
   });
-  filesWebsocketStore.cleanFilesBuffer();
-  return entitiesToReturn;
 };
 
 export const checkIsImage = (entity: IEntity) => {
@@ -83,29 +83,25 @@ export const checkIsImage = (entity: IEntity) => {
     return entity;
   }
   const entityToReturn = { ...entity };
-  const filesWebsocketStore = useFilesWebsocketStore();
-  filesWebsocketStore.saveImageUrl(entityToReturn.image_url!);
   delete entityToReturn.image_url;
   return entityToReturn;
 };
 
 export const sendCropImage = async (newUrl: string, entity: IImage) => {
-  const filesWebsocketStore = useFilesWebsocketStore();
-  filesWebsocketStore.saveImageUrl(newUrl);
-  const websocketStore = useWebsocketStore();
+  const sheetUuid = cookies.get('current_sheet_uuid');
   const response = await fetch(newUrl);
   const blob = await response.blob();
   const buffer = await blob.arrayBuffer();
-  const dataSetCropNow = {
-    event: 'setCropNow'
-  };
-  websocketStore.sendData(dataSetCropNow);
-  filesWebsocketStore.sendData(buffer);
-  const data = {
-    event: 'cropImage',
-    body: { ...entity }
-  };
-  websocketStore.sendData(data);
+  const entityToPatch = { ...entity };
+  delete entityToPatch.image_url;
+  console.log('entity: ', entity);
+  await customFetchBuffer(`/sheets/${sheetUuid}/entities/crop`, 'POST', buffer);
+  console.log('entityToPatch: ', entityToPatch);
+  await customFetch(
+    `/sheets/${sheetUuid}/entities/crop/${entity.entity_uuid}`,
+    'PATCH',
+    entityToPatch
+  );
 };
 
 export const getImageScalesToRemove = (

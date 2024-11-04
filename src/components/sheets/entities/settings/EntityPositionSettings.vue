@@ -17,14 +17,14 @@ const menuItems = computed(() => {
     state.push({
       label: 'Up',
       theme: 'black',
-      onClick: () => changeEntitiesOrder(props.entityUuid, 'up')
+      onClick: async () => await changeEntitiesOrder(props.entityUuid, 'up')
     });
   }
   if (props.entityIndex !== props.entitiesLength - 1) {
     state.push({
       label: 'Down',
       theme: 'black',
-      onClick: () => changeEntitiesOrder(props.entityUuid, 'down')
+      onClick: async () => await changeEntitiesOrder(props.entityUuid, 'down')
     });
   }
   return state;

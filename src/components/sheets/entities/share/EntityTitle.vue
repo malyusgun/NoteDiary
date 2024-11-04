@@ -13,7 +13,7 @@ const emit = defineEmits(['update:title']);
 const title = useVModel(props, 'title', emit);
 
 let titleTimeout: ReturnType<typeof setTimeout>;
-const editTitle = () => {
+const editTitle = async () => {
   clearTimeout(titleTimeout);
   titleTimeout = setTimeout(
     async () => await editEntity({ ...props.entityData, title: props.entityData.title }),

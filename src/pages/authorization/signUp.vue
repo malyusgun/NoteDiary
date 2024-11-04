@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import cookies from '@/app/plugins/Cookie';
 import customFetch from '@/app/helpers/customFetch';
-import { useDataStore } from '@/app/stores/data';
-import { useAuthorizationStore } from '@/app/stores/authorization';
 import {
   createEntityHandler,
   getSheetHandler,
-  getUserHandler,
-  signUpUserHandler
+  getUserHandler
 } from '@/app/helpers/requestHandlers';
+import type { IUser } from '@/app/interfaces/authorization';
 
 const router = useRouter();
-const dataStore = useDataStore();
-const authorizationStore = useAuthorizationStore();
 
 const formData = ref({
   nick_name: '',
@@ -26,20 +22,19 @@ const signUp = async () => {
     console.log('Выберите любимый цвет');
     return;
   }
-  const favoriteColor = formData.value.favorite_color;
-  delete formData.value.favorite_color;
-  const userData = { ...formData.value, settings: { favorite_color: favoriteColor } };
-
+  const userData = formData.value;
   const data = await customFetch(`/users`, 'POST', userData);
-  const userDataDB = data.createdUser;
+  const userDataDB: IUser = {
+    ...data.createdUser,
+    user_sheets: JSON.parse(data.createdUser.user_sheets)
+  };
 
-  cookies.set('home_uuid', userDataDB.sheets[0]);
+  cookies.set('home_uuid', userDataDB.user_sheets[0].sheet_uuid);
   cookies.set('user_uuid', userDataDB.user_uuid);
-  cookies.set('favorite_color', userDataDB.settings.favorite_color);
+  cookies.set('favorite_color', userDataDB.favorite_color);
 
   getUserHandler(userDataDB);
   getSheetHandler(data.homeSheet);
-  dataStore.addSheetData(data.homeSheet);
   createEntityHandler(data.startEntity);
 
   await router.push(`/${data.homeSheet.sheet_uuid}`);
@@ -79,7 +74,7 @@ const colors = [
             :class="[
               `size-10 rounded-md border-2 border-${item}-100 border-solid cursor-pointer`,
               {
-                'border-blue-800 border-4': formData.favorite_color === item
+                '!border-blue-800 border-4': formData.favorite_color === item
               }
             ]"
             @click.prevent="formData.favorite_color = item"

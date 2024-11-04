@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { IEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
+import type { TThemeColor } from '@/shared/ui/interfaces';
 
 interface Props {
   newEntityData: IEntity;
@@ -31,7 +32,7 @@ const returnOriginalSize = () => {
     <Button
       label="Save"
       textColor="white"
-      :theme="themeColor"
+      :theme="themeColor as TThemeColor"
       textStyle="bold"
       size="medium"
       @click.prevent="$emit('saveChanges')"
@@ -40,38 +41,38 @@ const returnOriginalSize = () => {
         <SaveIcon color="white" size="25" />
       </template>
     </Button>
-    <Button
-      v-if="newEntityData.file_width > 200 || newEntityData.file_height > 200"
-      label="Crop image"
-      textColor="black"
-      theme="white"
-      textStyle="bold"
-      size="medium"
-      @click.prevent="$emit('openCropImageModal')"
-    >
-      <template #icon>
-        <CropIcon color="black" size="25" />
-      </template>
-    </Button>
+    <!--    <Button-->
+    <!--      v-if="newEntityData.file_width > 200 || newEntityData.file_height > 200"-->
+    <!--      label="Crop image"-->
+    <!--      textColor="black"-->
+    <!--      theme="white"-->
+    <!--      textStyle="bold"-->
+    <!--      size="medium"-->
+    <!--      @click.prevent="$emit('openCropImageModal')"-->
+    <!--    >-->
+    <!--      <template #icon>-->
+    <!--        <CropIcon color="black" size="25" />-->
+    <!--      </template>-->
+    <!--    </Button>-->
   </div>
   <div class="absolute flex gap-4 top-4 right-16 z-10 hover:brightness-80 transition-all">
-    <Button
-      v-if="newEntityData.file_width"
-      v-show="
-        newEntityData.file_width !== newEntityData.file_width_initial ||
-        newEntityData.file_height !== newEntityData.file_height_initial
-      "
-      label="Original size"
-      textColor="white"
-      :theme="themeColor"
-      textStyle="bold"
-      size="medium"
-      @click.prevent="returnOriginalSize"
-    >
-      <template #icon>
-        <TrashIcon color="white" size="25" />
-      </template>
-    </Button>
+    <!--    <Button-->
+    <!--      v-if="newEntityData.file_width"-->
+    <!--      v-show="-->
+    <!--        newEntityData.file_width !== newEntityData.file_width_initial ||-->
+    <!--        newEntityData.file_height !== newEntityData.file_height_initial-->
+    <!--      "-->
+    <!--      label="Original size"-->
+    <!--      textColor="white"-->
+    <!--      :theme="themeColor"-->
+    <!--      textStyle="bold"-->
+    <!--      size="medium"-->
+    <!--      @click.prevent="returnOriginalSize"-->
+    <!--    >-->
+    <!--      <template #icon>-->
+    <!--        <TrashIcon color="white" size="25" />-->
+    <!--      </template>-->
+    <!--    </Button>-->
     <Button
       label="Delete"
       textColor="white"

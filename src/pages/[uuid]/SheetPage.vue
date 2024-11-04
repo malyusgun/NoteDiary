@@ -2,16 +2,15 @@
 import { useInterfaceStore } from '@/app/stores/interface';
 import type { IImageMainInfo } from '@/app/interfaces';
 import { backgroundImageOnLoad, uploadImage } from '@/app/helpers/images';
-import cookies from '@/app/plugins/Cookie';
 import { useDataStore } from '@/app/stores/data';
-import { fetchForEntities, getSheetBackground } from '@/app/helpers';
+import { getSheetBackground, getUser } from '@/app/helpers';
+import { fetchForEntities } from '@/app/helpers/entities';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
 
 const currentSheet = computed(() => dataStore.currentSheet);
 const backgroundUrl = computed<string>(() => interfaceStore.sheetBackground);
-const currentSheetUuid = computed(() => cookies.get('current_sheet_uuid'));
 // const pageTitle = computed(() => dataStore.currentPage.page_title);
 
 const isMenuVisible = ref<boolean>(false);
@@ -30,12 +29,11 @@ onMounted(async () => {
     if (event.ctrlKey && event.shiftKey) isMenuVisible.value = !isMenuVisible.value;
   };
   document.addEventListener('keydown', onKeydown);
+  await getUser();
   if (currentSheet.value.background_path) {
-    getSheetBackground(currentSheet.value.background_path);
+    await getSheetBackground(currentSheet.value.background_path);
   }
-  if (!dataStore.entities.length) {
-    await fetchForEntities(currentSheet.value.sheet_uuid);
-  }
+  await fetchForEntities(currentSheet.value.sheet_uuid);
 });
 
 const uploadFile = ($event: Event) => {

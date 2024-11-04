@@ -29,12 +29,11 @@ const saveChanges = async (newState: IImage) => {
   await editEntity(newState);
   entityData.value = newState;
 };
-const returnOriginalSize = () => {
+const returnOriginalSize = async () => {
   const newState = entityData.value;
   newState.file_width = newState.file_width_initial;
   newState.file_height = newState.file_height_initial;
-  entityData.value = newState;
-  sendReturnOriginalSize(newState);
+  entityData.value = await sendReturnOriginalSize(newState);
 };
 </script>
 
@@ -84,24 +83,6 @@ const returnOriginalSize = () => {
 </template>
 
 <style scoped>
-.entityContainer:hover .aggregateHigh {
-  height: 65px;
-}
-.entityContainer:hover .aggregateShort {
-  height: 30px;
-}
-.entityContainer .speedDial {
-  opacity: 0;
-}
-.entityContainer:hover .speedDial {
-  opacity: 100;
-}
-.imageContainer .speedDialSize {
-  opacity: 0;
-}
-.imageContainer:hover .speedDialSize {
-  opacity: 100;
-}
 input::placeholder {
   font-weight: 400;
 }

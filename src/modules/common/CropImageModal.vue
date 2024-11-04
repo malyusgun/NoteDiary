@@ -21,6 +21,7 @@ const finalImageUrl = ref<string>('');
 const dataStore = useDataStore();
 const windowWidth = computed(() => dataStore.windowWidth);
 const windowHeight = computed(() => dataStore.windowHeight);
+let widthPercent: number;
 
 const stageSize = ref({
   width: 200,
@@ -43,6 +44,7 @@ watch(
 
     imageInstance.src = props.imageInfo.image_url;
     imageInstance.onload = () => {
+      widthPercent = props.imageInfo.image_width;
       const imageWidth = (props.imageInfo.image_width / 100) * (windowWidth.value - 128);
       const imageHeight = (imageWidth / props.imageInfo.file_width) * props.imageInfo.file_height;
       imageInstance.src = props.imageInfo.image_url;
@@ -87,13 +89,7 @@ const onCropperChange = async ({ canvas }) => {
   finalImageUrl.value = canvas.toDataURL();
 };
 const cropImage = () => {
-  emit(
-    'cropImage',
-    finalImageUrl.value,
-    Math.ceil((imageInstance.width / windowWidth.value) * 100),
-    imageInstance.width,
-    imageInstance.height
-  );
+  emit('cropImage', finalImageUrl.value, widthPercent, imageInstance.width, imageInstance.height);
   finalImageUrl.value = '';
 };
 </script>
@@ -125,6 +121,10 @@ const cropImage = () => {
       >
         Save image
       </button>
+      {{ stageSize.width }}
+      {{ stageSize.height }}
+      {{ imageInstance.width }}
+      {{ imageInstance.height }}
       <div
         :style="`position: relative; width: ${stageSize.width}px; height: ${stageSize.height}px;`"
       >

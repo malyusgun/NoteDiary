@@ -94,9 +94,7 @@ export const sendCropImage = async (newUrl: string, entity: IImage) => {
   const buffer = await blob.arrayBuffer();
   const entityToPatch = { ...entity };
   delete entityToPatch.image_url;
-  console.log('entity: ', entity);
   await customFetchBuffer(`/sheets/${sheetUuid}/entities/crop`, 'POST', buffer);
-  console.log('entityToPatch: ', entityToPatch);
   await customFetch(
     `/sheets/${sheetUuid}/entities/crop/${entity.entity_uuid}`,
     'PATCH',

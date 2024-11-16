@@ -6,8 +6,7 @@ interface Props {
 }
 defineProps<Props>();
 
-const dataStore = useDataStore();
-const entities = computed(() => dataStore.entities);
+const entities = computed(() => useDataStore().entities);
 </script>
 
 <template>

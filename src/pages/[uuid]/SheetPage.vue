@@ -1,22 +1,19 @@
 <script setup lang="ts">
 import { useInterfaceStore } from '@/app/stores/interface';
 import { useAuthorizationStore } from '@/app/stores/authorization';
-import { useWebsocketStore } from '@/app/stores/websocket';
-import type { IImageMainInfo } from '@/app/interfaces';
-import { fetchForEntities } from '@/app/helpers/entities';
-import { backgroundImageOnLoad, uploadImage } from '@/app/helpers/images';
-import cookies from '@/app/plugins/Cookie';
 import { useDataStore } from '@/app/stores/data';
+import type { IImageMainInfo } from '@/app/interfaces';
+import { backgroundImageOnLoad, uploadImage } from '@/app/helpers/images';
+import { getSheetBackground, getUser } from '@/app/helpers';
+import { fetchForEntities } from '@/app/helpers/entities';
 
 const dataStore = useDataStore();
 const interfaceStore = useInterfaceStore();
-const authorizationStore = useAuthorizationStore();
-const websocketStore = useWebsocketStore();
 
-const currentSheetUuid = computed(() => cookies.get('current_sheet_uuid'));
+const currentSheet = computed(() => dataStore.currentSheet);
 const backgroundUrl = computed<string>(() => interfaceStore.sheetBackground);
-const isFetchedForBackground = computed(() => interfaceStore.isFetchedForBackground);
-// const sheetTitle = computed(() => dataStore.currentSheet.sheet_title);
+// const pageTitle = computed(() => dataStore.currentPage.page_title);
+const userData = computed(() => useAuthorizationStore().userData);
 
 const isMenuVisible = ref<boolean>(false);
 const isEditMode = ref<boolean>(false);
@@ -28,25 +25,18 @@ const backgroundImageInfo = ref<IImageMainInfo>({
 });
 const windowWidth = computed(() => dataStore.windowWidth);
 
-onMounted(() => {
+onMounted(async () => {
   const onKeydown = (event) => {
     if (event.ctrlKey && event.altKey) isEditMode.value = !isEditMode.value;
     if (event.ctrlKey && event.shiftKey) isMenuVisible.value = !isMenuVisible.value;
   };
   document.addEventListener('keydown', onKeydown);
-  const getSheetBackgroundData = {
-    event: 'getSheetBackground',
-    body: {
-      sheet_uuid: ''
-    }
-  };
-  websocketStore.setInitialDataToSend(getSheetBackgroundData);
-});
-
-const unwatchBackground = watch([isFetchedForBackground], () => {
-  if (isFetchedForBackground.value) {
-    fetchForEntities(currentSheetUuid.value);
-    unwatchBackground();
+  await getUser();
+  if (currentSheet.value?.background_path) {
+    await getSheetBackground(currentSheet.value.background_path);
+  }
+  if (currentSheet.value?.sheet_uuid) {
+    await fetchForEntities(currentSheet.value.sheet_uuid);
   }
 });
 
@@ -69,11 +59,11 @@ const openMenu = () => (isMenuVisible.value = true);
   <SidebarMenuButton @openMenu="openMenu" />
   <SidebarMenu v-model:isMenuVisible="isMenuVisible" />
   <SheetTelegramSection />
-  <CropImageModal
-    v-model:isVisible="isModalUploadFile"
-    v-model:imageInfo="backgroundImageInfo"
-    @cropImage="saveImage"
-  />
+  <!--  <CropImageModal-->
+  <!--    v-model:isVisible="isModalUploadFile"-->
+  <!--    v-model:imageInfo="backgroundImageInfo"-->
+  <!--    @cropImage="saveImage"-->
+  <!--  />-->
   <SheetPageContent
     :isEditMode="isEditMode"
     :backgroundUrl="backgroundUrl"

@@ -14,3 +14,13 @@ export type TThemeColor =
   | 'rose'
   | 'red'
   | 'black';
+
+export interface ITableItem {
+  label: string;
+  link?: string;
+  color?: string;
+  iconBefore?: string;
+  iconAfter?: string;
+  iconColor?: string;
+  children?: ITableItem[];
+}

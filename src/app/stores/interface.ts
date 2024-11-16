@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import { useWebsocketStore } from '@/app/stores/websocket';
+import customFetch from '@/app/helpers/customFetch';
+import cookies from '@/app/plugins/Cookie';
+import { serverErrorHandler } from '@/app/helpers/exceptions';
 
 export const useInterfaceStore = defineStore('interfaceStore', () => {
-  const websocketStore = useWebsocketStore();
-
   const isDarkMode = ref<boolean>(true);
   const defaultSheetBackground = ref<string>(
     'https://t3.ftcdn.net/jpg/05/01/28/98/360_F_501289843_4ITbthNCydFQGgJmoZe4IQKchItBubqZ.jpg'
@@ -14,12 +14,14 @@ export const useInterfaceStore = defineStore('interfaceStore', () => {
   function setIsFetchedForBackground() {
     isFetchedForBackground.value = true;
   }
-  function resetSheetBackground() {
-    sheetBackground.value = defaultSheetBackground.value;
-    const data = {
-      event: 'deleteSheetBackground'
-    };
-    websocketStore.sendData(data);
+  async function resetSheetBackground() {
+    try {
+      const sheetUuid = cookies.get('current_sheet_uuid');
+      await customFetch(`/sheets/${sheetUuid}/background`, 'DELETE', sheetUuid);
+      sheetBackground.value = defaultSheetBackground.value;
+    } catch (e) {
+      serverErrorHandler(e);
+    }
   }
   function editSheetBackground(newUrl: string) {
     sheetBackground.value = newUrl;
@@ -28,14 +30,14 @@ export const useInterfaceStore = defineStore('interfaceStore', () => {
     image.onload = async () => {
       const response = await fetch(newUrl);
       const blob = await response.blob();
-      const data = {
-        event: 'editSheetBackground',
-        body: {
+      try {
+        await customFetch(`/sheets/${sheetUuid}/background`, 'PATCH', {
           background_url: newUrl,
           extension: blob.type
-        }
-      };
-      websocketStore.sendData(data);
+        });
+      } catch (e) {
+        serverErrorHandler(e);
+      }
     };
   }
   function setSheetBackgroundFromDB(url: string | null) {

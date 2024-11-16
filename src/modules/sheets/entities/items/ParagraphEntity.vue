@@ -12,16 +12,15 @@ interface Props {
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
 
-const dataStore = useDataStore();
-const entities = computed(() => dataStore.entities);
+const entities = computed(() => useDataStore().entities);
 const entitiesLength = computed(() => entities.value.length);
 const entityIndex = computed(() =>
   entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
 );
 
 let textTimeout: ReturnType<typeof setTimeout>;
-const editText = () => {
-  editEntity({ ...entityData.value, text: entityData.value.text });
+const editText = async () => {
+  await editEntity({ ...entityData.value, text: entityData.value.text });
 };
 
 const { textarea, triggerResize } = useTextareaAutosize({ styleProp: 'minHeight' });
@@ -30,8 +29,8 @@ const editTextAndTriggerResize = () => {
   clearTimeout(textTimeout);
   textTimeout = setTimeout(() => editText(), 600);
 };
-const saveChanges = (newState: IParagraph) => {
-  editEntity(newState);
+const saveChanges = async (newState: IParagraph) => {
+  await editEntity(newState);
   entityData.value = newState;
 };
 </script>

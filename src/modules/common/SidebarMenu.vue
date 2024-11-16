@@ -11,16 +11,15 @@ const emit = defineEmits(['update:isMenuVisible']);
 const isMenuVisible = useVModel(props, 'isMenuVisible', emit);
 
 const authorizationStore = useAuthorizationStore();
-const dataStore = useDataStore();
 const sheets = ref();
-const userNickName = computed(() => authorizationStore.userNickName);
+const userData = computed(() => authorizationStore.userData);
 
 onMounted(() => {
-  sheets.value = dataStore.sheets;
+  sheets.value = useDataStore().sheets;
 });
 
-const logout = () => {
-  authorizationStore.logout();
+const logout = async () => {
+  await authorizationStore.logout();
 };
 </script>
 
@@ -34,14 +33,14 @@ const logout = () => {
             alt="ShelfNote logo"
             class="bg-white size-20 rounded-full"
           />
-          <span class="font-semibold text-4xl">ShelfNote</span>
+          <span class="font-semibold text-4xl">NoteDiary</span>
         </div>
       </section>
     </template>
     <section class="flex items-center justify-between">
       <div>
         <p class="text-xl w-48 overflow-ellipsis overflow-hidden text-nowrap">
-          @{{ userNickName }}
+          @{{ userData?.nick_name }}
         </p>
       </div>
       <a href="/settings" class="ml-auto mr-1 p-2 hover:cursor-pointer"
@@ -57,23 +56,7 @@ const logout = () => {
     <Divider class="mt-4" />
     <nav class="mt-4">
       <h3 class="text-xl">Menu</h3>
-      <Tree :expand="true" theme="black" :items="sheets">
-        <template #1IconBefore>
-          <HamburgerIcon color="white" size="20" />
-        </template>
-        <template #1-2IconAfter>
-          <DottedIcon color="white" size="20" />
-        </template>
-        <template #1-1IconBefore>
-          <ParagraphIcon color="white" size="20" />
-        </template>
-        <template #1-1-2IconBefore>
-          <DottedIcon color="white" size="20" />
-        </template>
-        <template #1-2-1IconBefore>
-          <ImageIcon color="white" size="20" />
-        </template>
-      </Tree>
+      <Tree :expand="true" theme="black" :items="sheets"> </Tree>
     </nav>
   </Drawer>
 </template>

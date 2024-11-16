@@ -1,3 +1,54 @@
+import { useInterfaceStore } from '@/app/stores/interface';
+import { useDataStore } from '@/app/stores/data';
+import type { IEntity } from '@/app/interfaces/environment';
+import customFetch from '@/app/helpers/customFetch';
+import cookies from '@/app/plugins/Cookie';
+import { getUserHandler } from '@/app/helpers/requestHandlers';
+import type { IUserDB } from '@/app/interfaces/responses';
+import customFetchBuffer from '@/app/helpers/customFetchBuffer';
+import { serverErrorHandler } from '@/app/helpers/exceptions';
+
+export const getUser = async () => {
+  try {
+    const userUuid = cookies.get('user_uuid');
+    const userDB: IUserDB = await customFetch(`/users/${userUuid}`, 'GET');
+    getUserHandler({ ...userDB, user_sheets: JSON.parse(userDB.user_sheets) });
+  } catch (e) {
+    serverErrorHandler(e);
+  }
+};
+
+export const getSheetBackground = async (backgroundPath: string) => {
+  const background = await customFetchBuffer(`/sheets/${backgroundPath}/background`, 'GET');
+  const blob = new Blob([background], {
+    type: `image/jpeg`
+  });
+  const url = URL.createObjectURL(blob);
+  useInterfaceStore().setSheetBackgroundFromDB(url);
+};
+
+export const deleteEntity = async (entityUuid: string) => {
+  try {
+    const entities = useDataStore().entities;
+    const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
+    const deletedEntity = await customFetch(
+      `/sheets/${sheetUuid}/entities/${entityUuid}`,
+      'DELETE',
+      {
+        ...entityToDelete
+      }
+    );
+
+    let newStateEntities = [...entities.value];
+    newStateEntities = newStateEntities.filter(
+      (entity: IEntity) => entity.entity_uuid !== deletedEntity.entity_uuid
+    );
+    useDataStore().editEntities(newStateEntities);
+  } catch (e) {
+    serverErrorHandler(e);
+  }
+};
+
 export const convertThemeToColorWhiteDefault = (theme: string | undefined) => {
   if (!theme) return '#ffffff';
   switch (theme) {

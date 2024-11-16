@@ -1,15 +1,15 @@
-import type { TColors } from '@/app/interfaces/environment';
+import type { ISheet, TTheme } from '@/app/interfaces/environment';
 
-export interface IUserData {
+export interface IUser {
   user_uuid: string;
   nick_name: string;
-  first_name?: string;
-  last_name?: string;
-  middle_name?: string;
   email: string;
-  phone_number?: string;
-  settings: IUserSettings;
+  favorite_color: TTheme;
+  user_sheets: ISheet[];
 }
-interface IUserSettings {
-  favoriteColor: TColors;
+export interface IUserSignForm {
+  nick_name: string;
+  email: string;
+  favorite_color: TTheme;
+  password: string;
 }

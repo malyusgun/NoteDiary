@@ -5,6 +5,7 @@ import { sendReturnOriginalSize } from '@/app/helpers/images';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useVModel } from '@vueuse/core';
+import { serverErrorHandler } from '@/app/helpers/exceptions';
 
 interface Props {
   entityData: IImage;
@@ -14,8 +15,7 @@ const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
 
-const dataStore = useDataStore();
-const entities = computed(() => dataStore.entities);
+const entities = computed(() => useDataStore().entities);
 const entitiesLength = computed(() => entities.value.length);
 const entityIndex = computed(() =>
   entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
@@ -25,16 +25,19 @@ const textContainerWidth = computed(() => {
   if (entityData.value?.paragraph_size === 'half') return (100 - entityData.value.image_width) / 2;
   return 100 - entityData.value.image_width;
 });
-const saveChanges = (newState: IImage) => {
-  editEntity(newState);
+const saveChanges = async (newState: IImage) => {
+  await editEntity(newState);
   entityData.value = newState;
 };
-const returnOriginalSize = () => {
-  const newState = entityData.value;
-  newState.file_width = newState.file_width_initial;
-  newState.file_height = newState.file_height_initial;
-  entityData.value = newState;
-  sendReturnOriginalSize(newState);
+const returnOriginalSize = async () => {
+  try {
+    const newState = entityData.value;
+    newState.file_width = newState.file_width_initial;
+    newState.file_height = newState.file_height_initial;
+    entityData.value = await sendReturnOriginalSize(newState);
+  } catch (e) {
+    serverErrorHandler(e);
+  }
 };
 </script>
 
@@ -84,24 +87,6 @@ const returnOriginalSize = () => {
 </template>
 
 <style scoped>
-.entityContainer:hover .aggregateHigh {
-  height: 65px;
-}
-.entityContainer:hover .aggregateShort {
-  height: 30px;
-}
-.entityContainer .speedDial {
-  opacity: 0;
-}
-.entityContainer:hover .speedDial {
-  opacity: 100;
-}
-.imageContainer .speedDialSize {
-  opacity: 0;
-}
-.imageContainer:hover .speedDialSize {
-  opacity: 100;
-}
 input::placeholder {
   font-weight: 400;
 }

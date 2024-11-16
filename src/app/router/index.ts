@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import cookies from '@/app/plugins/Cookie';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,16 +10,40 @@ const router = createRouter({
       component: () => import('@/pages/[uuid]/SheetPage.vue')
     },
     {
-      path: '/signUp',
+      path: '/auth/signUp',
       name: 'signUp',
-      component: () => import('@/pages/authorization/signUp.vue')
+      component: () => import('@/pages/authorization/SignUp.vue')
     },
     {
-      path: '/',
-      name: 'emptyPage',
-      component: () => import('@/pages/[uuid]/SheetPage.vue')
+      path: '/auth/confirmMail',
+      name: 'confirmMail',
+      component: () => import('@/pages/authorization/ConfirmMail.vue')
+    },
+    {
+      path: '/auth/signIn',
+      name: 'signIn',
+      component: () => import('@/pages/authorization/SignIn.vue')
     }
   ]
 });
 
-export default router;
+//middleware
+router.beforeEach(async (to) => {
+  const home_uuid = cookies.get('home_uuid');
+  const isAuthPage = ['signUp', 'confirmMail', 'signIn'].find((item) => item === to.name);
+  if (!isAuthPage && !home_uuid) {
+    await router.push('/auth/signUp');
+  }
+  if (to.path === '/') {
+    await router.push(`/${home_uuid}`);
+  }
+});
+
+//helpers
+const redirectSignIn = async () => {
+  await router.push('/auth/signIn');
+};
+const redirectSignUp = async () => {
+  await router.push('/auth/signIn');
+};
+export { router, redirectSignIn, redirectSignUp };

@@ -56,8 +56,8 @@ const saveChanges = () => {
 const toggleConfirmDeleteParagraph = () => {
   isModalToDeleteParagraph.value = !isModalToDeleteParagraph.value;
 };
-const deleteParagraph = () => {
-  deleteEntity(prevEntityData.value.entity_uuid);
+const deleteParagraph = async () => {
+  await deleteEntity(prevEntityData.value.entity_uuid);
   isModalToDeleteParagraph.value = false;
   isModal.value = false;
 };

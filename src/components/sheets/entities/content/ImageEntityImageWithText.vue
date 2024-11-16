@@ -13,10 +13,10 @@ const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
 
 let textTimeout: ReturnType<typeof setTimeout>;
-const editText = () => {
+const editText = async () => {
   clearTimeout(textTimeout);
   textTimeout = setTimeout(
-    () => editEntity({ ...entityData.value, text: entityData.value.text }),
+    async () => await editEntity({ ...entityData.value, text: entityData.value.text }),
     600
   );
 };

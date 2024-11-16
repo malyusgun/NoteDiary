@@ -11,15 +11,14 @@ interface Props {
 const props = defineProps<Props>();
 const entityData = ref(props.entityData);
 
-const dataStore = useDataStore();
-const entities = computed(() => dataStore.entities);
+const entities = computed(() => useDataStore().entities);
 const entityIndex = computed(() =>
   entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
 );
 const entitiesLength = computed(() => entities.value.length);
 
-const saveChanges = (newState: IDivider) => {
-  editEntity(newState);
+const saveChanges = async (newState: IDivider) => {
+  await editEntity(newState);
   entityData.value = newState;
 };
 </script>

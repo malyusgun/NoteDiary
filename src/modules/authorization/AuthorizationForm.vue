@@ -1,9 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+interface Props {
+  isSignUpPage?: boolean;
+}
+defineProps<Props>();
+</script>
 
 <template>
   <main style="min-height: 100vh" class="relative w-full h-full bg-gray-900">
     <article
-      class="form absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all py-20 px-40 border-4 border-solid border-blue-800 rounded-3xl"
+      :class="[
+        'form absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all p-10 border-4 border-solid border-blue-800 rounded-3xl',
+        {
+          'px-40 py-20': isSignUpPage
+        }
+      ]"
     >
       <slot />
     </article>

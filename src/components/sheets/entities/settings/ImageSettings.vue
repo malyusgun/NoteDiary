@@ -71,12 +71,14 @@ const cropImage = async (
 const toggleConfirmDeleteImageModal = () => {
   isModalToDeleteImage.value = !isModalToDeleteImage.value;
 };
-const deleteImage = () => {
-  deleteEntity(prevEntityData.value.entity_uuid);
+const deleteImage = async () => {
+  await deleteEntity(prevEntityData.value.entity_uuid);
   isModalToDeleteImage.value = false;
   isModal.value = false;
 };
-const openCropImageModal = () => (isModalCropImage.value = true);
+const openCropImageModal = () => {
+  isModalCropImage.value = true;
+};
 const onCloseModal = () => {
   setTimeout(() => {
     newEntityData.value = { ...prevEntityData.value };
@@ -97,11 +99,11 @@ const onCloseModal = () => {
   </button>
   <Modal v-model:isVisible="isModal" theme="black" width="90%" :onClose="onCloseModal"
     ><template #header><h3 class="w-max mx-auto">Edit image block</h3></template>
-    <CropImageModal
-      v-model:isVisible="isModalCropImage"
-      v-model:imageInfo="newEntityData"
-      @cropImage="cropImage"
-    />
+    <!--    <CropImageModal-->
+    <!--      v-model:isVisible="isModalCropImage"-->
+    <!--      v-model:imageInfo="newEntityData"-->
+    <!--      @cropImage="cropImage"-->
+    <!--    />-->
     <DeleteEntityConfirmModal
       v-model:isModalToDeleteEntity="isModalToDeleteImage"
       @deleteEntity="deleteImage"

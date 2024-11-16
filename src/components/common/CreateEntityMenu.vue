@@ -9,13 +9,10 @@ const { open: uploadFile, onChange } = useFileDialog({
   accept: 'image/*',
   reset: true
 });
-const authorizationStore = useAuthorizationStore();
-const dataStore = useDataStore();
 
 const themeColor: string = cookies.get('favorite_color');
 const isMenu = ref(false);
-const userNickName = computed(() => authorizationStore.userNickName);
-const entitiesCount = computed(() => dataStore.entities.length);
+const entitiesCount = computed(() => useDataStore().entities.length);
 
 const addImage = async (files: FileList) => {
   let image = new Image();
@@ -37,8 +34,8 @@ const speedDialItems = ref([
     label: 'Divider',
     textStyle: 'bold',
     theme: 'blue',
-    onClick: () => {
-      createEntity({
+    onClick: async () => {
+      await createEntity({
         entity_type: 'divider',
         entity_order: entitiesCount.value + 1,
         divider_height: 1,
@@ -50,8 +47,8 @@ const speedDialItems = ref([
     label: 'Paragraph',
     textStyle: 'bold',
     theme: 'green',
-    onClick: () => {
-      createEntity({
+    onClick: async () => {
+      await createEntity({
         entity_type: 'paragraph',
         entity_order: entitiesCount.value + 1,
         text: '',
@@ -71,8 +68,8 @@ const speedDialItems = ref([
     label: 'Table',
     textStyle: 'bold',
     theme: 'red',
-    onClick: () => {
-      createEntity({
+    onClick: async () => {
+      await createEntity({
         entity_type: 'table',
         entity_order: entitiesCount.value + 1,
         table_columns: [

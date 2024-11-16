@@ -9,28 +9,37 @@ import cookies from '@/app/plugins/Cookie';
 import customFetch from '@/app/helpers/customFetch';
 import { createEntityHandler } from '@/app/helpers/requestHandlers';
 import customFetchBuffer from '@/app/helpers/customFetchBuffer';
+import { serverErrorHandler } from '@/app/helpers/exceptions';
 
 const dataStore = useDataStore();
 
 export const fetchForEntities = async (sheet_uuid: string) => {
-  const entitiesDB = await customFetch(`/sheets/${sheet_uuid}/entities`, 'GET');
-  const entities = addUrlsToImageEntities(entitiesDB.entities, entitiesDB.imageEntities);
-  dataStore.editEntities(entities);
+  try {
+    const entitiesDB = await customFetch(`/sheets/${sheet_uuid}/entities`, 'GET');
+    const entities = addUrlsToImageEntities(entitiesDB.entities, entitiesDB.imageEntities);
+    dataStore.editEntities(entities);
+  } catch (e) {
+    serverErrorHandler(e);
+  }
 };
 
 export const createEntity = async (newEntity: IEntity, buffer?: Buffer) => {
-  const sheet_uuid = cookies.get('current_sheet_uuid');
-  if (buffer) {
-    await customFetchBuffer(`/sheets/${sheet_uuid}/entities/image`, 'POST', buffer);
-  } // создание должно вызываться "после", когда изображение на бэкенде уже создано, запросом выше
-  const newEntityDB = await customFetch(`/sheets/${sheet_uuid}/entities`, 'POST', {
-    ...newEntity,
-    sheet_uuid
-  });
-  if (buffer) {
-    newEntityDB.image_url = getUrlFromArrayBuffer(buffer);
+  try {
+    const sheet_uuid = cookies.get('current_sheet_uuid');
+    if (buffer) {
+      await customFetchBuffer(`/sheets/${sheet_uuid}/entities/image`, 'POST', buffer);
+    } // create should be called "after" when the image on the backend is already created by the request above
+    const newEntityDB = await customFetch(`/sheets/${sheet_uuid}/entities`, 'POST', {
+      ...newEntity,
+      sheet_uuid
+    });
+    if (buffer) {
+      newEntityDB.image_url = getUrlFromArrayBuffer(buffer);
+    }
+    createEntityHandler(newEntityDB);
+  } catch (e) {
+    serverErrorHandler(e);
   }
-  createEntityHandler(newEntityDB);
 };
 
 export const addImageOnLoad = async (image, url: string, entitiesCount: number) => {
@@ -67,38 +76,46 @@ export const addImageOnLoad = async (image, url: string, entitiesCount: number) 
 };
 
 export const editEntity = async (newState: IEntity) => {
-  const sheetUuid = cookies.get('current_sheet_uuid');
-  const stateWithoutUrl = { ...newState };
-  delete stateWithoutUrl.image_url;
-  await customFetch(
-    `/sheets/${sheetUuid}/entities/${newState.entity_uuid}`,
-    'PATCH',
-    stateWithoutUrl
-  );
-  const entities = dataStore.entities;
-  let newStateEntities = [...entities];
-  newStateEntities = newStateEntities.map((entity: IEntity) => {
-    if (entity.entity_uuid !== newState.entity_uuid) return entity;
-    return newState;
-  });
-  dataStore.editEntities(newStateEntities);
+  try {
+    const sheetUuid = cookies.get('current_sheet_uuid');
+    const stateWithoutUrl = { ...newState };
+    delete stateWithoutUrl.image_url;
+    await customFetch(
+      `/sheets/${sheetUuid}/entities/${newState.entity_uuid}`,
+      'PATCH',
+      stateWithoutUrl
+    );
+    const entities = dataStore.entities;
+    let newStateEntities = [...entities];
+    newStateEntities = newStateEntities.map((entity: IEntity) => {
+      if (entity.entity_uuid !== newState.entity_uuid) return entity;
+      return newState;
+    });
+    dataStore.editEntities(newStateEntities);
+  } catch (e) {
+    serverErrorHandler(e);
+  }
 };
 
 export const deleteEntity = async (entityUuid: string) => {
-  const sheet_uuid = cookies.get('current_sheet_uuid');
-  const entities = dataStore.entities;
-  const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
-  delete entityToDelete.image_url;
-  await customFetch(`/sheets/${sheet_uuid}/entities/${entityUuid}`, 'DELETE', {
-    ...entityToDelete,
-    sheet_uuid
-  });
+  try {
+    const sheet_uuid = cookies.get('current_sheet_uuid');
+    const entities = dataStore.entities;
+    const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
+    delete entityToDelete.image_url;
+    await customFetch(`/sheets/${sheet_uuid}/entities/${entityUuid}`, 'DELETE', {
+      ...entityToDelete,
+      sheet_uuid
+    });
 
-  let newStateEntities = [...entities];
-  newStateEntities = newStateEntities.filter(
-    (entity: IEntity) => entity.entity_uuid !== entityToDelete.entity_uuid
-  );
-  dataStore.editEntities(newStateEntities);
+    let newStateEntities = [...entities];
+    newStateEntities = newStateEntities.filter(
+      (entity: IEntity) => entity.entity_uuid !== entityToDelete.entity_uuid
+    );
+    dataStore.editEntities(newStateEntities);
+  } catch (e) {
+    serverErrorHandler(e);
+  }
 };
 
 export const changeEntitiesOrder = async (entityUuid: string, direction: 'up' | 'down') => {
@@ -110,18 +127,22 @@ export const changeEntitiesOrder = async (entityUuid: string, direction: 'up' | 
   const targetEntityIndex = direction === 'up' ? mainEntityIndex - 1 : mainEntityIndex + 1;
   const targetEntity = entities[targetEntityIndex];
 
-  await customFetch(`/sheets/${sheetUuid}/entities`, 'PATCH', {
-    main: mainEntity,
-    target: targetEntity
-  });
+  try {
+    await customFetch(`/sheets/${sheetUuid}/entities`, 'PATCH', {
+      main: mainEntity,
+      target: targetEntity
+    });
 
-  const newStateEntities = [...entities];
-  if (mainEntity.entity_order > newStateEntities[mainEntityIndex].entity_order!) {
-    newStateEntities[mainEntityIndex + 1].entity_order =
-      newStateEntities[mainEntityIndex].entity_order;
-  } else {
-    newState[mainEntityIndex - 1].entity_order = newStateEntities[mainEntityIndex].entity_order;
+    const newStateEntities = [...entities];
+    if (mainEntity.entity_order > newStateEntities[mainEntityIndex].entity_order!) {
+      newStateEntities[mainEntityIndex + 1].entity_order =
+        newStateEntities[mainEntityIndex].entity_order;
+    } else {
+      newState[mainEntityIndex - 1].entity_order = newStateEntities[mainEntityIndex].entity_order;
+    }
+    newStateEntities[mainEntityIndex] = { ...mainEntity };
+    dataStore.editEntities(newStateEntities);
+  } catch (e) {
+    serverErrorHandler(e);
   }
-  newStateEntities[mainEntityIndex] = { ...mainEntity };
-  dataStore.editEntities(newStateEntities);
 };

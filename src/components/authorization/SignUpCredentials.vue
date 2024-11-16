@@ -4,13 +4,13 @@ import { useVModel } from '@vueuse/core';
 interface Props {
   formData: {
     nick_name: string;
-    phone_number: string;
     email: string;
     password: string;
+    favorite_color: string;
   };
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['update:formData']);
+const emit = defineEmits(['update:formData', 'checkAreCredentialsValid']);
 const formData = useVModel(props, 'formData', emit);
 </script>
 
@@ -27,6 +27,7 @@ const formData = useVModel(props, 'formData', emit);
       type="text"
       placeholder="Enter your nick name"
       required
+      @input="emit('checkAreCredentialsValid')"
     />
     <label class="block redStar mb-1 pl-1 pointer-events-none select-none" for="email">Email</label>
     <input
@@ -37,6 +38,7 @@ const formData = useVModel(props, 'formData', emit);
       type="text"
       placeholder="Enter your email"
       required
+      @input="emit('checkAreCredentialsValid')"
     />
     <label class="block redStar mb-1 pl-1 pointer-events-none select-none" for="password"
       >Password</label
@@ -49,8 +51,24 @@ const formData = useVModel(props, 'formData', emit);
       type="password"
       placeholder="Enter your password"
       required
+      @input="emit('checkAreCredentialsValid')"
     />
   </section>
 </template>
 
-<style scoped></style>
+<style scoped>
+.input:hover {
+  border-color: var(--blue-500);
+}
+.input:focus {
+  border-color: var(--blue-700);
+}
+.redStar::after {
+  position: relative;
+  right: -4px;
+  top: 0;
+  content: '*';
+  font-weight: bold;
+  color: var(--red-500);
+}
+</style>

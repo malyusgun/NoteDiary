@@ -1,3 +1,6 @@
+import cookies from '@/app/plugins/Cookie';
+import { redirectSignIn } from '@/app/router';
+
 const server = process.env['SERVER'] || 'http://localhost:5000/api/v1';
 let isRefresh: boolean = false;
 let previousResponseData: [string, 'GET' | 'POST' | 'PATCH' | 'DELETE', unknown];
@@ -7,49 +10,38 @@ const customFetch = async (
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   body?: unknown
 ) => {
-  const router = useRouter();
-
-  try {
-    const response = await fetch(server + url, {
-      method,
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    // обычный запрос, прошёл успешно
-    if (response.ok && !isRefresh) {
-      return await response.json();
+  const response = await fetch(server + url, {
+    method,
+    body: JSON.stringify(body),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
     }
-    // это был запрос на обновление access-token (удачный), повтор предыдущего запроса
-    if (response.ok && isRefresh) {
-      isRefresh = false;
-      return await customFetch(...previousResponseData);
-    }
-    // неверные креды или истёк refresh-token
-    if (response.status === 401) {
-      await router.push('/signIn');
-      return;
-    }
-    // истёк access-token
-    if (response.status === 403) {
-      isRefresh = true;
-      previousresponseData = [
-        url,
-        {
-          method,
-          body
-        }
-      ];
-      return await customFetch('/refreshAccessToken', 'GET');
-    }
-    if (response.status === 500) {
-      // TODO обработка ошибки, редирект на страницу ещё не реализованной pages/Error500.vue
-      //  или просто показ уведомления с предложением перезагрузить страницу
-      return;
-    }
-  } catch (e) {
-    throw new Error(e);
+  });
+  // simple successful request
+  if (response.ok && !isRefresh) {
+    return await response.json();
+  }
+  // the last request was to update the access-token (successful), repeat the previous request
+  if (response.ok && isRefresh) {
+    isRefresh = false;
+    return await customFetch(...previousResponseData);
+  }
+  // invalid credentials or the refresh-token expired
+  if (response.status === 401) {
+    await redirectSignIn();
+    throw response;
+  }
+  // access-token expired
+  if (response.status === 403) {
+    const userUuid = cookies.get('user_uuid');
+    isRefresh = true;
+    previousResponseData = [url, method, body];
+    return await customFetch(`/users/${userUuid}/refresh`, 'PATCH');
+  }
+  // server error
+  if (response.status === 500) {
+    throw response;
   }
 };
 

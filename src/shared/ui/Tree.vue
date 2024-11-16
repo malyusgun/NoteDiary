@@ -1,25 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { convertThemeToColorWhiteDefault } from './helpers/index';
-import type { TThemeColor } from './interfaces/index';
+import { convertThemeToColorWhiteDefault, icons } from './helpers/index';
+import type { ITableItem, TThemeColor } from './interfaces/index';
 import TriangleOpenIcon from '@/shared/ui/icons/TriangleOpenIcon.vue';
 
 interface Props {
-  items?: {
-    text: string;
-    link?: string;
-    color?: string;
-    children?: {
-      text: string;
-      link?: string;
-      color?: string;
-      children?: {
-        text: string;
-        link?: string;
-        color?: string;
-      }[];
-    }[];
-  }[];
+  items?: ITableItem[];
   maxWidth?: number;
   expand?: boolean;
   theme?: TThemeColor;
@@ -39,19 +25,19 @@ const setInitialState = () => {
   for (let item of props.items) {
     state.value.push({
       isOpen: props?.expand ?? false,
-      text: item.text
+      label: item.label
     });
     if (item.children) {
       for (let child of item.children) {
         state.value.push({
           isOpen: props?.expand ?? false,
-          text: child.text
+          label: child.label
         });
         if (child.children) {
           for (let grandChild of child.children) {
             state.value.push({
               isOpen: props?.expand ?? false,
-              text: grandChild.text
+              label: grandChild.label
             });
           }
         }
@@ -64,7 +50,7 @@ watch([items], () => {
 });
 const toggleIsOpen = (item) =>
   state.value.map((itemState) => {
-    if (itemState.text === item.text) itemState.isOpen = !itemState.isOpen;
+    if (itemState.label === item.label) itemState.isOpen = !itemState.isOpen;
   });
 </script>
 
@@ -74,12 +60,12 @@ const toggleIsOpen = (item) =>
     class="tree"
   >
     <li
-      v-for="(item, index) of items"
-      :key="item.text"
+      v-for="item of items"
+      :key="item.label"
       :class="[
         'item flex',
         {
-          openItem: state.find((itemState) => itemState.text === item.text && itemState.isOpen)
+          openItem: state.find((itemState) => itemState.label === item.label && itemState.isOpen)
         }
       ]"
     >
@@ -89,7 +75,7 @@ const toggleIsOpen = (item) =>
           'openButton',
           {
             openButtonOpened: state.find(
-              (itemState) => itemState.text === item.text && itemState.isOpen
+              (itemState) => itemState.label === item.label && itemState.isOpen
             )
           }
         ]"
@@ -101,96 +87,93 @@ const toggleIsOpen = (item) =>
         :class="[
           'content',
           {
-            openContent: state.find((itemState) => itemState.text === item.text && itemState.isOpen)
+            openContent: state.find(
+              (itemState) => itemState.label === item.label && itemState.isOpen
+            )
           }
         ]"
       >
         <div class="textContainer">
-          <slot :name="`${index + 1}IconBefore`" />
-          <a :href="item.link" class="text">{{ item.text }}</a>
-          <slot :name="`${index + 1}IconAfter`" />
+          <component
+            :is="icons[item.iconBefore]"
+            v-if="item.iconBefore"
+            :color="item.iconColor"
+            size="20"
+          />
+          <a :href="item.link" class="label">{{ item.label }}</a>
+          <component
+            :is="icons[item.iconAfter]"
+            v-if="item.iconAfter"
+            :color="item.iconColor"
+            size="20"
+          />
         </div>
         <div class="children">
-          <div v-for="(child, indexChild) of item.children" :key="child.text" class="flex item">
-            <svg
+          <div v-for="child of item.children" :key="child.label" class="flex item">
+            <TriangleOpenIcon
               v-if="child.children"
               :class="[
                 'openButton',
                 {
                   openButtonOpened: state.find(
-                    (itemState) => itemState.text === child.text && itemState.isOpen
+                    (itemState) => itemState.label === child.label && itemState.isOpen
                   )
                 }
               ]"
-              width="25px"
-              height="25px"
-              viewBox="0 -0.5 28 28"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+              :color="textColor"
+              size="25"
               @click.prevent="toggleIsOpen(child)"
-            >
-              <g
-                id="Page-1"
-                stroke="none"
-                stroke-width="1"
-                fill="none"
-                fill-rule="evenodd"
-                sketch:type="MSPage"
-              >
-                <g
-                  id="Icon-Set-Filled"
-                  sketch:type="MSLayerGroup"
-                  transform="translate(-156.000000, -623.000000)"
-                  :fill="textColor ?? '#000000'"
-                >
-                  <path
-                    id="open"
-                    d="M183,647.998 L157,647.998 C156.448,647.998 156,648.446 156,648.999 C156,649.552 156.448,650 157,650 L183,650 C183.552,650 184,649.552 184,648.999 C184,648.446 183.552,647.998 183,647.998 L183,647.998 Z M158.014,645.995 L182.018,645.995 C184.375,645.995 184.296,644.608 183.628,643.574 L171.44,624.555 C170.882,623.771 169.22,623.703 168.56,624.555 L156.372,643.574 C155.768,644.703 155.687,645.995 158.014,645.995 L158.014,645.995 Z"
-                    sketch:type="MSShapeGroup"
-                  ></path>
-                </g>
-              </g>
-            </svg>
+            />
             <div
               :class="[
                 'content',
                 {
                   openContent: state.find(
-                    (itemState) => itemState.text === child.text && itemState.isOpen
+                    (itemState) => itemState.label === child.label && itemState.isOpen
                   )
                 }
               ]"
             >
               <div class="textContainer">
-                <slot :name="`${index + 1}-${indexChild + 1}IconBefore`" />
-                <a :href="child.link" class="text">{{ child.text }}</a>
-                <slot :name="`${index + 1}-${indexChild + 1}IconAfter`" />
+                <component
+                  :is="icons[child.iconBefore]"
+                  v-if="child.iconBefore"
+                  :color="child.iconColor"
+                  size="20"
+                />
+                <a :href="child.link" class="label">{{ child.label }}</a>
+                <component
+                  :is="icons[child.iconAfter]"
+                  v-if="child.iconAfter"
+                  :color="child.iconColor"
+                  size="20"
+                />
               </div>
               <div class="children">
-                <div
-                  v-for="(grandChild, indexGrandChild) of child.children"
-                  :key="grandChild.text"
-                  class="flex item"
-                >
+                <div v-for="grandChild of child.children" :key="grandChild.label" class="flex item">
                   <div
                     :class="[
                       'content',
                       {
                         openContent: state.find(
-                          (itemState) => itemState.text === grandChild.text && itemState.isOpen
+                          (itemState) => itemState.label === grandChild.label && itemState.isOpen
                         )
                       }
                     ]"
                   >
                     <div class="textContainer">
-                      <slot
-                        :name="`${index + 1}-${indexChild + 1}-${indexGrandChild + 1}IconBefore`"
+                      <component
+                        :is="icons[grandChild.iconBefore]"
+                        v-if="grandChild.iconBefore"
+                        :color="grandChild.iconColor"
+                        size="20"
                       />
-                      <p :href="grandChild.link" class="text">{{ grandChild.text }}</p>
-                      <slot
-                        :name="`${index + 1}-${indexChild + 1}-${indexGrandChild + 1}IconAfter`"
+                      <p :href="grandChild.link" class="label">{{ grandChild.label }}</p>
+                      <component
+                        :is="icons[grandChild.iconAfter]"
+                        v-if="grandChild.iconAfter"
+                        :color="grandChild.iconColor"
+                        size="20"
                       />
                     </div>
                   </div>
@@ -219,7 +202,7 @@ const toggleIsOpen = (item) =>
   transition: all 0.3s ease;
   background-color: v-bind(themeColor);
 }
-.text {
+.label {
   display: inline-block;
   position: relative;
   padding: 4px 0;

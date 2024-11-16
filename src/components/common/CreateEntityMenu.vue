@@ -9,13 +9,10 @@ const { open: uploadFile, onChange } = useFileDialog({
   accept: 'image/*',
   reset: true
 });
-const authorizationStore = useAuthorizationStore();
-const dataStore = useDataStore();
 
 const themeColor: string = cookies.get('favorite_color');
 const isMenu = ref(false);
-const userNickName = computed(() => authorizationStore.userNickName);
-const entitiesCount = computed(() => dataStore.entities.length);
+const entitiesCount = computed(() => useDataStore().entities.length);
 
 const addImage = async (files: FileList) => {
   let image = new Image();

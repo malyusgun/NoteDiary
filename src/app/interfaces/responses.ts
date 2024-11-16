@@ -8,3 +8,8 @@ export interface IUserDB {
   favorite_color: TTheme;
   user_sheets: JSON;
 }
+
+export interface IError {
+  status: number;
+  message: string;
+}

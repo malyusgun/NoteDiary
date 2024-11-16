@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useInterfaceStore } from '@/app/stores/interface';
+import { useAuthorizationStore } from '@/app/stores/authorization';
+import { useDataStore } from '@/app/stores/data';
 import type { IImageMainInfo } from '@/app/interfaces';
 import { backgroundImageOnLoad, uploadImage } from '@/app/helpers/images';
-import { useDataStore } from '@/app/stores/data';
 import { getSheetBackground, getUser } from '@/app/helpers';
 import { fetchForEntities } from '@/app/helpers/entities';
 
@@ -12,6 +13,7 @@ const interfaceStore = useInterfaceStore();
 const currentSheet = computed(() => dataStore.currentSheet);
 const backgroundUrl = computed<string>(() => interfaceStore.sheetBackground);
 // const pageTitle = computed(() => dataStore.currentPage.page_title);
+const userData = computed(() => useAuthorizationStore().userData);
 
 const isMenuVisible = ref<boolean>(false);
 const isEditMode = ref<boolean>(false);
@@ -30,10 +32,12 @@ onMounted(async () => {
   };
   document.addEventListener('keydown', onKeydown);
   await getUser();
-  if (currentSheet.value.background_path) {
+  if (currentSheet.value?.background_path) {
     await getSheetBackground(currentSheet.value.background_path);
   }
-  await fetchForEntities(currentSheet.value.sheet_uuid);
+  if (currentSheet.value?.sheet_uuid) {
+    await fetchForEntities(currentSheet.value.sheet_uuid);
+  }
 });
 
 const uploadFile = ($event: Event) => {
@@ -55,11 +59,11 @@ const openMenu = () => (isMenuVisible.value = true);
   <SidebarMenuButton @openMenu="openMenu" />
   <SidebarMenu v-model:isMenuVisible="isMenuVisible" />
   <SheetTelegramSection />
-  <CropImageModal
-    v-model:isVisible="isModalUploadFile"
-    v-model:imageInfo="backgroundImageInfo"
-    @cropImage="saveImage"
-  />
+  <!--  <CropImageModal-->
+  <!--    v-model:isVisible="isModalUploadFile"-->
+  <!--    v-model:imageInfo="backgroundImageInfo"-->
+  <!--    @cropImage="saveImage"-->
+  <!--  />-->
   <SheetPageContent
     :isEditMode="isEditMode"
     :backgroundUrl="backgroundUrl"

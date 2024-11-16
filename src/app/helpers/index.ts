@@ -6,14 +6,16 @@ import cookies from '@/app/plugins/Cookie';
 import { getUserHandler } from '@/app/helpers/requestHandlers';
 import type { IUserDB } from '@/app/interfaces/responses';
 import customFetchBuffer from '@/app/helpers/customFetchBuffer';
-
-const interfaceStore = useInterfaceStore();
-const dataStore = useDataStore();
+import { serverErrorHandler } from '@/app/helpers/exceptions';
 
 export const getUser = async () => {
-  const userUuid = cookies.get('user_uuid');
-  const userDB: IUserDB = await customFetch(`/users/${userUuid}`, 'GET');
-  getUserHandler({ ...userDB, user_sheets: JSON.parse(userDB.user_sheets) });
+  try {
+    const userUuid = cookies.get('user_uuid');
+    const userDB: IUserDB = await customFetch(`/users/${userUuid}`, 'GET');
+    getUserHandler({ ...userDB, user_sheets: JSON.parse(userDB.user_sheets) });
+  } catch (e) {
+    serverErrorHandler(e);
+  }
 };
 
 export const getSheetBackground = async (backgroundPath: string) => {
@@ -22,21 +24,29 @@ export const getSheetBackground = async (backgroundPath: string) => {
     type: `image/jpeg`
   });
   const url = URL.createObjectURL(blob);
-  interfaceStore.setSheetBackgroundFromDB(url);
+  useInterfaceStore().setSheetBackgroundFromDB(url);
 };
 
 export const deleteEntity = async (entityUuid: string) => {
-  const entities = dataStore.entities;
-  const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
-  const deletedEntity = await customFetch(`/sheets/${sheetUuid}/entities/${entityUuid}`, 'DELETE', {
-    ...entityToDelete
-  });
+  try {
+    const entities = useDataStore().entities;
+    const entityToDelete = entities.find((entity) => entity.entity_uuid === entityUuid);
+    const deletedEntity = await customFetch(
+      `/sheets/${sheetUuid}/entities/${entityUuid}`,
+      'DELETE',
+      {
+        ...entityToDelete
+      }
+    );
 
-  let newStateEntities = [...entities.value];
-  newStateEntities = newStateEntities.filter(
-    (entity: IEntity) => entity.entity_uuid !== deletedEntity.entity_uuid
-  );
-  dataStore.editEntities(newStateEntities);
+    let newStateEntities = [...entities.value];
+    newStateEntities = newStateEntities.filter(
+      (entity: IEntity) => entity.entity_uuid !== deletedEntity.entity_uuid
+    );
+    useDataStore().editEntities(newStateEntities);
+  } catch (e) {
+    serverErrorHandler(e);
+  }
 };
 
 export const convertThemeToColorWhiteDefault = (theme: string | undefined) => {

@@ -5,6 +5,7 @@ import { sendReturnOriginalSize } from '@/app/helpers/images';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useVModel } from '@vueuse/core';
+import { serverErrorHandler } from '@/app/helpers/exceptions';
 
 interface Props {
   entityData: IImage;
@@ -14,8 +15,7 @@ const props = defineProps<Props>();
 const emit = defineEmits(['update:entityData']);
 const entityData = useVModel(props, 'entityData', emit);
 
-const dataStore = useDataStore();
-const entities = computed(() => dataStore.entities);
+const entities = computed(() => useDataStore().entities);
 const entitiesLength = computed(() => entities.value.length);
 const entityIndex = computed(() =>
   entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
@@ -30,10 +30,14 @@ const saveChanges = async (newState: IImage) => {
   entityData.value = newState;
 };
 const returnOriginalSize = async () => {
-  const newState = entityData.value;
-  newState.file_width = newState.file_width_initial;
-  newState.file_height = newState.file_height_initial;
-  entityData.value = await sendReturnOriginalSize(newState);
+  try {
+    const newState = entityData.value;
+    newState.file_width = newState.file_width_initial;
+    newState.file_height = newState.file_height_initial;
+    entityData.value = await sendReturnOriginalSize(newState);
+  } catch (e) {
+    serverErrorHandler(e);
+  }
 };
 </script>
 

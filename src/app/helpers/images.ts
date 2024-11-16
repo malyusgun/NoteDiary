@@ -6,6 +6,7 @@ import customFetch from '@/app/helpers/customFetch';
 import cookies from '@/app/plugins/Cookie';
 import customFetchBuffer from '@/app/helpers/customFetchBuffer';
 import { Buffer } from 'buffer';
+import { serverErrorHandler } from '@/app/helpers/exceptions';
 
 export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
   let imageWidth = Math.ceil((fileWidth / (windowWidth - 138)) * 100);
@@ -51,8 +52,7 @@ export const backgroundImageOnLoad = (image, windowWidth: number) => {
 };
 
 export const setDefaultSheetBackground = async () => {
-  const interfaceStore = useInterfaceStore();
-  await interfaceStore.resetSheetBackground();
+  await useInterfaceStore().resetSheetBackground();
 };
 
 export const getUrlFromArrayBuffer = (ArrayBuffer: Buffer) => {
@@ -88,18 +88,22 @@ export const checkIsImage = (entity: IEntity) => {
 };
 
 export const sendCropImage = async (newUrl: string, entity: IImage) => {
-  const sheetUuid = cookies.get('current_sheet_uuid');
-  const response = await fetch(newUrl);
-  const blob = await response.blob();
-  const buffer = await blob.arrayBuffer();
-  const entityToPatch = { ...entity };
-  delete entityToPatch.image_url;
-  await customFetchBuffer(`/sheets/${sheetUuid}/entities/crop`, 'POST', buffer);
-  await customFetch(
-    `/sheets/${sheetUuid}/entities/crop/${entity.entity_uuid}`,
-    'PATCH',
-    entityToPatch
-  );
+  try {
+    const sheetUuid = cookies.get('current_sheet_uuid');
+    const response = await fetch(newUrl);
+    const blob = await response.blob();
+    const buffer = await blob.arrayBuffer();
+    const entityToPatch = { ...entity };
+    delete entityToPatch.image_url;
+    await customFetchBuffer(`/sheets/${sheetUuid}/entities/crop`, 'POST', buffer);
+    await customFetch(
+      `/sheets/${sheetUuid}/entities/crop/${entity.entity_uuid}`,
+      'PATCH',
+      entityToPatch
+    );
+  } catch (e) {
+    serverErrorHandler();
+  }
 };
 
 export const getImageScalesToRemove = (

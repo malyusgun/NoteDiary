@@ -11,8 +11,7 @@ interface Props {
   settingsListWidth: number;
 }
 const props = defineProps<Props>();
-const dataStore = useDataStore();
-const windowWidth = computed(() => dataStore.windowWidth);
+const windowWidth = computed(() => useDataStore().windowWidth);
 
 const textContainerWidth = computed(() => {
   if (!props.isEntityWidthFull)

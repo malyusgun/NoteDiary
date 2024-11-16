@@ -1,3 +1,7 @@
+import PlusIcon from '@/shared/icons/PlusIcon.vue';
+import ImageIcon from '@/shared/icons/ImageIcon.vue';
+import SettingsIcon from '@/shared/icons/SettingsIcon.vue';
+
 export const convertThemeToColorWhiteDefault = (theme: string | undefined) => {
   if (!theme) return '#ffffff';
   switch (theme) {
@@ -119,4 +123,10 @@ export const convertThemeToColorBlackDefault = (theme: string | undefined) => {
       return '#000000';
   }
   return '#000000';
+};
+
+export const icons = {
+  plus: PlusIcon,
+  image: ImageIcon,
+  settings: SettingsIcon
 };

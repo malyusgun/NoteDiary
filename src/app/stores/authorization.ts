@@ -1,32 +1,28 @@
 import { defineStore } from 'pinia';
-import type { IUser } from '@/app/interfaces/authorization';
+import type { IUser, IUserSignForm } from '@/app/interfaces/authorization';
 import cookies from '@/app/plugins/Cookie';
+import customFetch from '@/app/helpers/customFetch';
+import { redirectSignUp } from '@/app/router';
 
 export const useAuthorizationStore = defineStore('authorizationStore', () => {
-  const router = useRouter();
+  const userData = ref<IUser | IUserSignForm | null>();
+  const codeMail = ref<string>('');
 
-  const userUuid = ref<string>('');
-  const userNickName = ref<string>('malyusgun');
-  const userData = ref<IUser | null>();
-
-  function setUserUuid(uuid: string) {
-    userUuid.value = uuid;
-  }
-  function setUserNickName(nickName: string) {
-    userNickName.value = nickName;
-  }
-  function setUserData(data: IUser) {
+  function setUserData(data: IUserSignForm | IUser) {
     userData.value = data;
   }
-  function logout() {
-    userUuid.value = '';
-    userNickName.value = '';
+  function setCodeMail(code: string) {
+    codeMail.value = code;
+  }
+  async function logout() {
+    await customFetch('/users', 'DELETE', userData.value);
+
     userData.value = null;
     cookies.remove('user_uuid');
     cookies.remove('current_sheet_uuid');
     cookies.remove('home_uuid');
     cookies.remove('favorite_color');
-    router.push('/signUp');
+    await redirectSignUp();
   }
-  return { userUuid, userNickName, userData, setUserUuid, setUserNickName, setUserData, logout };
+  return { userData, codeMail, setUserData, setCodeMail, logout };
 });

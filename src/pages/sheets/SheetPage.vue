@@ -12,8 +12,6 @@ const interfaceStore = useInterfaceStore();
 
 const currentSheet = computed(() => dataStore.currentSheet);
 const backgroundUrl = computed<string>(() => interfaceStore.sheetBackground);
-// const pageTitle = computed(() => dataStore.currentPage.page_title);
-const userData = computed(() => useAuthorizationStore().userData);
 
 const isMenuVisible = ref<boolean>(false);
 const isEditMode = ref<boolean>(false);
@@ -23,7 +21,7 @@ const backgroundImageInfo = ref<IImageMainInfo>({
   image_width: 0,
   image_height: 0
 });
-const windowWidth = computed(() => dataStore.windowWidth);
+const windowWidth = computed(() => interfaceStore.windowWidth);
 
 onMounted(async () => {
   const onKeydown = (event) => {
@@ -55,7 +53,7 @@ const openMenu = () => (isMenuVisible.value = true);
 </script>
 
 <template>
-  <SheetHeader v-model:isEditMode="isEditMode" :title="'Home page'" />
+  <SheetHeader v-model:isEditMode="isEditMode" :title="currentSheet?.sheet_title" />
   <SidebarMenuButton @openMenu="openMenu" />
   <SidebarMenu v-model:isMenuVisible="isMenuVisible" />
   <SheetTelegramSection />

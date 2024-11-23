@@ -5,9 +5,14 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/:sheetUuid',
+      path: '/:uuid',
       name: 'sheet',
-      component: () => import('@/pages/[uuid]/SheetPage.vue')
+      component: () => import('@/pages/sheets/SheetPage.vue')
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('@/pages/settings/Settings.vue')
     },
     {
       path: '/auth/signUp',
@@ -46,4 +51,7 @@ const redirectSignIn = async () => {
 const redirectSignUp = async () => {
   await router.push('/auth/signIn');
 };
-export { router, redirectSignIn, redirectSignUp };
+const goBack = async () => {
+  await router.back();
+};
+export { router, redirectSignIn, redirectSignUp, goBack };

@@ -2,8 +2,10 @@ import { defineStore } from 'pinia';
 import customFetch from '@/app/helpers/customFetch';
 import cookies from '@/app/plugins/Cookie';
 import { serverErrorHandler } from '@/app/helpers/exceptions';
+import { useWindowSize } from '@vueuse/core';
 
 export const useInterfaceStore = defineStore('interfaceStore', () => {
+  const { width: windowWidth, height: windowHeight } = useWindowSize();
   const isDarkMode = ref<boolean>(true);
   const defaultSheetBackground = ref<string>(
     'https://t3.ftcdn.net/jpg/05/01/28/98/360_F_501289843_4ITbthNCydFQGgJmoZe4IQKchItBubqZ.jpg'
@@ -47,6 +49,8 @@ export const useInterfaceStore = defineStore('interfaceStore', () => {
     sheetBackground.value = url;
   }
   return {
+    windowWidth,
+    windowHeight,
     isDarkMode,
     sheetBackground,
     defaultSheetBackground,

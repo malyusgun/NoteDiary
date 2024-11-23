@@ -35,6 +35,7 @@ const openConfirmMailPage = async () => {
   }
   const userData = formData.value;
   const data = await customFetch('/users/confirm', 'POST', userData);
+  localStorage.setItem('userData', JSON.stringify(userData));
   authorizationStore.setUserData(userData as IUserSignForm);
   authorizationStore.setCodeMail(data.code);
   cookies.set('user_uuid', data.user_uuid);

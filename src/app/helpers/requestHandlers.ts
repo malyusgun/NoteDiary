@@ -9,7 +9,6 @@ export const getUserHandler = (data: IUser) => {
 };
 
 export const getSheetHandler = (data: ISheet) => {
-  useDataStore().setCurrentSheetData(data);
   useDataStore().setCurrentSheetUuid(data.sheet_uuid);
 };
 

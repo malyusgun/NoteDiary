@@ -37,9 +37,7 @@ const returnOriginalSize = () => {
       size="medium"
       @click.prevent="$emit('saveChanges')"
     >
-      <template #icon>
-        <SaveIcon color="white" size="25" />
-      </template>
+      <SaveIcon color="white" size="25" />
     </Button>
     <!--    <Button-->
     <!--      v-if="newEntityData.file_width > 200 || newEntityData.file_height > 200"-->
@@ -50,9 +48,7 @@ const returnOriginalSize = () => {
     <!--      size="medium"-->
     <!--      @click.prevent="$emit('openCropImageModal')"-->
     <!--    >-->
-    <!--      <template #icon>-->
     <!--        <CropIcon color="black" size="25" />-->
-    <!--      </template>-->
     <!--    </Button>-->
   </div>
   <div class="absolute flex gap-4 top-4 right-16 z-10 hover:brightness-80 transition-all">
@@ -69,9 +65,7 @@ const returnOriginalSize = () => {
     <!--      size="medium"-->
     <!--      @click.prevent="returnOriginalSize"-->
     <!--    >-->
-    <!--      <template #icon>-->
     <!--        <TrashIcon color="white" size="25" />-->
-    <!--      </template>-->
     <!--    </Button>-->
     <Button
       label="Delete"
@@ -81,9 +75,7 @@ const returnOriginalSize = () => {
       size="medium"
       @click.prevent="$emit('toggleConfirmDeleteImageModal')"
     >
-      <template #icon>
-        <TrashIcon color="white" size="25" />
-      </template>
+      <TrashIcon color="white" size="25" />
     </Button>
   </div>
 </template>

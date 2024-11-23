@@ -11,8 +11,11 @@ interface Props {
   size?: 'small' | 'medium' | 'large' | 'extraLarge';
   textColor?: TThemeColor;
   theme?: TThemeColor;
+  width?: string | number;
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  iconPos: 'left'
+});
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
 const textColor = computed(() => convertThemeToColorBlackDefault(props.textColor));
 const borderColor = computed(() =>
@@ -40,6 +43,7 @@ const buttonPadding = computed(() => {
       return '1.8rem 1.2rem';
   }
 });
+const width = computed(() => (props.width ? `${props.width}px` : 'max-content'));
 </script>
 
 <template>
@@ -51,7 +55,7 @@ const buttonPadding = computed(() => {
         border: borderColor
       }
     ]"
-    :style="`padding: ${buttonPadding}`"
+    :style="`padding: ${buttonPadding}; width: ${width}`"
   >
     <span :style="`background-color: ${themeColor}`" class="background"></span>
     <span
@@ -73,7 +77,7 @@ const buttonPadding = computed(() => {
         }
       ]"
     >
-      <slot name="icon" />
+      <slot />
     </span>
   </button>
 </template>
@@ -81,9 +85,10 @@ const buttonPadding = computed(() => {
 <style scoped>
 .button {
   position: relative;
-  border-radius: 5px;
+  border-radius: 7px;
   display: flex;
   gap: 8px;
+  justify-content: center;
   align-items: center;
   user-select: none;
 }
@@ -94,16 +99,19 @@ const buttonPadding = computed(() => {
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: -1;
   top: 0;
   left: 0;
   border-radius: 5px;
   transition: filter 0.2s ease-in-out;
 }
 .text {
+  position: relative;
+  z-index: 2;
   line-height: 1;
 }
 .icon {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;

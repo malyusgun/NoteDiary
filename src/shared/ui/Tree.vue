@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { convertThemeToColorWhiteDefault, icons } from './helpers/index';
-import type { ITableItem, TThemeColor } from './interfaces/index';
+import type { ITreeItem, TThemeColor } from './interfaces/index';
 import TriangleOpenIcon from '@/shared/ui/icons/TriangleOpenIcon.vue';
 
 interface Props {
-  items?: ITableItem[];
+  items?: ITreeItem[];
   maxWidth?: number;
   expand?: boolean;
   theme?: TThemeColor;
+  disabled?: boolean;
+  onClick?: (link?: string) => void | never | typeof link;
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  maxWidth: 300,
+  disabled: false,
+  onClick: () => null
+});
 const items = computed(() => props.items);
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));
 const textColor = computed(() => {
@@ -24,19 +30,19 @@ const setInitialState = () => {
   if (!props?.items) return;
   for (let item of props.items) {
     state.value.push({
-      isOpen: props?.expand ?? false,
+      isOpen: props?.expand,
       label: item.label
     });
     if (item.children) {
       for (let child of item.children) {
         state.value.push({
-          isOpen: props?.expand ?? false,
+          isOpen: props?.expand,
           label: child.label
         });
         if (child.children) {
           for (let grandChild of child.children) {
             state.value.push({
-              isOpen: props?.expand ?? false,
+              isOpen: props?.expand,
               label: grandChild.label
             });
           }
@@ -45,9 +51,15 @@ const setInitialState = () => {
     }
   }
 };
-watch([items], () => {
-  if (items.value) setInitialState();
-});
+watch(
+  [items],
+  () => {
+    if (items.value) setInitialState();
+  },
+  {
+    immediate: true
+  }
+);
 const toggleIsOpen = (item) =>
   state.value.map((itemState) => {
     if (itemState.label === item.label) itemState.isOpen = !itemState.isOpen;
@@ -55,63 +67,77 @@ const toggleIsOpen = (item) =>
 </script>
 
 <template>
-  <ul
-    :style="`background-color: ${themeColor ?? 'white'}; max-width: ${maxWidth ?? 300}px`"
-    class="tree"
-  >
+  <ul :style="`background-color: ${themeColor ?? 'white'}; max-width: ${maxWidth}px`" class="tree">
     <li
       v-for="item of items"
       :key="item.label"
       :class="[
-        'item flex',
+        'item',
         {
-          openItem: state.find((itemState) => itemState.label === item.label && itemState.isOpen)
+          openContent: state.find((itemState) => itemState.label === item.label && itemState.isOpen)
         }
       ]"
     >
-      <TriangleOpenIcon
-        v-if="item.children"
+      <section
         :class="[
-          'openButton',
+          'textContainer',
           {
-            openButtonOpened: state.find(
-              (itemState) => itemState.label === item.label && itemState.isOpen
-            )
-          }
-        ]"
-        :color="textColor"
-        size="25"
-        @click.prevent="toggleIsOpen(item)"
-      />
-      <div
-        :class="[
-          'content',
-          {
-            openContent: state.find(
-              (itemState) => itemState.label === item.label && itemState.isOpen
-            )
+            pointer: !disabled && item.children
           }
         ]"
       >
-        <div class="textContainer">
-          <component
-            :is="icons[item.iconBefore]"
-            v-if="item.iconBefore"
-            :color="item.iconColor"
-            size="20"
-          />
-          <a :href="item.link" class="label">{{ item.label }}</a>
-          <component
-            :is="icons[item.iconAfter]"
-            v-if="item.iconAfter"
-            :color="item.iconColor"
-            size="20"
-          />
-        </div>
-        <div class="children">
-          <div v-for="child of item.children" :key="child.label" class="flex item">
+        <TriangleOpenIcon
+          v-if="item.children && !disabled"
+          :class="[
+            'openButton',
+            {
+              openButtonOpened: state.find(
+                (itemState) => itemState.label === item.label && itemState.isOpen
+              )
+            }
+          ]"
+          :color="textColor"
+          size="15"
+          @click.prevent="toggleIsOpen(item)"
+        />
+        <component
+          :is="icons[item.iconBefore]"
+          v-if="item.iconBefore"
+          :color="item.iconColor"
+          size="20"
+        />
+        <a :href="item.link" class="label" @click.prevent="onClick(item.link)">{{ item.label }}</a>
+        <component
+          :is="icons[item.iconAfter]"
+          v-if="item.iconAfter"
+          :color="item.iconColor"
+          size="20"
+        />
+      </section>
+      <div class="children">
+        <div
+          v-for="child of item.children"
+          :key="child.label"
+          :class="[
+            'item',
+            {
+              pl50: !child.children,
+              openContent: state.find(
+                (itemState) => itemState.label === child.label && itemState.isOpen
+              )
+            }
+          ]"
+        >
+          <section
+            :class="[
+              'textContainer',
+              {
+                pointer: !disabled && child.children
+              }
+            ]"
+          >
             <TriangleOpenIcon
-              v-if="child.children"
+              v-if="child.children && !disabled"
               :class="[
                 'openButton',
                 {
@@ -121,63 +147,55 @@ const toggleIsOpen = (item) =>
                 }
               ]"
               :color="textColor"
-              size="25"
+              size="15"
               @click.prevent="toggleIsOpen(child)"
             />
+            <component
+              :is="icons[child.iconBefore]"
+              v-if="child.iconBefore"
+              :color="child.iconColor"
+              size="20"
+            />
+            <a :href="child.link" class="label" @click.prevent="onClick(child.link)">{{
+              child.label
+            }}</a>
+            <component
+              :is="icons[child.iconAfter]"
+              v-if="child.iconAfter"
+              :color="child.iconColor"
+              size="20"
+            />
+          </section>
+          <div class="children">
             <div
+              v-for="grandChild of child.children"
+              :key="grandChild.label"
               :class="[
-                'content',
+                'item',
                 {
+                  pl50: !grandChild.children,
                   openContent: state.find(
-                    (itemState) => itemState.label === child.label && itemState.isOpen
+                    (itemState) => itemState.label === grandChild.label && itemState.isOpen
                   )
                 }
               ]"
             >
               <div class="textContainer">
                 <component
-                  :is="icons[child.iconBefore]"
-                  v-if="child.iconBefore"
-                  :color="child.iconColor"
+                  :is="icons[grandChild.iconBefore]"
+                  v-if="grandChild.iconBefore"
+                  :color="grandChild.iconColor"
                   size="20"
                 />
-                <a :href="child.link" class="label">{{ child.label }}</a>
+                <p :href="grandChild.link" class="label" @click.prevent="onClick(grandChild.link)">
+                  {{ grandChild.label }}
+                </p>
                 <component
-                  :is="icons[child.iconAfter]"
-                  v-if="child.iconAfter"
-                  :color="child.iconColor"
+                  :is="icons[grandChild.iconAfter]"
+                  v-if="grandChild.iconAfter"
+                  :color="grandChild.iconColor"
                   size="20"
                 />
-              </div>
-              <div class="children">
-                <div v-for="grandChild of child.children" :key="grandChild.label" class="flex item">
-                  <div
-                    :class="[
-                      'content',
-                      {
-                        openContent: state.find(
-                          (itemState) => itemState.label === grandChild.label && itemState.isOpen
-                        )
-                      }
-                    ]"
-                  >
-                    <div class="textContainer">
-                      <component
-                        :is="icons[grandChild.iconBefore]"
-                        v-if="grandChild.iconBefore"
-                        :color="grandChild.iconColor"
-                        size="20"
-                      />
-                      <p :href="grandChild.link" class="label">{{ grandChild.label }}</p>
-                      <component
-                        :is="icons[grandChild.iconAfter]"
-                        v-if="grandChild.iconAfter"
-                        :color="grandChild.iconColor"
-                        size="20"
-                      />
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -192,12 +210,8 @@ const toggleIsOpen = (item) =>
   padding: 15px 25px 15px 15px;
 }
 .item {
-  position: relative;
-}
-.content {
   width: 100%;
-  padding-left: 25px;
-  position: relative;
+  padding-left: 20px;
   overflow: hidden;
   transition: all 0.3s ease;
   background-color: v-bind(themeColor);
@@ -212,13 +226,7 @@ const toggleIsOpen = (item) =>
   word-break: break-word;
 }
 .openButton {
-  position: absolute;
-  z-index: 3;
-  top: 5px;
-  left: 0;
-  cursor: pointer;
-  padding: 5px;
-  margin: -5px -5px -5px 0;
+  margin-right: 15px;
   transition: transform 0.3s ease;
 }
 .openButtonOpened {
@@ -226,7 +234,7 @@ const toggleIsOpen = (item) =>
 }
 .children {
   width: 100%;
-  padding-left: 10px;
+  padding-left: 25px;
   opacity: 0;
   max-height: 0;
   transform: translateY(-100%);
@@ -238,13 +246,19 @@ const toggleIsOpen = (item) =>
   max-height: 1000px;
 }
 .textContainer {
+  position: relative;
   display: flex;
   gap: 10px;
-  margin-left: 10px;
 }
 .flex {
   display: flex;
   align-items: start;
   justify-content: end;
+}
+.pointer {
+  cursor: pointer;
+}
+.pl50 {
+  padding-left: 50px;
 }
 </style>

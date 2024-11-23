@@ -1,14 +1,27 @@
 import { defineStore } from 'pinia';
 import type { IEntity, ISheet } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
-import { useWindowSize } from '@vueuse/core';
 
 export const useDataStore = defineStore('dataStore', () => {
   const sheets = ref([
     {
       label: 'Settings',
       iconBefore: 'settings',
-      iconColor: 'white'
+      iconColor: 'white',
+      children: [
+        {
+          label: 'hui',
+          iconBefore: 'image',
+          iconColor: 'white',
+          children: [
+            {
+              label: 'pisda',
+              iconBefore: 'image',
+              iconColor: 'white'
+            }
+          ]
+        }
+      ]
     }
   ]);
 
@@ -19,11 +32,6 @@ export const useDataStore = defineStore('dataStore', () => {
   const entities = ref<IEntity[]>([]);
   function setCurrentSheetUuid(uuid: string) {
     cookies.set('current_sheet_uuid', uuid);
-  }
-
-  const { width: windowWidth, height: windowHeight } = useWindowSize();
-  function setCurrentSheetData(data: ISheet) {
-    // currentSheet.value = data;
   }
   function setSheetsData(data: ISheet[]) {
     sheetsData.value = data;
@@ -37,14 +45,11 @@ export const useDataStore = defineStore('dataStore', () => {
     );
   }
   return {
-    windowWidth,
-    windowHeight,
     sheets,
     entities,
     sheetsData,
     currentSheet,
     setCurrentSheetUuid,
-    setCurrentSheetData,
     setSheetsData,
     addSheetData,
     editEntities

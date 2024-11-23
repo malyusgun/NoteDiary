@@ -7,6 +7,7 @@ import type { IImageMainInfo } from '@/app/interfaces';
 import type { IImage } from '@/app/interfaces/entities';
 import UploadIcon from '@/shared/icons/UploadIcon.vue';
 import { useDataStore } from '@/app/stores/data';
+import { useInterfaceStore } from '@/app/stores/interface';
 
 interface Props {
   isVisible: boolean;
@@ -19,7 +20,7 @@ const { isVisible } = useVModels(props, emit);
 const imageInstance = new Image();
 const finalImageUrl = ref<string>('');
 const dataStore = useDataStore();
-const windowWidth = computed(() => dataStore.windowWidth);
+const windowWidth = computed(() => useInterfaceStore().windowWidth);
 const windowHeight = computed(() => dataStore.windowHeight);
 let widthPercent: number;
 

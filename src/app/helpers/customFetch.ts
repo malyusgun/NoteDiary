@@ -10,6 +10,9 @@ const customFetch = async (
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   body?: unknown
 ) => {
+  while (url.includes('//')) {
+    url.replace('//', '/');
+  }
   const response = await fetch(server + url, {
     method,
     body: JSON.stringify(body),

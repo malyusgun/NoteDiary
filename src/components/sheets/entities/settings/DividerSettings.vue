@@ -79,9 +79,7 @@ const deleteDivider = async () => {
         @click.prevent="toggleConfirmToDeleteDivider"
       >
         <Button label="Delete" textColor="white" theme="red" textStyle="bold" size="medium">
-          <template #icon>
-            <TrashIcon color="white" size="25" />
-          </template>
+          <TrashIcon color="white" size="25" />
         </Button>
       </div>
       <div
@@ -89,9 +87,7 @@ const deleteDivider = async () => {
         @click.prevent="saveChanges"
       >
         <Button label="Save" textColor="white" :theme="themeColor" textStyle="bold" size="medium">
-          <template #icon>
-            <SaveIcon color="white" size="25" />
-          </template>
+          <SaveIcon color="white" size="25" />
         </Button>
       </div>
     </div>

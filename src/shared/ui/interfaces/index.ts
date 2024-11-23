@@ -15,12 +15,12 @@ export type TThemeColor =
   | 'red'
   | 'black';
 
-export interface ITableItem {
+export interface ITreeItem {
   label: string;
   link?: string;
   color?: string;
   iconBefore?: string;
   iconAfter?: string;
   iconColor?: string;
-  children?: ITableItem[];
+  children?: ITreeItem[];
 }

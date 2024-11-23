@@ -10,6 +10,7 @@ import customFetch from '@/app/helpers/customFetch';
 import { createEntityHandler } from '@/app/helpers/requestHandlers';
 import customFetchBuffer from '@/app/helpers/customFetchBuffer';
 import { serverErrorHandler } from '@/app/helpers/exceptions';
+import { useInterfaceStore } from '@/app/stores/interface';
 
 const dataStore = useDataStore();
 
@@ -46,7 +47,7 @@ export const addImageOnLoad = async (image, url: string, entitiesCount: number) 
   const response = await fetch(url);
   const blob = await response.blob();
   const buffer = await blob.arrayBuffer();
-  const windowWidth = computed(() => dataStore.windowWidth);
+  const windowWidth = computed(() => useInterfaceStore().windowWidth);
   const maxHeight = 1000;
   const initWidth = image.width;
   if (image.height > maxHeight) {

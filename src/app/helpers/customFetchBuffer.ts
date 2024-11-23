@@ -9,9 +9,6 @@ const customFetchBuffer = async (
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   body?: Buffer
 ) => {
-  console.log('url: ', url);
-  console.log('method: ', method);
-  console.log('body: ', body);
   const response = await fetch(server + url, {
     method,
     body,

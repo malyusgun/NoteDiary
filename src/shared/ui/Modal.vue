@@ -8,7 +8,7 @@ interface Props {
   isVisible: boolean;
   theme?: TThemeColor;
   width?: number | string;
-  onClose?: () => any;
+  onClose?: () => never;
 }
 const props = defineProps<Props>();
 const themeColor = computed(() => convertThemeToColorWhiteDefault(props.theme));

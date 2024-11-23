@@ -16,7 +16,7 @@ const code = ref<string>('');
 const errorText = ref<string>('');
 const isCodeExpired = ref<boolean>(false);
 
-const userData = computed(() => authorizationStore.userData);
+const userData = computed(() => authorizationStore.userData ?? localStorage.getItem('userData'));
 
 onMounted(async () => {
   if (!authorizationStore.codeMail) {
@@ -57,7 +57,7 @@ const signUp = async () => {
   getSheetHandler(data.homeSheet);
   createEntityHandler(data.startEntity);
 
-  await router.push(`/${data.homeSheet.sheet_uuid}`);
+  await router.push(`/sheets/${data.homeSheet.sheet_uuid}`);
 };
 </script>
 

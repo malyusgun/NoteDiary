@@ -2,6 +2,7 @@
 import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useVModel } from '@vueuse/core';
+import { convertSheetsForTree } from '@/app/helpers/sheets';
 
 interface Props {
   isMenuVisible: boolean;
@@ -10,13 +11,11 @@ const props = defineProps<Props>();
 const emit = defineEmits(['update:isMenuVisible']);
 const isMenuVisible = useVModel(props, 'isMenuVisible', emit);
 
+const router = useRouter();
 const authorizationStore = useAuthorizationStore();
-const sheets = ref();
+const sheets = computed(() => useDataStore().sheetsData);
+const sheetsTree = computed(() => convertSheetsForTree(sheets.value));
 const userData = computed(() => authorizationStore.userData);
-
-onMounted(() => {
-  sheets.value = useDataStore().sheets;
-});
 
 const logout = async () => {
   await authorizationStore.logout();
@@ -56,7 +55,20 @@ const logout = async () => {
     <Divider class="mt-4" />
     <nav class="mt-4">
       <h3 class="text-xl">Menu</h3>
-      <Tree :expand="true" theme="black" :items="sheets"> </Tree>
+      <Tree
+        :expand="true"
+        theme="black"
+        :items="sheetsTree"
+        :onClick="
+          (link) => {
+            useDataStore().setCurrentSheetUuid(link.slice(1));
+            router.push(link.slice(1));
+            router.push({ path: '/' });
+            router.go(0);
+          }
+        "
+      >
+      </Tree>
     </nav>
   </Drawer>
 </template>

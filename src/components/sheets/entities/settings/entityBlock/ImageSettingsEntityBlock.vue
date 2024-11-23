@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IImage } from '@/app/interfaces/entities';
-import { useDataStore } from '@/app/stores/data';
+import { useInterfaceStore } from '@/app/stores/interface';
 
 interface Props {
   newEntityData: IImage;
@@ -11,7 +11,7 @@ interface Props {
   settingsListWidth: number;
 }
 const props = defineProps<Props>();
-const windowWidth = computed(() => useDataStore().windowWidth);
+const windowWidth = computed(() => useInterfaceStore().windowWidth);
 
 const textContainerWidth = computed(() => {
   if (!props.isEntityWidthFull)

@@ -38,7 +38,7 @@ const signIn = async () => {
   getUserHandler(userDataDB);
   getSheetHandler(userDataDB.user_sheets[0]);
 
-  await router.push(`/${userDataDB.user_sheets[0].sheet_uuid}`);
+  await router.push(`/sheets/${userDataDB.user_sheets[0].sheet_uuid}`);
 };
 </script>
 

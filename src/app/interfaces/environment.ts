@@ -4,7 +4,7 @@ export interface ISheet {
   sheet_uuid: string;
   sheet_title: string;
   sheet_icon: string;
-  sheet_navigation_order: string;
+  sheet_children: string[];
   background_path?: string;
   sheet_entities?: string;
 }

@@ -13,12 +13,14 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@d.malygin/UI_storybook": "^1.0.7",
     "@vueuse/core": "^10.11.0",
     "@vueuse/integrations": "^10.11.0",
     "buffer": "^6.0.3",
     "pinia": "^2.1.7",
     "universal-cookie": "^7",
     "uuid": "^10.0.0",
+    "vite-plugin-vue-devtools": "7.5.4",
     "vue": "^3.4.29",
     "vue-advanced-cropper": "^2.8.9",
     "vue-router": "^4.3.3"

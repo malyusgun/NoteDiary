@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import Modal from '@d.malygin/UI_storybook/components/Modal';
+import Divider from '@d.malygin/UI_storybook/components/Divider';
+import Button from '@d.malygin/UI_storybook/components/Button';
+import SaveIcon from '@d.malygin/UI_storybook/icons/Mono/Save';
+import SettingsIcon from '@d.malygin/UI_storybook/icons/Mono/Settings';
+import TrashIcon from '@d.malygin/UI_storybook/icons/Mono/Trash';
 import { convertThemeToColorWhiteDefault } from '@/app/helpers';
 import { deleteEntity } from '@/app/helpers/entities';
 import type { IDivider } from '@/app/interfaces/entities';
@@ -47,10 +53,14 @@ const deleteDivider = async () => {
   >
     <SettingsIcon color="white" size="25" />
   </button>
-  <Modal v-model:isVisible="isModal" theme="black" width="90%"
+  <Modal v-model:visible="isModal" theme="black" width="90%" height="max-content"
     ><template #header><h3 class="w-max mx-auto">Edit divider</h3></template>
-    <Modal v-model:isVisible="isModalToDeleteDivider" theme="black" width="30%"
-      ><p class="font-bold pt-4 mb-4 text-center">Are you sure you want to delete this divider?</p>
+    <Modal v-model:visible="isModalToDeleteDivider" theme="black" width="40%" headerAllowWrap
+      ><template #header
+        ><p class="font-bold pt-4 mb-4 text-center">
+          Are you sure you want to delete this divider?
+        </p></template
+      >
       <div class="flex justify-between">
         <Button
           label="Yes, delete"
@@ -72,13 +82,17 @@ const deleteDivider = async () => {
         :style="`border-color: var(--${themeColor}-200); height: 32px`"
         class="mt-8 flex flex-col justify-center gap-4 p-8 min-h-full border-2 border-slate-100 border-dashed rounded-2xl"
       >
-        <Divider :type="newEntityData.divider_type" :height="newEntityData.divider_height" />
+        <Divider
+          :type="newEntityData.divider_type"
+          :height="newEntityData.divider_height"
+          darknessColor="100"
+        />
       </section>
       <div
         class="absolute top-4 right-16 z-10 hover:brightness-80 transition-all"
         @click.prevent="toggleConfirmToDeleteDivider"
       >
-        <Button label="Delete" textColor="white" theme="red" textStyle="bold" size="medium">
+        <Button label="Delete" textColor="white" theme="red" textStyle="bold">
           <TrashIcon color="white" size="25" />
         </Button>
       </div>
@@ -86,7 +100,7 @@ const deleteDivider = async () => {
         class="absolute top-4 left-4 z-10 hover:brightness-80 transition-all"
         @click.prevent="saveChanges"
       >
-        <Button label="Save" textColor="white" :theme="themeColor" textStyle="bold" size="medium">
+        <Button label="Save" textColor="white" :theme="themeColor" textStyle="bold">
           <SaveIcon color="white" size="25" />
         </Button>
       </div>

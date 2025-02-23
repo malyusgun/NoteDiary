@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import MenuDial from '@d.malygin/UI_storybook/components/MenuDial';
+import ImageIcon from '@d.malygin/UI_storybook/icons/Mono/Image';
+import ParagraphIcon from '@d.malygin/UI_storybook/icons/Mono/Paragraph';
+import TableIcon from '@d.malygin/UI_storybook/icons/Mono/Table';
+import LineDiagonalIcon from '@d.malygin/UI_storybook/icons/Mono/LineDiagonal';
 import { useFileDialog } from '@vueuse/core';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useDataStore } from '@/app/stores/data';
@@ -93,9 +98,15 @@ const speedDialItems = ref([
 </script>
 
 <template>
-  <MenuDial v-model:isActive="isMenu" :items="speedDialItems" size="large" :theme="themeColor">
+  <MenuDial
+    v-model:active="isMenu"
+    :items="speedDialItems"
+    size="large"
+    iconColor="white"
+    :theme="themeColor"
+  >
     <template #1IconAfter>
-      <HorizontalLineIcon color="white" size="25" />
+      <LineDiagonalIcon color="white" size="25" />
     </template>
     <template #2IconAfter>
       <ParagraphIcon color="white" size="25" />

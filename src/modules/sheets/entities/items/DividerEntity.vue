@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Divider from '@d.malygin/UI_storybook/components/Divider';
 import type { IDivider } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers/entities';
 import { useDataStore } from '@/app/stores/data';
@@ -25,7 +26,11 @@ const saveChanges = async (newState: IDivider) => {
 
 <template>
   <section class="entityContainer relative px-16 py-6">
-    <Divider :type="entityData.divider_type" :height="entityData.divider_height" />
+    <Divider
+      :type="entityData.divider_type"
+      :height="entityData.divider_height"
+      darknessColor="100"
+    />
     <DividerSettings v-if="isEditMode" :entityData="entityData" @saveChanges="saveChanges" />
     <EntityPositionSettings
       v-if="isEditMode && entitiesLength > 1"

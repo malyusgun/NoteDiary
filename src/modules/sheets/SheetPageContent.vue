@@ -4,6 +4,7 @@ import { setDefaultSheetBackground } from '@/app/helpers/images';
 
 interface Props {
   isEditMode: boolean;
+  isMenuVisible: boolean;
   backgroundUrl: string;
 }
 defineProps<Props>();
@@ -15,7 +16,15 @@ const defaultBackgroundUrl = computed<string>(() => interfaceStore.defaultSheetB
 </script>
 
 <template>
-  <main id="sheetContainer" :style="`background-color: ${isDarkMode ? 'black' : 'light'}`">
+  <main
+    id="sheetContainer"
+    :class="[
+      {
+        'mr-[-10px] pr-[10px]': isMenuVisible
+      }
+    ]"
+    :style="`background-color: ${isDarkMode ? 'black' : 'light'}`"
+  >
     <article style="min-height: 200px" class="backgroundContainer relative">
       <img
         :src="backgroundUrl"

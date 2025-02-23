@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import PlusCircleIcon from '@/shared/icons/PlusCircleIcon.vue';
+import Modal from '@d.malygin/UI_storybook/components/Modal';
+import Checkbox from '@d.malygin/UI_storybook/components/Checkbox';
+import Divider from '@d.malygin/UI_storybook/components/Divider';
+import Button from '@d.malygin/UI_storybook/components/Button';
+import EditIcon from '@d.malygin/UI_storybook/icons/Mono/Edit';
+import PlusCircleIcon from '@d.malygin/UI_storybook/icons/Mono/PlusCircle';
+import TrashIcon from '@d.malygin/UI_storybook/icons/Mono/Trash';
 import { useVModel } from '@vueuse/core';
 import type { TTheme } from '@/app/interfaces/environment';
 import { createSheet, deleteSheet, replaceSheet } from '@/app/helpers/sheets';
@@ -46,7 +52,7 @@ const submitModal = () => {
     return;
   }
   if (props.modalMode === 'add') {
-    createSheet(sheetName.value, parent.value);
+    createSheet(sheetName.value, isParent.value ? parent.value : null);
     isModal.value = false;
     return;
   }
@@ -61,13 +67,13 @@ const submitModal = () => {
 </script>
 
 <template>
-  <Modal v-model:isVisible="isModal" theme="black">
+  <Modal v-model:visible="isModal" theme="black">
     <template #header
       ><h2 v-show="modalMode === 'add'">Добавить страницу</h2>
       <h2 v-show="modalMode === 'edit'">Переместить страницу</h2>
       <h2 v-show="modalMode === 'delete'">Удалить страницу</h2></template
     >
-    <Divider class="mb-2" />
+    <Divider class="mb-2" darknessColor="100" />
     <article class="p-2 relative">
       <p class="h-8 mb-2 flex gap-12 items-start justify-between">
         Название:
@@ -79,9 +85,13 @@ const submitModal = () => {
       </p>
       <section v-show="modalMode !== 'delete'">
         <div class="h-6 mb-2 flex items-end justify-between">
-          <p>
+          <p class="flex items-center">
             <span>Родитель:</span>
-            <input v-model="isParent" type="checkbox" class="ml-2 size-6 align-text-bottom" />
+            <Checkbox
+              v-model="isParent"
+              :activeTheme="themeColor"
+              class="ml-2 size-6 align-text-bottom"
+            />
           </p>
           <transition name="fastFading" mode="out-in">
             <input
@@ -96,11 +106,10 @@ const submitModal = () => {
       <section class="mt-4">
         <Button
           class="ml-auto"
-          border="white"
+          :label="modalMode === 'add' ? 'Добавить' : modalMode === 'edit' ? 'Изменить' : 'Удалить'"
           :theme="themeColor"
           textColor="white"
           size="small"
-          :label="modalMode === 'add' ? 'Добавить' : modalMode === 'edit' ? 'Изменить' : 'Удалить'"
           @click.prevent="submitModal"
         >
           <PlusCircleIcon v-show="modalMode === 'add'" size="20" color="white" />

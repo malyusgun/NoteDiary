@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Divider from '@d.malygin/UI_storybook/components/Divider';
+import Button from '@d.malygin/UI_storybook/components/Button';
+import ArrowLeftIcon from '@d.malygin/UI_storybook/icons/Mono/ArrowLeft';
 import type { TTheme } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
 import { goBack } from '@/app/router';
@@ -23,20 +26,18 @@ onMounted(async () => {
   <div class="w-full min-h-screen bg-black">
     <ChangeSheetsModal v-model:isModal="isModal" :modalMode="modalMode" :themeColor="themeColor" />
     <header class="relative">
-      <div class="absolute top-0 left-4">
-        <Button
-          border="white"
-          :theme="themeColor"
-          textColor="white"
-          size="small"
-          label="Вернуться"
-          @click.prevent="goBack"
-        >
-          <ArrowLeftIcon size="20" color="white" />
-        </Button>
-      </div>
+      <Button
+        label="Вернуться"
+        :theme="themeColor"
+        textColor="white"
+        size="small"
+        class="absolute top-4 left-4"
+        @click.prevent="goBack"
+      >
+        <ArrowLeftIcon size="20" color="white" />
+      </Button>
       <h1 class="my-6 mx-auto w-max text-5xl">Настройки</h1>
-      <Divider />
+      <Divider darknessColor="100" />
     </header>
     <main class="min-h-screen">
       <SettingsSheetsSection

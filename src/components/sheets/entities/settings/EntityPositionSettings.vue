@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import MenuDial from '@d.malygin/UI_storybook/components/MenuDial';
+import ArrowsVerticalIcon from '@d.malygin/UI_storybook/icons/Mono/ArrowsVertical';
 import { changeEntitiesOrder } from '@/app/helpers/entities';
 import cookies from '@/app/plugins/Cookie';
 
@@ -33,14 +35,9 @@ const menuItems = computed(() => {
 
 <template>
   <div class="settings absolute right-2 top-0 transition-all select-none">
-    <MenuDial
-      v-model:isActive="isMenu"
-      :items="menuItems"
-      :theme="themeColor"
-      size="medium"
-      direction="left"
+    <MenuDial v-model:active="isMenu" :items="menuItems" :theme="themeColor" direction="left"
       ><template #buttonIcon>
-        <VerticalArrowsIcon
+        <ArrowsVerticalIcon
           :color="themeColor === 'white' ? 'black' : 'white'"
           :size="25"
         /> </template

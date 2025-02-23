@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import InputDiv from '@d.malygin/UI_storybook/components/InputDiv';
+import Button from '@d.malygin/UI_storybook/components/Button';
+import ArrowLeftIcon from '@d.malygin/UI_storybook/icons/Mono/ArrowLeft';
 import customFetch from '@/app/helpers/customFetch';
-import type { IUser, IUserSignForm } from '@/app/interfaces/authorization';
+import type { IUser } from '@/app/interfaces/authorization';
 import cookies from '@/app/plugins/Cookie';
 import {
   createEntityHandler,
@@ -16,7 +19,9 @@ const code = ref<string>('');
 const errorText = ref<string>('');
 const isCodeExpired = ref<boolean>(false);
 
-const userData = computed(() => authorizationStore.userData ?? localStorage.getItem('userData'));
+const userData = computed(
+  () => authorizationStore.userData ?? JSON.parse(localStorage.getItem('userData'))
+);
 
 onMounted(async () => {
   if (!authorizationStore.codeMail) {
@@ -57,7 +62,7 @@ const signUp = async () => {
   getSheetHandler(data.homeSheet);
   createEntityHandler(data.startEntity);
 
-  await router.push(`/sheets/${data.homeSheet.sheet_uuid}`);
+  await router.push(`/${data.homeSheet.sheet_uuid}`);
 };
 </script>
 
@@ -71,40 +76,40 @@ const signUp = async () => {
         <label
           v-if="errorText && !isCodeExpired"
           for="code"
-          class="absolute text-red-600 -top-7 left-0"
+          class="absolute text-red-600 -top-7 left-1/2 -translate-x-1/2"
           >{{ errorText }}</label
         >
-        <input
-          id="code"
+        <InputDiv
           v-model="code"
-          style="border-width: 1px"
-          class="input block p-1 px-2 border-solid border-blue-300 rounded-md transition-all"
-          type="text"
-          placeholder="Enter your code"
-          maxlength="6"
-          required
+          theme="blue"
+          size="large"
+          darkness-theme="900"
+          scheme="6by1"
           @input="errorText = ''"
         />
       </div>
-      <button
+      <Button
+        theme="blue"
+        darkness-theme="700"
+        label="Confirm mail"
         :class="[
-          'px-6 py-2 font-bold text-2xl bg-blue-700 border-2 border-solid border-blue-100 rounded-lg select-none',
           {
             'brightness-75 pointer-events-none': isCodeExpired || code.length !== 6
           }
         ]"
         @click.prevent="signUp"
-      >
-        Confirm mail
-      </button>
+      />
       <p v-show="isCodeExpired" class="w-80 text-red-600 text-center">{{ errorText }}</p>
     </section>
-    <button
-      class="flex gap-2 absolute -bottom-20 left-0 p-2 font-bold text-xl bg-blue-700 border-2 border-solid border-blue-100 rounded-lg select-none"
+    <Button
+      theme="blue"
+      darkness-theme="700"
+      label="Sign up"
+      class="absolute -bottom-20 left-0"
       @click.prevent="backToSignUp"
     >
-      <ArrowLeftIcon color="white" /> Sign up
-    </button>
+      <ArrowLeftIcon color="white" />
+    </Button>
   </AuthorizationForm>
 </template>
 

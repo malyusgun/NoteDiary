@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Button from '@d.malygin/UI_storybook/components/Button';
+import ArrowRightIcon from '@d.malygin/UI_storybook/icons/Mono/ArrowRight';
+import UserIcon from '@d.malygin/UI_storybook/icons/Mono/User';
 import customFetch from '@/app/helpers/customFetch';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import cookies from '@/app/plugins/Cookie';
@@ -86,25 +89,33 @@ const colors = [
             @click.prevent="formData.favorite_color = item"
           ></li>
         </ul>
-        <button
-          :class="[
-            'flex items-center gap-2 absolute -right-10 -bottom-12 px-6 py-2 font-bold text-2xl bg-blue-700 border-2 border-solid border-blue-100 rounded-lg select-none',
-            {
-              'brightness-75 pointer-events-none': !areCredentialsValid
-            }
-          ]"
-          @click.prevent="openConfirmMailPage"
-        >
-          <UserIcon color="white" size="25" /> Sign up
-        </button>
+        <div class="flex gap-6 absolute -right-[136px] -bottom-12">
+          <Button
+            :class="[
+              {
+                'brightness-75 pointer-events-none': !areCredentialsValid
+              }
+            ]"
+            label="Sign up"
+            theme="blue"
+            darknessTheme="700"
+            textColor="white"
+            @click.prevent="openConfirmMailPage"
+          >
+            <UserIcon color="white" size="25" />
+          </Button>
+          <Button
+            label="Sign in"
+            theme="blue"
+            darknessTheme="700"
+            textColor="white"
+            @click.prevent="goToSignIn"
+          >
+            <ArrowRightIcon color="white" size="25" />
+          </Button>
+        </div>
       </section>
     </form>
-    <button
-      class="flex items-end gap-2 absolute -bottom-20 right-24 p-2 font-bold text-lg bg-blue-700 border-2 border-solid border-blue-100 rounded-lg select-none"
-      @click.prevent="goToSignIn"
-    >
-      <ArrowRightIcon color="white" /> Sign in
-    </button>
   </AuthorizationForm>
 </template>
 

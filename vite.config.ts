@@ -2,10 +2,10 @@ import { fileURLToPath, URL } from 'node:url';
 
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import vueDevTools from 'vite-plugin-vue-devtools';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   define: {
     'process.env': {}
@@ -18,13 +18,7 @@ export default defineConfig({
     }
   },
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          // isCustomElement: (tag) => ['StateMenu', 'FontMenu'].includes(tag)
-        }
-      }
-    }),
+    vue(),
     Components({
       dts: 'src/app/components.d.ts',
       dirs: ['src/app', 'src/pages', 'src/modules', 'src/components', 'src/shared']
@@ -118,7 +112,8 @@ export default defineConfig({
         enabled: false, // Default `false`
         filepath: './.biomelintrc-auto-import.json' // Default `./.biomelintrc-auto-import.json`
       }
-    })
+    }),
+    vueDevTools()
   ],
   resolve: {
     alias: {

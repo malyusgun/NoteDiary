@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import HamburgerIcon from '@d.malygin/UI_storybook/icons/Mono/Hamburger';
+
 const emit = defineEmits(['openMenu']);
 </script>
 

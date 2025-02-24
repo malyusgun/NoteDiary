@@ -368,10 +368,10 @@
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
 
-"@d.malygin/UI_storybook@^1.0.7":
-  version "1.0.7"
-  resolved "https://gl.iqdev.team/api/v4/projects/634/packages/npm/@d.malygin/UI_storybook/-/@d.malygin/UI_storybook-1.0.7.tgz#9026f7bba58de2eeaae2b9b14b61da0463a09961"
-  integrity sha1-kCb3u6WN4u6q4rmxS2HaBGOgmWE=
+"@d.malygin/UI_storybook@^1.0.16":
+  version "1.0.16"
+  resolved "https://gl.iqdev.team/api/v4/projects/634/packages/npm/@d.malygin/UI_storybook/-/@d.malygin/UI_storybook-1.0.16.tgz#4a36d63d587ab63ceafaea99b6bb7fbc1917d9fa"
+  integrity sha1-SjbWPVh6tjzq+uqZtrt/vBkX2fo=
   dependencies:
     "@vitejs/plugin-vue" "^5.1.4"
     vite "^5.4.10"

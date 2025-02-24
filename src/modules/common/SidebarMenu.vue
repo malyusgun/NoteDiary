@@ -25,6 +25,13 @@ const userData = computed(() => authorizationStore.userData);
 const logout = async () => {
   await authorizationStore.logout();
 };
+const onClickTreeItem = (item: { route: string }) => {
+  const route = item.route.slice(1);
+  useDataStore().setCurrentSheetUuid(route);
+  router.push(route);
+  router.push({ path: '/' });
+  router.go(0);
+};
 </script>
 
 <template>
@@ -66,20 +73,7 @@ const logout = async () => {
     </section>
     <nav class="mt-4">
       <h3 class="text-xl">Menu</h3>
-      <TreeList
-        :items="sheetsTree"
-        theme="black"
-        :onClick="
-          (link: string) => {
-            useDataStore().setCurrentSheetUuid(link.slice(1));
-            router.push(link.slice(1));
-            router.push({ path: '/' });
-            router.go(0);
-          }
-        "
-        expand
-      >
-      </TreeList>
+      <TreeList :items="sheetsTree" theme="black" expand @onClick="onClickTreeItem"> </TreeList>
     </nav>
   </Drawer>
 </template>

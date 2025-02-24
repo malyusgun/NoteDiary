@@ -23,9 +23,10 @@ const newEntityData = useVModel(props, 'newEntityData', emit);
       <p class="py-2 text-center">Type</p>
       <div class="flex items-center">
         <SelectButton
-          v-model:value="newEntityData.divider_type"
+          v-model="newEntityData.divider_type"
           :theme="themeColor"
           :options="entityTypeOptions"
+          activeBackgroundColor="white"
           rounded
         />
       </div>
@@ -34,9 +35,10 @@ const newEntityData = useVModel(props, 'newEntityData', emit);
       <p class="py-2 text-center">Height</p>
       <div class="flex items-center">
         <SelectButton
-          v-model:value="newEntityData.divider_height"
+          v-model="newEntityData.divider_height"
           :theme="themeColor"
           :options="entityHeightOptions"
+          activeBackgroundColor="white"
           rounded
         />
       </div>

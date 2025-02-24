@@ -55,9 +55,8 @@ watch(
     <div class="flex flex-col items-center" style="min-width: 30%; min-height: 100px">
       <p class="py-2">Image size</p>
       <Slider
-        v-model:value="newEntityData.image_scale"
+        v-model="newEntityData.image_scale"
         width="300px"
-        size="small"
         :max="scales.length - 1"
         :options="scales"
         :isSmooth="true"
@@ -70,9 +69,10 @@ watch(
         <div>
           <p class="py-2 text-center">Title</p>
           <SelectButton
-            v-model:value="isTitle"
+            v-model="isTitle"
             :theme="themeColor"
             :options="entityIsTitleOptions"
+            activeBackgroundColor="white"
             rounded
           />
         </div>
@@ -81,9 +81,10 @@ watch(
             <div v-show="isTitle" class="flex flex-col items-center">
               <p class="py-2 text-center">Title position</p>
               <SelectButton
-                v-model:value="newEntityData.entity_title_position"
+                v-model="newEntityData.entity_title_position"
                 :theme="themeColor"
                 :options="entityTitlePositionOptions"
+                activeBackgroundColor="white"
                 rounded
               >
                 <template #1Icon><AlignLeftIcon /></template>
@@ -98,9 +99,10 @@ watch(
             <div v-show="isText" class="flex flex-col items-center">
               <p class="py-2">Text position</p>
               <SelectButton
-                v-model:value="newEntityData.text_position"
+                v-model="newEntityData.text_position"
                 :theme="themeColor"
                 :options="entityTextPositionOptions"
+                activeBackgroundColor="white"
                 rounded
               />
             </div>
@@ -114,9 +116,10 @@ watch(
               <p class="py-2 text-center">Text</p>
               <div class="flex items-center">
                 <SelectButton
-                  v-model:value="isText"
+                  v-model="isText"
                   :theme="themeColor"
                   :options="entityIsTextOptions"
+                  activeBackgroundColor="white"
                   rounded
                 />
               </div>
@@ -128,9 +131,10 @@ watch(
             <div v-show="!(isText && isEntityWidthFull)" class="flex flex-col items-center">
               <p class="py-2 text-center">Block position</p>
               <SelectButton
-                v-model:value="newEntityData.entity_position"
+                v-model="newEntityData.entity_position"
                 :theme="themeColor"
                 :options="entityPositionOptions"
+                activeBackgroundColor="white"
                 rounded
                 ><template #1Icon><AlignLeftIcon /></template>
                 <template #2Icon><AlignCenterIcon /></template>
@@ -147,9 +151,10 @@ watch(
             >
               <p class="py-2">Text width</p>
               <SelectButton
-                v-model:value="isEntityWidthFull"
+                v-model="isEntityWidthFull"
                 :theme="themeColor"
                 :options="isEntityWidthFullOptions"
+                activeBackgroundColor="white"
                 rounded
               />
             </div>

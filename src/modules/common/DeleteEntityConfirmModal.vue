@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Modal from '@d.malygin/UI_storybook/components/Modal';
+import Button from '@d.malygin/UI_storybook/components/Button';
 import { useVModel } from '@vueuse/core';
 
 interface IProps {
@@ -14,8 +16,12 @@ const isModalToDeleteEntity = useVModel(props, 'isModalToDeleteEntity', emit);
 </script>
 
 <template>
-  <Modal v-model:isVisible="isModalToDeleteEntity" theme="black" width="30%"
-    ><p class="font-bold pt-4 mb-4 text-center">Are you sure you want to delete this element?</p>
+  <Modal v-model:visible="isModalToDeleteEntity" theme="black" width="40%" headerAllowWrap
+    ><template #header
+      ><p class="font-bold pt-4 mb-4 text-center">
+        Are you sure you want to delete thi element?
+      </p></template
+    >
     <div class="flex justify-between">
       <Button
         label="Yes, delete"

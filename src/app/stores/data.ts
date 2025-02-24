@@ -8,20 +8,7 @@ export const useDataStore = defineStore('dataStore', () => {
       label: 'Settings',
       iconBefore: 'settings',
       iconColor: 'white',
-      children: [
-        {
-          label: 'hui',
-          iconBefore: 'image',
-          iconColor: 'white',
-          children: [
-            {
-              label: 'pisda',
-              iconBefore: 'image',
-              iconColor: 'white'
-            }
-          ]
-        }
-      ]
+      children: []
     }
   ]);
 

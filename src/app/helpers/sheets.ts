@@ -7,7 +7,7 @@ import cookies from '@/app/plugins/Cookie';
 const convertSheetForTree = (sheet: ISheet, sheets: ISheet[]) => {
   const treeItem: ITreeItem = {
     label: sheet.sheet_title,
-    link: '/' + sheet.sheet_uuid,
+    route: '/' + sheet.sheet_uuid,
     color: 'white',
     iconBefore: sheet.sheet_icon,
     iconColor: 'white'
@@ -28,6 +28,7 @@ export const convertSheetsForTree = (sheets: ISheet[]) => {
   const uuidsPassed = new Set();
   const childrenUuids = new Set();
   const result: ITreeItem[] = [];
+
   for (const sheet of sheets) {
     if (sheet.sheet_children.length) {
       sheet.sheet_children.forEach((child) => {
@@ -35,6 +36,7 @@ export const convertSheetsForTree = (sheets: ISheet[]) => {
       });
     }
   }
+
   for (const sheet of sheets) {
     if (uuidsPassed.has(sheet.sheet_uuid) || childrenUuids.has(sheet.sheet_uuid)) continue;
     const item = convertSheetForTree(sheet, sheets);

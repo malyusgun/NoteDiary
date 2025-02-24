@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import Modal from '@d.malygin/UI_storybook/components/Modal';
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
 import { useVModels } from '@vueuse/core';
 import type { IImageMainInfo } from '@/app/interfaces';
 import type { IImage } from '@/app/interfaces/entities';
-import UploadIcon from '@/shared/icons/UploadIcon.vue';
+import DownloadIcon from '@d.malygin/UI_storybook/icons/Mono/Download';
 import { useDataStore } from '@/app/stores/data';
 import { useInterfaceStore } from '@/app/stores/interface';
 
@@ -98,13 +99,14 @@ const cropImage = () => {
 <template>
   <div>
     <Modal
-      v-model:isVisible="isVisible"
+      v-model:visible="isVisible"
       :style="`width: ${modalWidth}%; position: relative`"
       theme="black"
+      height="max-content"
     >
       <template #header>
         <div class="flex gap-4 justify-center mx-auto select-none">
-          <UploadIcon :size="stageSize.width < 400 ? 25 : 30" color="white" />
+          <DownloadIcon :size="stageSize.width < 400 ? 25 : 30" color="white" />
           <span
             :class="[
               'font-bold text-2xl',

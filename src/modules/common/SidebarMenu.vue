@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import TreeList from '@d.malygin/UI_storybook/components/TreeList';
+import Drawer from '@d.malygin/UI_storybook/components/Drawer';
+import Divider from '@d.malygin/UI_storybook/components/Divider';
+import ExitIcon from '@d.malygin/UI_storybook/icons/Mono/Exit';
+import SettingsIcon from '@d.malygin/UI_storybook/icons/Mono/Settings';
 import { useDataStore } from '@/app/stores/data';
 import { useAuthorizationStore } from '@/app/stores/authorization';
 import { useVModel } from '@vueuse/core';
@@ -20,12 +25,26 @@ const userData = computed(() => authorizationStore.userData);
 const logout = async () => {
   await authorizationStore.logout();
 };
+const onClickTreeItem = (item: { route: string }) => {
+  const route = item.route.slice(1);
+  useDataStore().setCurrentSheetUuid(route);
+  router.push(route);
+  router.push({ path: '/' });
+  router.go(0);
+};
 </script>
 
 <template>
-  <Drawer v-model:isVisible="isMenuVisible" width="400" theme="black">
+  <Drawer
+    v-model:visible="isMenuVisible"
+    width="400"
+    theme="black"
+    headerHeight="90px"
+    paddingRightOnActive="10px"
+    headerDivider
+  >
     <template #header
-      ><section class="flex justify-between items-center mb-4">
+      ><section class="flex justify-between items-center">
         <div class="inline-flex items-center gap-6">
           <img
             src="../../app/assets/ShelfNoteLogoCircle.png"
@@ -52,23 +71,9 @@ const logout = async () => {
         <ExitIcon color="#f00" class="hover:brightness-75 transition-all" />
       </button>
     </section>
-    <Divider class="mt-4" />
     <nav class="mt-4">
       <h3 class="text-xl">Menu</h3>
-      <Tree
-        :expand="true"
-        theme="black"
-        :items="sheetsTree"
-        :onClick="
-          (link) => {
-            useDataStore().setCurrentSheetUuid(link.slice(1));
-            router.push(link.slice(1));
-            router.push({ path: '/' });
-            router.go(0);
-          }
-        "
-      >
-      </Tree>
+      <TreeList :items="sheetsTree" theme="black" expand @onClick="onClickTreeItem"> </TreeList>
     </nav>
   </Drawer>
 </template>

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Button from '@d.malygin/UI_storybook/components/Button';
+import SaveIcon from '@d.malygin/UI_storybook/icons/Mono/Save';
+import TrashIcon from '@d.malygin/UI_storybook/icons/Mono/Trash';
 import type { IEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
 import type { TThemeColor } from '@/shared/ui/interfaces';
@@ -34,7 +37,6 @@ const returnOriginalSize = () => {
       textColor="white"
       :theme="themeColor as TThemeColor"
       textStyle="bold"
-      size="medium"
       @click.prevent="$emit('saveChanges')"
     >
       <SaveIcon color="white" size="25" />
@@ -45,7 +47,6 @@ const returnOriginalSize = () => {
     <!--      textColor="black"-->
     <!--      theme="white"-->
     <!--      textStyle="bold"-->
-    <!--      size="medium"-->
     <!--      @click.prevent="$emit('openCropImageModal')"-->
     <!--    >-->
     <!--        <CropIcon color="black" size="25" />-->
@@ -62,7 +63,6 @@ const returnOriginalSize = () => {
     <!--      textColor="white"-->
     <!--      :theme="themeColor"-->
     <!--      textStyle="bold"-->
-    <!--      size="medium"-->
     <!--      @click.prevent="returnOriginalSize"-->
     <!--    >-->
     <!--        <TrashIcon color="white" size="25" />-->
@@ -72,7 +72,6 @@ const returnOriginalSize = () => {
       textColor="white"
       theme="red"
       textStyle="bold"
-      size="medium"
       @click.prevent="$emit('toggleConfirmDeleteImageModal')"
     >
       <TrashIcon color="white" size="25" />

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SelectButton from '@d.malygin/UI_storybook/components/SelectButton';
 import type { TTheme } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
 import type { IDivider } from '@/app/interfaces/entities';
@@ -21,24 +22,24 @@ const newEntityData = useVModel(props, 'newEntityData', emit);
     <li class="flex flex-col items-center" style="min-width: 150px; min-height: 100px">
       <p class="py-2 text-center">Type</p>
       <div class="flex items-center">
-        <ToggleButton
-          v-model:value="newEntityData.divider_type"
+        <SelectButton
+          v-model="newEntityData.divider_type"
           :theme="themeColor"
           :options="entityTypeOptions"
-          rounded="true"
-          :border="themeColor"
+          activeBackgroundColor="white"
+          rounded
         />
       </div>
     </li>
     <li class="flex flex-col items-center" style="min-width: 150px; min-height: 100px">
       <p class="py-2 text-center">Height</p>
       <div class="flex items-center">
-        <ToggleButton
-          v-model:value="newEntityData.divider_height"
+        <SelectButton
+          v-model="newEntityData.divider_height"
           :theme="themeColor"
           :options="entityHeightOptions"
-          rounded="true"
-          :border="themeColor"
+          activeBackgroundColor="white"
+          rounded
         />
       </div>
     </li>

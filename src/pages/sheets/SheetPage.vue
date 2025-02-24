@@ -53,10 +53,14 @@ const openMenu = () => (isMenuVisible.value = true);
 </script>
 
 <template>
-  <SheetHeader v-model:isEditMode="isEditMode" :title="currentSheet?.sheet_title" />
+  <SheetHeader
+    v-model:isEditMode="isEditMode"
+    :title="currentSheet?.sheet_title ?? ''"
+    :isMenuVisible="isMenuVisible"
+  />
   <SidebarMenuButton @openMenu="openMenu" />
   <SidebarMenu v-model:isMenuVisible="isMenuVisible" />
-  <SheetTelegramSection />
+  <SheetTelegramSection :isMenuVisible="isMenuVisible" />
   <!--  <CropImageModal-->
   <!--    v-model:isVisible="isModalUploadFile"-->
   <!--    v-model:imageInfo="backgroundImageInfo"-->
@@ -64,6 +68,7 @@ const openMenu = () => (isMenuVisible.value = true);
   <!--  />-->
   <SheetPageContent
     :isEditMode="isEditMode"
+    :isMenuVisible="isMenuVisible"
     :backgroundUrl="backgroundUrl"
     @uploadFile="uploadFile"
   />

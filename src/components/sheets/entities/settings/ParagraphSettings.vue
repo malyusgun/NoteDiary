@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Modal from '@d.malygin/UI_storybook/components/Modal';
+import SettingsIcon from '@d.malygin/UI_storybook/icons/Mono/Settings';
 import type { IParagraph } from '@/app/interfaces/entities';
 import type { TTheme } from '@/app/interfaces/environment';
 import { convertThemeToColorWhiteDefault } from '@/app/helpers';
@@ -78,7 +80,12 @@ const onCloseModal = () => {
   >
     <SettingsIcon color="white" size="25" />
   </button>
-  <Modal v-model:isVisible="isModal" theme="black" width="90%" :onClose="onCloseModal"
+  <Modal
+    v-model:visible="isModal"
+    theme="black"
+    width="90%"
+    height="max-content"
+    @onClose="onCloseModal"
     ><template #header><h3 class="w-max mx-auto">Edit paragraph</h3></template>
     <DeleteEntityConfirmModal
       v-model:isModalToDeleteEntity="isModalToDeleteParagraph"

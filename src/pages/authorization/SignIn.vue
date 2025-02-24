@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Button from '@d.malygin/UI_storybook/components/Button';
+import ArrowLeftIcon from '@d.malygin/UI_storybook/icons/Mono/ArrowLeft';
+import UserIcon from '@d.malygin/UI_storybook/icons/Mono/User';
 import cookies from '@/app/plugins/Cookie';
 import customFetch from '@/app/helpers/customFetch';
 import type { IUser } from '@/app/interfaces/authorization';
@@ -38,7 +41,7 @@ const signIn = async () => {
   getUserHandler(userDataDB);
   getSheetHandler(userDataDB.user_sheets[0]);
 
-  await router.push(`/sheets/${userDataDB.user_sheets[0].sheet_uuid}`);
+  await router.push(`/${userDataDB.user_sheets[0].sheet_uuid}`);
 };
 </script>
 
@@ -75,24 +78,29 @@ const signIn = async () => {
           @input="checkAreCredentialsValid"
         />
       </div>
-      <button
+      <Button
+        label="Sign in"
+        theme="blue"
+        darknessTheme="700"
+        textColor="white"
         :class="[
-          'flex items-center gap-2 px-6 py-2 font-bold text-2xl bg-blue-700 border-2 border-solid border-blue-100 rounded-lg select-none',
           {
             'brightness-75 pointer-events-none': !areCredentialsValid
           }
         ]"
         @click.prevent="signIn"
-      >
-        <UserIcon color="white" size="25" /> Sign in
-      </button>
+        ><UserIcon color="white" size="25"
+      /></Button>
     </section>
-    <button
-      class="flex items-end gap-2 absolute -bottom-20 left-1/2 -translate-x-1/2 p-2 font-bold text-lg bg-blue-700 border-2 border-solid border-blue-100 rounded-lg select-none"
+    <Button
+      label="Sign up"
+      theme="blue"
+      darknessTheme="700"
+      textColor="white"
+      class="absolute -bottom-20 left-1/2 -translate-x-1/2"
       @click.prevent="goToSignUp"
-    >
-      <ArrowLeftIcon color="white" /> Sign up
-    </button>
+      ><ArrowLeftIcon size="25" color="white"
+    /></Button>
   </AuthorizationForm>
 </template>
 

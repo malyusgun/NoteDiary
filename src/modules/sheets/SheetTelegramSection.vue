@@ -1,8 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+interface IProps {
+  isMenuVisible: boolean;
+}
+defineProps<IProps>();
+</script>
 
 <template>
   <section
-    class="telegramContainer fixed z-50 bottom-8 right-8 cursor-pointer border-3 border-solid border-white rounded-full transition-all duration-300"
+    :class="[
+      'telegramContainer fixed z-50 bottom-8 cursor-pointer border-3 border-solid border-white rounded-full',
+      {
+        'right-[32px]': !isMenuVisible,
+        'right-[42px]': isMenuVisible
+      }
+    ]"
   >
     <p
       class="telegramText absolute w-96 h-20 p-4 text-white font-medium bg-black bg-opacity-70 rounded-full transition-all duration-300 pointer-events-none"
@@ -32,6 +43,9 @@
 .telegramContainer:hover > .telegramText {
   opacity: 100;
   right: 104%;
+}
+.telegramContainer > a {
+  transition: filter 0.3s ease-in-out;
 }
 .telegramContainer:hover > a {
   filter: brightness(0.75);

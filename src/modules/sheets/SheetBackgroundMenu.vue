@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import DownloadIcon from '@d.malygin/UI_storybook/icons/Mono/Download';
+import ImageEditIcon from '@d.malygin/UI_storybook/icons/Mono/ImageEdit';
+
 interface Props {
   isBackgroundDefault: boolean;
 }
@@ -23,7 +26,7 @@ defineEmits(['uploadFile', 'setDefaultBackground']);
         class="w-2 py-1 -my-2 pl-2 -ml-2 opacity-0"
         @change="$emit('uploadFile', $event)"
       />
-      <p class="flex"><UploadIcon color="white" size="25" class="mr-2" />Upload image</p>
+      <p class="flex"><DownloadIcon color="white" size="25" class="mr-2" />Upload image</p>
     </div>
     <button
       v-if="isBackgroundDefault"

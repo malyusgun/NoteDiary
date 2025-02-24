@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import Slider from '@d.malygin/UI_storybook/components/Slider';
+import SelectButton from '@d.malygin/UI_storybook/components/SelectButton';
+import AlignLeftIcon from '@d.malygin/UI_storybook/icons/Mono/AlignLeft';
+import AlignCenterIcon from '@d.malygin/UI_storybook/icons/Mono/AlignCenter';
+import AlignRightIcon from '@d.malygin/UI_storybook/icons/Mono/AlignRight';
 import type { TTheme } from '@/app/interfaces/environment';
 import { useVModels } from '@vueuse/core';
 import type { IImage } from '@/app/interfaces/entities';
@@ -50,9 +55,8 @@ watch(
     <div class="flex flex-col items-center" style="min-width: 30%; min-height: 100px">
       <p class="py-2">Image size</p>
       <Slider
-        v-model:value="newEntityData.image_scale"
+        v-model="newEntityData.image_scale"
         width="300px"
-        size="small"
         :max="scales.length - 1"
         :options="scales"
         :isSmooth="true"
@@ -64,29 +68,29 @@ watch(
       <li class="flex flex-col items-center justify-between gap-4" style="min-width: 150px">
         <div>
           <p class="py-2 text-center">Title</p>
-          <ToggleButton
-            v-model:value="isTitle"
+          <SelectButton
+            v-model="isTitle"
             :theme="themeColor"
             :options="entityIsTitleOptions"
-            rounded="true"
-            :border="themeColor"
+            activeBackgroundColor="white"
+            rounded
           />
         </div>
         <div style="height: 108px" class="flex gap-8 items-center justify-between col-span-2">
           <Transition name="fading">
             <div v-show="isTitle" class="flex flex-col items-center">
               <p class="py-2 text-center">Title position</p>
-              <ToggleButton
-                v-model:value="newEntityData.entity_title_position"
+              <SelectButton
+                v-model="newEntityData.entity_title_position"
                 :theme="themeColor"
                 :options="entityTitlePositionOptions"
-                rounded="true"
-                :border="themeColor"
+                activeBackgroundColor="white"
+                rounded
               >
                 <template #1Icon><AlignLeftIcon /></template>
                 <template #2Icon><AlignCenterIcon /></template>
                 <template #3Icon><AlignRightIcon /></template
-              ></ToggleButton>
+              ></SelectButton>
             </div>
           </Transition>
         </div>
@@ -94,12 +98,12 @@ watch(
           <Transition name="fading">
             <div v-show="isText" class="flex flex-col items-center">
               <p class="py-2">Text position</p>
-              <ToggleButton
-                v-model:value="newEntityData.text_position"
+              <SelectButton
+                v-model="newEntityData.text_position"
                 :theme="themeColor"
                 :options="entityTextPositionOptions"
-                rounded="true"
-                :border="themeColor"
+                activeBackgroundColor="white"
+                rounded
               />
             </div>
           </Transition>
@@ -111,12 +115,12 @@ watch(
             <div v-show="newEntityData.image_width <= 75" class="flex flex-col items-center">
               <p class="py-2 text-center">Text</p>
               <div class="flex items-center">
-                <ToggleButton
-                  v-model:value="isText"
+                <SelectButton
+                  v-model="isText"
                   :theme="themeColor"
                   :options="entityIsTextOptions"
-                  rounded="true"
-                  :border="themeColor"
+                  activeBackgroundColor="white"
+                  rounded
                 />
               </div>
             </div>
@@ -126,16 +130,16 @@ watch(
           <Transition name="fading">
             <div v-show="!(isText && isEntityWidthFull)" class="flex flex-col items-center">
               <p class="py-2 text-center">Block position</p>
-              <ToggleButton
-                v-model:value="newEntityData.entity_position"
+              <SelectButton
+                v-model="newEntityData.entity_position"
                 :theme="themeColor"
                 :options="entityPositionOptions"
-                rounded="true"
-                :border="themeColor"
+                activeBackgroundColor="white"
+                rounded
                 ><template #1Icon><AlignLeftIcon /></template>
                 <template #2Icon><AlignCenterIcon /></template>
                 <template #3Icon><AlignRightIcon /></template
-              ></ToggleButton>
+              ></SelectButton>
             </div>
           </Transition>
         </div>
@@ -146,12 +150,12 @@ watch(
               class="flex flex-col items-center"
             >
               <p class="py-2">Text width</p>
-              <ToggleButton
-                v-model:value="isEntityWidthFull"
+              <SelectButton
+                v-model="isEntityWidthFull"
                 :theme="themeColor"
                 :options="isEntityWidthFullOptions"
-                rounded="true"
-                :border="themeColor"
+                activeBackgroundColor="white"
+                rounded
               />
             </div>
           </Transition>

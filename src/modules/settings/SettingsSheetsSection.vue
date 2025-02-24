@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import TreeList from '@d.malygin/UI_storybook/components/TreeList';
+import DocumentAddIcon from '@d.malygin/UI_storybook/icons/Mono/DocumentAdd';
+import DocumentDeleteIcon from '@d.malygin/UI_storybook/icons/Mono/DocumentDelete';
+import DocumentEditIcon from '@d.malygin/UI_storybook/icons/Mono/DocumentEdit';
+import Button from '@d.malygin/UI_storybook/components/Button';
 import type { TTheme } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useVModel } from '@vueuse/core';
@@ -27,49 +32,44 @@ const openModal = (mode: 'add' | 'edit' | 'delete') => {
   <div>
     <h2 class="my-4 ml-8 w-max text-3xl">Страницы</h2>
     <article class="ml-4 flex gap-16">
-      <Tree
+      <TreeList
         v-if="sheets.length"
-        :expand="true"
-        theme="black"
         :items="sheets"
         :maxWidth="treeMaxWidth"
+        theme="black"
+        expand
         class="mb-5"
-      ></Tree>
+      ></TreeList>
       <section>
         <Button
-          class="mb-4"
-          border="white"
+          class="mb-4 !flex"
+          label="Добавить"
           :theme="themeColor"
           textColor="white"
           size="small"
-          label="Добавить"
           width="140"
           @click.prevent="openModal('add')"
         >
-          <PageAddIcon color="white" size="30" />
+          <DocumentAddIcon color="white" size="30" />
         </Button>
         <Button
-          class="mb-4"
-          border="white"
+          class="mb-4 !flex"
+          label="Изменить"
           :theme="themeColor"
           textColor="white"
           size="small"
-          label="Изменить"
-          width="140"
           @click.prevent="openModal('edit')"
         >
-          <PageEditIcon color="white" size="30" />
+          <DocumentEditIcon color="white" size="30" />
         </Button>
         <Button
-          border="white"
+          label="Удалить"
           :theme="themeColor"
           textColor="white"
           size="small"
-          label="Удалить"
-          width="140"
           @click.prevent="openModal('delete')"
         >
-          <PageDeleteIcon color="white" size="30" />
+          <DocumentDeleteIcon color="white" size="30" />
         </Button>
       </section>
     </article>

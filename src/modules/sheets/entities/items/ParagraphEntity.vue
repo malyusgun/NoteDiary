@@ -94,15 +94,6 @@ const saveChanges = async (newState: IParagraph) => {
 .entityContainer:hover .settings {
   opacity: 100;
 }
-.entityContainer:hover .aggregateHigh {
-  height: 140px;
-}
-.entityContainer:hover .aggregateMedium {
-  height: 80px;
-}
-.entityContainer:hover .aggregateShort {
-  height: 35px;
-}
 input::placeholder {
   font-weight: 400;
 }

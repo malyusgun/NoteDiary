@@ -4,7 +4,8 @@ import SaveIcon from '@d.malygin/UI_storybook/icons/Mono/Save';
 import TrashIcon from '@d.malygin/UI_storybook/icons/Mono/Trash';
 import type { TEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
-import type { TThemeColor } from '@/shared/ui/interfaces';
+import type { TThemeColor } from '@/app/interfaces';
+import type { IImage } from '@/app/interfaces/entities';
 
 interface Props {
   newEntityData: TEntity;
@@ -20,7 +21,7 @@ const emit = defineEmits([
 const newEntityData = useVModel(props, 'newEntityData', emit);
 
 const returnOriginalSize = () => {
-  const newState = { ...newEntityData.value };
+  const newState = { ...newEntityData.value } as IImage;
   newState.image_url = newState.image_url_initial;
   newState.file_width = newState.file_width_initial;
   newState.file_height = newState.file_height_initial;

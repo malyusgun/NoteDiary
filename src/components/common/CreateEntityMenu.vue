@@ -76,7 +76,14 @@ const speedDialItems = ref([
     onClick: async () => {
       await createEntity({
         entity_type: 'table',
+        entity_position: 'left',
         entity_order: entitiesCount.value + 1,
+        size: 'normal',
+        theme: 'black',
+        darknessTheme: '500',
+        fontSize: '16px',
+        editable: false,
+        table_data: [[]],
         table_columns: [
           {
             name: 'Name',
@@ -88,7 +95,7 @@ const speedDialItems = ref([
           },
           {
             name: 'Status',
-            type: 'status'
+            type: 'tag'
           }
         ]
       });

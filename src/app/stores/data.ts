@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { IEntity, ISheet } from '@/app/interfaces/environment';
+import type { TEntity, ISheet } from '@/app/interfaces/environment';
 import cookies from '@/app/plugins/Cookie';
 
 export const useDataStore = defineStore('dataStore', () => {
@@ -16,7 +16,7 @@ export const useDataStore = defineStore('dataStore', () => {
   const currentSheet = computed<ISheet>(() =>
     sheetsData.value.find((sheet) => sheet.sheet_uuid === cookies.get('current_sheet_uuid'))
   );
-  const entities = ref<IEntity[]>([]);
+  const entities = ref<TEntity[]>([]);
   function setCurrentSheetUuid(uuid: string) {
     cookies.set('current_sheet_uuid', uuid);
   }
@@ -26,7 +26,9 @@ export const useDataStore = defineStore('dataStore', () => {
   function addSheetData(data: ISheet) {
     sheetsData.value.push(data);
   }
-  function editEntities(newState: IEntity[]) {
+  function editEntities(newState: TEntity[]) {
+    console.log('entities.value: ', entities.value);
+    console.log('newState: ', newState);
     entities.value = newState.sort(
       (entity, prevEntity) => +entity?.entity_order - +prevEntity?.entity_order
     );

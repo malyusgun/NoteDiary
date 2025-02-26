@@ -1,6 +1,6 @@
 import { useInterfaceStore } from '@/app/stores/interface';
 import { useDataStore } from '@/app/stores/data';
-import type { IEntity } from '@/app/interfaces/environment';
+import type { TEntity } from '@/app/interfaces/environment';
 import customFetch from '@/app/helpers/customFetch';
 import cookies from '@/app/plugins/Cookie';
 import { getUserHandler } from '@/app/helpers/requestHandlers';
@@ -41,7 +41,7 @@ export const deleteEntity = async (entityUuid: string) => {
 
     let newStateEntities = [...entities.value];
     newStateEntities = newStateEntities.filter(
-      (entity: IEntity) => entity.entity_uuid !== deletedEntity.entity_uuid
+      (entity: TEntity) => entity.entity_uuid !== deletedEntity.entity_uuid
     );
     useDataStore().editEntities(newStateEntities);
   } catch (e) {

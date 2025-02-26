@@ -1,4 +1,4 @@
-import type { IEntity } from '@/app/interfaces/environment';
+import type { TEntity } from '@/app/interfaces/environment';
 import type { IImage } from '@/app/interfaces/entities';
 import { useInterfaceStore } from '@/app/stores/interface';
 import { imageScaleOptions } from '@/components/sheets/entities/settings/lists/constants/options';
@@ -19,7 +19,7 @@ export const calcImageWidth = (fileWidth: number, windowWidth: number) => {
   return imageWidth;
 };
 
-export const sendReturnOriginalSize = async (newState: IEntity) => {
+export const sendReturnOriginalSize = async (newState: TEntity) => {
   const sheetUuid = cookies.get('current_sheet_uuid');
   return await customFetch(
     `/sheets/${sheetUuid}/entities/defaultImageSize/${newState.entity_uuid}`,
@@ -63,9 +63,9 @@ export const getUrlFromArrayBuffer = (ArrayBuffer: Buffer) => {
   return URL.createObjectURL(blob);
 };
 
-export const addUrlsToImageEntities = (entities: IEntity[], imageEntities: IImage[]) => {
+export const addUrlsToImageEntities = (entities: TEntity[], imageEntities: IImage[]) => {
   let index = 0;
-  return entities.map((entity: IEntity) => {
+  return entities.map((entity: TEntity) => {
     if (!entity?.image_width) return entity;
     if (entity.image_url) return entity;
 
@@ -78,7 +78,7 @@ export const addUrlsToImageEntities = (entities: IEntity[], imageEntities: IImag
   });
 };
 
-export const checkIsImage = (entity: IEntity) => {
+export const checkIsImage = (entity: TEntity) => {
   if (!entity?.image_width) {
     return entity;
   }
@@ -201,7 +201,7 @@ export const scaleImage = (entityData: IImage, prevScale: string) => {
 
 export const updateEntityDataTextOnSave = <T>(
   newEntityData: T,
-  prevEntityData: IEntity,
+  prevEntityData: TEntity,
   isEntityWidthFull: boolean,
   isTitle: boolean,
   isText?: boolean

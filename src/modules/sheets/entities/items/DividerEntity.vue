@@ -3,7 +3,7 @@ import Divider from '@d.malygin/UI_storybook/components/Divider';
 import type { IDivider } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers/entities';
 import { useDataStore } from '@/app/stores/data';
-import type { IEntity } from '@/app/interfaces/environment';
+import type { TEntity } from '@/app/interfaces/environment';
 
 interface Props {
   entityData: IDivider;
@@ -14,7 +14,7 @@ const entityData = ref(props.entityData);
 
 const entities = computed(() => useDataStore().entities);
 const entityIndex = computed(() =>
-  entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
+  entities.value.findIndex((entity: TEntity) => entity.entity_uuid === props.entityData.entity_uuid)
 );
 const entitiesLength = computed(() => entities.value.length);
 

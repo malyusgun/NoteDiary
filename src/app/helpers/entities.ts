@@ -1,5 +1,5 @@
 import { useDataStore } from '@/app/stores/data';
-import type { IEntity } from '@/app/interfaces/environment';
+import type { TEntity } from '@/app/interfaces/environment';
 import {
   addUrlsToImageEntities,
   calcImageWidth,
@@ -24,7 +24,7 @@ export const fetchForEntities = async (sheet_uuid: string) => {
   }
 };
 
-export const createEntity = async (newEntity: IEntity, buffer?: Buffer) => {
+export const createEntity = async (newEntity: TEntity, buffer?: Buffer) => {
   try {
     const sheet_uuid = cookies.get('current_sheet_uuid');
     if (buffer) {
@@ -76,7 +76,7 @@ export const addImageOnLoad = async (image, url: string, entitiesCount: number) 
   );
 };
 
-export const editEntity = async (newState: IEntity) => {
+export const editEntity = async (newState: TEntity) => {
   try {
     const sheetUuid = cookies.get('current_sheet_uuid');
     const stateWithoutUrl = { ...newState };
@@ -88,7 +88,7 @@ export const editEntity = async (newState: IEntity) => {
     );
     const entities = dataStore.entities;
     let newStateEntities = [...entities];
-    newStateEntities = newStateEntities.map((entity: IEntity) => {
+    newStateEntities = newStateEntities.map((entity: TEntity) => {
       if (entity.entity_uuid !== newState.entity_uuid) return entity;
       return newState;
     });
@@ -111,7 +111,7 @@ export const deleteEntity = async (entityUuid: string) => {
 
     let newStateEntities = [...entities];
     newStateEntities = newStateEntities.filter(
-      (entity: IEntity) => entity.entity_uuid !== entityToDelete.entity_uuid
+      (entity: TEntity) => entity.entity_uuid !== entityToDelete.entity_uuid
     );
     dataStore.editEntities(newStateEntities);
   } catch (e) {
@@ -123,7 +123,7 @@ export const changeEntitiesOrder = async (entityUuid: string, direction: 'up' | 
   const entities = dataStore.entities;
   const sheetUuid = dataStore.currentSheet.sheet_uuid;
 
-  const mainEntity = entities.find((entity: IEntity) => entity.entity_uuid === entityUuid)!;
+  const mainEntity = entities.find((entity: TEntity) => entity.entity_uuid === entityUuid)!;
   const mainEntityIndex = entities.indexOf(mainEntity);
   const targetEntityIndex = direction === 'up' ? mainEntityIndex - 1 : mainEntityIndex + 1;
   const targetEntity = entities[targetEntityIndex];

@@ -2,12 +2,12 @@
 import Button from '@d.malygin/UI_storybook/components/Button';
 import SaveIcon from '@d.malygin/UI_storybook/icons/Mono/Save';
 import TrashIcon from '@d.malygin/UI_storybook/icons/Mono/Trash';
-import type { IEntity } from '@/app/interfaces/environment';
+import type { TEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
 import type { TThemeColor } from '@/shared/ui/interfaces';
 
 interface Props {
-  newEntityData: IEntity;
+  newEntityData: TEntity;
   themeColor: string;
 }
 const props = defineProps<Props>();

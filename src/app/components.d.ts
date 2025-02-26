@@ -45,5 +45,6 @@ declare module 'vue' {
     SignIn: typeof import('./../pages/authorization/SignIn.vue')['default']
     SignUp: typeof import('./../pages/authorization/SignUp.vue')['default']
     SignUpCredentials: typeof import('./../components/authorization/SignUpCredentials.vue')['default']
+    TableEntity: typeof import('./../modules/sheets/entities/items/TableEntity.vue')['default']
   }
 }

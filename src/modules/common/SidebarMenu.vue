@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import TreeList from '@d.malygin/UI_storybook/components/TreeList';
 import Drawer from '@d.malygin/UI_storybook/components/Drawer';
-import Divider from '@d.malygin/UI_storybook/components/Divider';
 import ExitIcon from '@d.malygin/UI_storybook/icons/Mono/Exit';
 import SettingsIcon from '@d.malygin/UI_storybook/icons/Mono/Settings';
 import { useDataStore } from '@/app/stores/data';

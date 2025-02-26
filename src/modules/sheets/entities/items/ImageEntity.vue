@@ -2,7 +2,7 @@
 import type { IImage } from '@/app/interfaces/entities';
 import { editEntity } from '@/app/helpers/entities';
 import { sendReturnOriginalSize } from '@/app/helpers/images';
-import type { IEntity } from '@/app/interfaces/environment';
+import type { TEntity } from '@/app/interfaces/environment';
 import { useDataStore } from '@/app/stores/data';
 import { useVModel } from '@vueuse/core';
 import { serverErrorHandler } from '@/app/helpers/exceptions';
@@ -18,7 +18,7 @@ const entityData = useVModel(props, 'entityData', emit);
 const entities = computed(() => useDataStore().entities);
 const entitiesLength = computed(() => entities.value.length);
 const entityIndex = computed(() =>
-  entities.value.findIndex((entity: IEntity) => entity.entity_uuid === props.entityData.entity_uuid)
+  entities.value.findIndex((entity: TEntity) => entity.entity_uuid === props.entityData.entity_uuid)
 );
 
 const textContainerWidth = computed(() => {

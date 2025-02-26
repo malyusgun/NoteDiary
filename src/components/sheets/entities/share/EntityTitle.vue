@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { IEntity } from '@/app/interfaces/environment';
+import type { TEntity } from '@/app/interfaces/environment';
 import { useVModel } from '@vueuse/core';
 import { editEntity } from '@/app/helpers/entities';
 
 interface Props {
   title?: string | null;
-  entityData: IEntity;
+  entityData: TEntity;
   isEditMode: boolean;
 }
 const props = defineProps<Props>();

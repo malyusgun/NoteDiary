@@ -13,9 +13,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@d.malygin/UI_storybook": "^1.0.16",
+    "@d.malygin/UI_storybook": "^1.0.20",
     "@vueuse/core": "^10.11.0",
-    "@vueuse/integrations": "^10.11.0",
     "buffer": "^6.0.3",
     "pinia": "^2.1.7",
     "universal-cookie": "^7",

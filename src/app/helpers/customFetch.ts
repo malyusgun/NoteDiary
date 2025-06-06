@@ -1,7 +1,7 @@
 import cookies from '@/app/plugins/Cookie';
 import { redirectSignIn } from '@/app/router';
 
-const server = process.env['SERVER'] || 'http://localhost:5000/api/v1';
+const server = import.meta.env['VITE_SERVER'] || 'http://localhost:3000';
 let isRefresh: boolean = false;
 let previousResponseData: [string, 'GET' | 'POST' | 'PATCH' | 'DELETE', unknown];
 
